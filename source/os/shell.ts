@@ -73,6 +73,23 @@ module TSOS {
                 "<string> - Sets the prompt.");
             this.commandList[this.commandList.length] = sc;
 
+            // date
+            sc = new ShellCommand(this.shellDate,
+                "date",
+                "- Displays the date and time.");
+            this.commandList[this.commandList.length] = sc;
+
+            // whereami
+            sc = new ShellCommand(this.shellWhereami,
+                "whereami",
+                "- Displays where you are.");
+            this.commandList[this.commandList.length] = sc;
+
+            // surpriseme
+            sc = new ShellCommand(this.shellSurpriseme,
+                "surpriseme",
+                "- Displays a surprise.");
+            this.commandList[this.commandList.length] = sc;
 
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
@@ -289,6 +306,21 @@ module TSOS {
             } else {
                 _StdOut.putText("Usage: prompt <string>  Please supply a string.");
             }
+        }
+
+        public shellDate(args: string[]) {
+            _StdOut.putText(new Date().toLocaleString());
+        }
+
+        public shellWhereami(args: string[]) {
+            _StdOut.putText("Heres a better question: where do you want to be?");
+        }
+
+        public shellSurpriseme(args: string[]) {
+            if (Date.now() % 2 == 0)
+                _StdOut.putText("Surprise!");
+            else
+                _StdOut.putText("\n");
         }
 
     }
