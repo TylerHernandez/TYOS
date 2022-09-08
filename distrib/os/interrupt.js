@@ -4,6 +4,8 @@
 var TSOS;
 (function (TSOS) {
     class Interrupt {
+        irq;
+        params;
         constructor(irq, params) {
             this.irq = irq;
             this.params = params;

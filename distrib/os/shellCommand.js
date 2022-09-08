@@ -1,6 +1,9 @@
 var TSOS;
 (function (TSOS) {
     class ShellCommand {
+        func;
+        command;
+        description;
         constructor(func, command = "", description = "") {
             this.func = func;
             this.command = command;

@@ -10,12 +10,12 @@
 var TSOS;
 (function (TSOS) {
     class Shell {
+        // Properties
+        promptStr = ">";
+        commandList = [];
+        curses = "[fuvg],[cvff],[shpx],[phag],[pbpxfhpxre],[zbgureshpxre],[gvgf]";
+        apologies = "[sorry]";
         constructor() {
-            // Properties
-            this.promptStr = ">";
-            this.commandList = [];
-            this.curses = "[fuvg],[cvff],[shpx],[phag],[pbpxfhpxre],[zbgureshpxre],[gvgf]";
-            this.apologies = "[sorry]";
         }
         init() {
             var sc;
@@ -45,10 +45,12 @@ var TSOS;
             // prompt <string>
             sc = new TSOS.ShellCommand(this.shellPrompt, "prompt", "<string> - Sets the prompt.");
             this.commandList[this.commandList.length] = sc;
+            console.log(this.commandList);
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
             // Display the initial prompt.
             this.putPrompt();
+            console.log("first");
         }
         putPrompt() {
             _StdOut.putText(this.promptStr);
@@ -186,16 +188,27 @@ var TSOS;
             _StdOut.clearScreen();
             _StdOut.resetXY();
         }
+        getCommandList() {
+            return this.commandList;
+        }
         shellMan(args) {
             if (args.length > 0) {
                 var topic = args[0];
-                switch (topic) {
-                    case "help":
-                        _StdOut.putText("Help displays a list of (hopefully) valid commands.");
-                        break;
-                    // TODO: Make descriptive MANual page entries for the the rest of the shell commands here.
-                    default:
-                        _StdOut.putText("No manual entry for " + args[0] + ".");
+                var recognizedCommand = null;
+                console.log(topic);
+                console.log(this.getCommandList());
+                // If topic is a command in commandList, retrieve the ShellCommand.
+                for (let index = 0; index < this.commandList.length; index++) {
+                    if (this.commandList[index].command == topic) {
+                        recognizedCommand = this.commandList[index];
+                    }
+                }
+                if (recognizedCommand != null) {
+                    // recognized shell command - print it's description.
+                    _StdOut.putText(recognizedCommand.command + recognizedCommand.description);
+                }
+                else {
+                    _StdOut.putText("No manual entry for " + args[0] + ".");
                 }
             }
             else {
