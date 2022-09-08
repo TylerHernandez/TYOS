@@ -72,7 +72,6 @@ module TSOS {
                 "prompt",
                 "<string> - Sets the prompt.");
             this.commandList[this.commandList.length] = sc;
-            console.log(this.commandList);
 
 
             // ps  - list the running processes and their IDs
@@ -80,7 +79,6 @@ module TSOS {
 
             // Display the initial prompt.
             this.putPrompt();
-            console.log("first");
         }
 
         public putPrompt() {
@@ -230,20 +228,14 @@ module TSOS {
             _StdOut.resetXY();
         }
 
-        public getCommandList(){
-            return this.commandList;
-        }
-
         public shellMan(args: string[]) {
             if (args.length > 0) {
                 var topic = args[0];
                 var recognizedCommand: ShellCommand = null;
-                console.log(topic);
-                console.log(this.getCommandList());
                 // If topic is a command in commandList, retrieve the ShellCommand.
-                for (let index = 0; index < this.commandList.length; index++) {
-                    if (this.commandList[index].command == topic) {
-                        recognizedCommand = this.commandList[index];
+                for (let index = 0; index < _OsShell.commandList.length; index++) {
+                    if (_OsShell.commandList[index].command == topic) {
+                        recognizedCommand = _OsShell.commandList[index];
                     }
                 }
                 if (recognizedCommand != null) {

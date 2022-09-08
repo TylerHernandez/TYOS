@@ -45,7 +45,6 @@ var TSOS;
             // prompt <string>
             sc = new TSOS.ShellCommand(this.shellPrompt, "prompt", "<string> - Sets the prompt.");
             this.commandList[this.commandList.length] = sc;
-            console.log(this.commandList);
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
             // Display the initial prompt.
@@ -188,19 +187,16 @@ var TSOS;
             _StdOut.clearScreen();
             _StdOut.resetXY();
         }
-        getCommandList() {
-            return this.commandList;
-        }
         shellMan(args) {
             if (args.length > 0) {
                 var topic = args[0];
                 var recognizedCommand = null;
                 console.log(topic);
-                console.log(this.getCommandList());
+                console.log(_OsShell.commandList);
                 // If topic is a command in commandList, retrieve the ShellCommand.
-                for (let index = 0; index < this.commandList.length; index++) {
-                    if (this.commandList[index].command == topic) {
-                        recognizedCommand = this.commandList[index];
+                for (let index = 0; index < _OsShell.commandList.length; index++) {
+                    if (_OsShell.commandList[index].command == topic) {
+                        recognizedCommand = _OsShell.commandList[index];
                     }
                 }
                 if (recognizedCommand != null) {
