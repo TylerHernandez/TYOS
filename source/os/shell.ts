@@ -259,7 +259,7 @@ module TSOS {
                     // recognized shell command - print it's description.
                     _StdOut.putText(recognizedCommand.command + recognizedCommand.description);
                 } else {
-                    _StdOut.putText("No manual entry for " + args[0] + ".");
+                    _StdOut.putText("No manual entry for " + topic + ".");
                 }
 
             } else {
