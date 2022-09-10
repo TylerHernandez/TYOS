@@ -12,12 +12,17 @@ var TSOS;
         currentXPosition;
         currentYPosition;
         buffer;
+        // Holds a log for text, to be utilized for redrawing canvas.
+        textLog;
+        canvasIsResetting;
         constructor(currentFont = _DefaultFontFamily, currentFontSize = _DefaultFontSize, currentXPosition = 0, currentYPosition = _DefaultFontSize, buffer = "") {
             this.currentFont = currentFont;
             this.currentFontSize = currentFontSize;
             this.currentXPosition = currentXPosition;
             this.currentYPosition = currentYPosition;
             this.buffer = buffer;
+            this.textLog = "";
+            this.canvasIsResetting = false;
         }
         init() {
             this.clearScreen();
@@ -66,9 +71,16 @@ var TSOS;
                 // Move the current X position.
                 var offset = _DrawingContext.measureText(this.currentFont, this.currentFontSize, text);
                 this.currentXPosition = this.currentXPosition + offset;
+                console.log(text);
+                if (!this.canvasIsResetting) {
+                    this.textLog += text;
+                }
             }
         }
         advanceLine() {
+            if (!this.canvasIsResetting) {
+                this.textLog += "\n";
+            }
             this.currentXPosition = 0;
             /*
              * Font size measures from the baseline to the highest point in the font.
@@ -79,6 +91,30 @@ var TSOS;
                 _DrawingContext.fontDescent(this.currentFont, this.currentFontSize) +
                 _FontHeightMargin;
             // TODO: Handle scrolling. (iProject 1)
+            // Store each line as element in an array. 
+            // Only if canvas is not resetting and Y position is not visible will we remove old lines.
+            if (this.currentYPosition > _Canvas.height && !this.canvasIsResetting) {
+                this.removeOldLines();
+            }
+        }
+        removeOldLines() {
+            // Gather all canvas text into a string (this.textLog);
+            console.log(this.textLog);
+            // Record we are resetting canvas so we don't store this text as new text in textLog.
+            this.canvasIsResetting = true;
+            // Clear canvas.
+            this.clearScreen();
+            this.resetXY();
+            // Slim down textLog to whatever we can fit.
+            this.textLog = this.textLog.substring(this.textLog.length / 4);
+            // For every text in textLog, draw to canvas.
+            var text = "";
+            var textLogArray = this.textLog.split("\n");
+            for (let i = 0; i < textLogArray.length; i++) {
+                this.putText(textLogArray[i]);
+                this.advanceLine();
+            }
+            this.canvasIsResetting = false;
         }
     }
     TSOS.Console = Console;

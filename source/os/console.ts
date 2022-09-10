@@ -9,11 +9,17 @@ module TSOS {
 
     export class Console {
 
+        // Holds a log for text, to be utilized for redrawing canvas.
+        private textLog: String;
+        private canvasIsResetting: Boolean;
+
         constructor(public currentFont = _DefaultFontFamily,
-                    public currentFontSize = _DefaultFontSize,
-                    public currentXPosition = 0,
-                    public currentYPosition = _DefaultFontSize,
-                    public buffer = "") {
+            public currentFontSize = _DefaultFontSize,
+            public currentXPosition = 0,
+            public currentYPosition = _DefaultFontSize,
+            public buffer = "") {
+            this.textLog = "";
+            this.canvasIsResetting = false;
         }
 
         public init(): void {
@@ -66,21 +72,58 @@ module TSOS {
                 // Move the current X position.
                 var offset = _DrawingContext.measureText(this.currentFont, this.currentFontSize, text);
                 this.currentXPosition = this.currentXPosition + offset;
+                console.log(text);
+                if (!this.canvasIsResetting) {
+                    this.textLog += text;
+                }
             }
-         }
+        }
 
         public advanceLine(): void {
+            if (!this.canvasIsResetting) {
+                this.textLog += "\n";
+            }
+
             this.currentXPosition = 0;
             /*
              * Font size measures from the baseline to the highest point in the font.
              * Font descent measures from the baseline to the lowest point in the font.
              * Font height margin is extra spacing between the lines.
              */
-            this.currentYPosition += _DefaultFontSize + 
-                                     _DrawingContext.fontDescent(this.currentFont, this.currentFontSize) +
-                                     _FontHeightMargin;
+            this.currentYPosition += _DefaultFontSize +
+                _DrawingContext.fontDescent(this.currentFont, this.currentFontSize) +
+                _FontHeightMargin;
 
             // TODO: Handle scrolling. (iProject 1)
+            // Store each line as element in an array. 
+
+            // Only if canvas is not resetting and Y position is not visible will we remove old lines.
+            if (this.currentYPosition > _Canvas.height && !this.canvasIsResetting) {
+                this.removeOldLines();
+            }
+        }
+
+        public removeOldLines(): void {
+            // Gather all canvas text into a string (this.textLog);
+            console.log(this.textLog);
+            // Record we are resetting canvas so we don't store this text as new text in textLog.
+            this.canvasIsResetting = true;
+            // Clear canvas.
+            this.clearScreen();
+            this.resetXY();
+
+            // Slim down textLog to whatever we can fit.
+            this.textLog = this.textLog.substring(this.textLog.length / 4);
+
+            // For every text in textLog, draw to canvas.
+            var text: String = "";
+            var textLogArray = this.textLog.split("\n");
+            for (let i = 0; i < textLogArray.length; i++) {
+                this.putText(textLogArray[i]);
+                this.advanceLine();
+            }
+
+            this.canvasIsResetting = false;
         }
     }
- }
+}
