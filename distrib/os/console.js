@@ -7,6 +7,11 @@
 var TSOS;
 (function (TSOS) {
     class Console {
+        currentFont;
+        currentFontSize;
+        currentXPosition;
+        currentYPosition;
+        buffer;
         constructor(currentFont = _DefaultFontFamily, currentFontSize = _DefaultFontSize, currentXPosition = 0, currentYPosition = _DefaultFontSize, buffer = "") {
             this.currentFont = currentFont;
             this.currentFontSize = currentFontSize;

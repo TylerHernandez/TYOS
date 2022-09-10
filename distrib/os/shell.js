@@ -10,12 +10,12 @@
 var TSOS;
 (function (TSOS) {
     class Shell {
+        // Properties
+        promptStr = ">";
+        commandList = [];
+        curses = "[fuvg],[cvff],[shpx],[phag],[pbpxfhpxre],[zbgureshpxre],[gvgf]";
+        apologies = "[sorry]";
         constructor() {
-            // Properties
-            this.promptStr = ">";
-            this.commandList = [];
-            this.curses = "[fuvg],[cvff],[shpx],[phag],[pbpxfhpxre],[zbgureshpxre],[gvgf]";
-            this.apologies = "[sorry]";
         }
         init() {
             var sc;
@@ -44,6 +44,15 @@ var TSOS;
             this.commandList[this.commandList.length] = sc;
             // prompt <string>
             sc = new TSOS.ShellCommand(this.shellPrompt, "prompt", "<string> - Sets the prompt.");
+            this.commandList[this.commandList.length] = sc;
+            // date
+            sc = new TSOS.ShellCommand(this.shellDate, "date", "- Displays the date and time.");
+            this.commandList[this.commandList.length] = sc;
+            // whereami
+            sc = new TSOS.ShellCommand(this.shellWhereami, "whereami", "- Displays where you are.");
+            this.commandList[this.commandList.length] = sc;
+            // surpriseme
+            sc = new TSOS.ShellCommand(this.shellSurpriseme, "surpriseme", "- Displays a surprise.");
             this.commandList[this.commandList.length] = sc;
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
@@ -189,13 +198,19 @@ var TSOS;
         shellMan(args) {
             if (args.length > 0) {
                 var topic = args[0];
-                switch (topic) {
-                    case "help":
-                        _StdOut.putText("Help displays a list of (hopefully) valid commands.");
-                        break;
-                    // TODO: Make descriptive MANual page entries for the the rest of the shell commands here.
-                    default:
-                        _StdOut.putText("No manual entry for " + args[0] + ".");
+                var recognizedCommand = null;
+                // If topic is a command in commandList, retrieve the ShellCommand.
+                for (let index = 0; index < _OsShell.commandList.length; index++) {
+                    if (_OsShell.commandList[index].command == topic) {
+                        recognizedCommand = _OsShell.commandList[index];
+                    }
+                }
+                if (recognizedCommand != null) {
+                    // recognized shell command - print it's description.
+                    _StdOut.putText(recognizedCommand.command + recognizedCommand.description);
+                }
+                else {
+                    _StdOut.putText("No manual entry for " + topic + ".");
                 }
             }
             else {
@@ -243,6 +258,18 @@ var TSOS;
             else {
                 _StdOut.putText("Usage: prompt <string>  Please supply a string.");
             }
+        }
+        shellDate(args) {
+            _StdOut.putText(new Date().toLocaleString());
+        }
+        shellWhereami(args) {
+            _StdOut.putText("Heres a better question: where do you want to be?");
+        }
+        shellSurpriseme(args) {
+            if (Date.now() % 2 == 0)
+                _StdOut.putText("Surprise!");
+            else
+                _StdOut.putText("\n");
         }
     }
     TSOS.Shell = Shell;

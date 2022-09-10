@@ -10,6 +10,7 @@
 var TSOS;
 (function (TSOS) {
     class Queue {
+        q;
         constructor(q = new Array()) {
             this.q = q;
         }

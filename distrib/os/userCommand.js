@@ -1,6 +1,8 @@
 var TSOS;
 (function (TSOS) {
     class UserCommand {
+        command;
+        args;
         constructor(command = "", args = []) {
             this.command = command;
             this.args = args;
