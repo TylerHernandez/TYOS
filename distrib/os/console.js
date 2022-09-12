@@ -91,13 +91,12 @@ var TSOS;
                 _DrawingContext.fontDescent(this.currentFont, this.currentFontSize) +
                 _FontHeightMargin;
             // TODO: Handle scrolling. (iProject 1)
-            // Store each line as element in an array. 
             // Only if canvas is not resetting and Y position is not visible will we remove old lines.
-            if (this.currentYPosition > _Canvas.height && !this.canvasIsResetting) {
-                this.removeOldLines();
+            if (this.currentYPosition > _Canvas.height) {
+                this.removeOldestLine();
             }
         }
-        removeOldLines() {
+        removeOldestLine() {
             // Gather all canvas text into a string (this.textLog);
             console.log(this.textLog);
             // Record we are resetting canvas so we don't store this text as new text in textLog.
@@ -105,8 +104,8 @@ var TSOS;
             // Clear canvas.
             this.clearScreen();
             this.resetXY();
-            // Slim down textLog to whatever we can fit.
-            this.textLog = this.textLog.substring(this.textLog.length / 4);
+            // Slim down textLog, removing the oldest line from the string.
+            this.textLog = this.textLog.slice(this.textLog.indexOf("\n") + 1);
             // For every text in textLog, draw to canvas.
             var text = "";
             var textLogArray = this.textLog.split("\n");
