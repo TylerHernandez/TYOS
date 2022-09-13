@@ -66,14 +66,22 @@ var TSOS;
                 decided to write one function and use the term "text" to connote string or char.
             */
             if (text !== "") {
-                // Draw the text at the current X and Y coordinates.
-                _DrawingContext.drawText(this.currentFont, this.currentFontSize, this.currentXPosition, this.currentYPosition, text);
-                // Move the current X position.
-                var offset = _DrawingContext.measureText(this.currentFont, this.currentFontSize, text);
-                this.currentXPosition = this.currentXPosition + offset;
-                console.log(text);
-                if (!this.canvasIsResetting) {
-                    this.textLog += text;
+                let index = 0;
+                var textArray = text.split("");
+                var offset;
+                // Draw every character individually to properly calculate what text fits on the line.
+                while (index < textArray.length) {
+                    // If text does not fit on x axis, advance line.
+                    if (_DrawingContext.measureText(this.currentFont, this.currentFontSize, textArray[index]) + this.currentXPosition >= _Canvas.width) {
+                        this.advanceLine();
+                    }
+                    _DrawingContext.drawText(this.currentFont, this.currentFontSize, this.currentXPosition, this.currentYPosition, textArray[index]);
+                    offset = _DrawingContext.measureText(this.currentFont, this.currentFontSize, textArray[index]);
+                    this.currentXPosition = this.currentXPosition + offset;
+                    if (!this.canvasIsResetting) {
+                        this.textLog += textArray[index];
+                    }
+                    index++;
                 }
             }
         }
@@ -90,15 +98,12 @@ var TSOS;
             this.currentYPosition += _DefaultFontSize +
                 _DrawingContext.fontDescent(this.currentFont, this.currentFontSize) +
                 _FontHeightMargin;
-            // TODO: Handle scrolling. (iProject 1)
-            // Only if canvas is not resetting and Y position is not visible will we remove old lines.
-            if (this.currentYPosition > _Canvas.height) {
+            // If the Y position is not visible, keep removing the oldest line. Prevent recursion with canvasIsResetting.
+            while ((this.currentYPosition > _Canvas.height) && !this.canvasIsResetting) {
                 this.removeOldestLine();
             }
         }
         removeOldestLine() {
-            // Gather all canvas text into a string (this.textLog);
-            console.log(this.textLog);
             // Record we are resetting canvas so we don't store this text as new text in textLog.
             this.canvasIsResetting = true;
             // Clear canvas.
