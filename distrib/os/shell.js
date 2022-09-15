@@ -54,6 +54,9 @@ var TSOS;
             // surpriseme
             sc = new TSOS.ShellCommand(this.shellSurpriseme, "surpriseme", "- Displays a surprise.");
             this.commandList[this.commandList.length] = sc;
+            // status <string>
+            sc = new TSOS.ShellCommand(this.shellStatus, "status", "<string> - Sets the status.");
+            this.commandList[this.commandList.length] = sc;
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
             // Display the initial prompt.
@@ -254,6 +257,14 @@ var TSOS;
         shellPrompt(args) {
             if (args.length > 0) {
                 _OsShell.promptStr = args[0];
+            }
+            else {
+                _StdOut.putText("Usage: prompt <string>  Please supply a string.");
+            }
+        }
+        shellStatus(args) {
+            if (args.length > 0) {
+                document.getElementById("status").innerHTML = args[0];
             }
             else {
                 _StdOut.putText("Usage: prompt <string>  Please supply a string.");
