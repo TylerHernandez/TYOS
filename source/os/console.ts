@@ -9,11 +9,17 @@ module TSOS {
 
     export class Console {
 
+        // Holds a log for text, to be utilized for redrawing canvas.
+        private textLog: String;
+        private canvasIsResetting: Boolean;
+
         constructor(public currentFont = _DefaultFontFamily,
-                    public currentFontSize = _DefaultFontSize,
-                    public currentXPosition = 0,
-                    public currentYPosition = _DefaultFontSize,
-                    public buffer = "") {
+            public currentFontSize = _DefaultFontSize,
+            public currentXPosition = 0,
+            public currentYPosition = _DefaultFontSize,
+            public buffer = "") {
+            this.textLog = "";
+            this.canvasIsResetting = false;
         }
 
         public init(): void {
@@ -61,26 +67,74 @@ module TSOS {
                 decided to write one function and use the term "text" to connote string or char.
             */
             if (text !== "") {
-                // Draw the text at the current X and Y coordinates.
-                _DrawingContext.drawText(this.currentFont, this.currentFontSize, this.currentXPosition, this.currentYPosition, text);
-                // Move the current X position.
-                var offset = _DrawingContext.measureText(this.currentFont, this.currentFontSize, text);
-                this.currentXPosition = this.currentXPosition + offset;
+
+                let index = 0;
+                var textArray: string[] = text.split("");
+                var offset: number;
+
+                // Draw every character individually to properly calculate what text fits on the line.
+                while (index < textArray.length) {
+
+                    // If text does not fit on x axis, advance line.
+                    if (_DrawingContext.measureText(this.currentFont, this.currentFontSize, textArray[index]) + this.currentXPosition >= _Canvas.width) {
+                        this.advanceLine();
+                    }
+
+                    _DrawingContext.drawText(this.currentFont, this.currentFontSize, this.currentXPosition, this.currentYPosition,
+                        textArray[index]);
+                    offset = _DrawingContext.measureText(this.currentFont, this.currentFontSize, textArray[index]);
+                    this.currentXPosition = this.currentXPosition + offset;
+
+                    if (!this.canvasIsResetting) {
+                        this.textLog += textArray[index];
+                    }
+
+                    index++;
+                }
             }
-         }
+        }
 
         public advanceLine(): void {
+            if (!this.canvasIsResetting) {
+                this.textLog += "\n";
+            }
+
             this.currentXPosition = 0;
             /*
              * Font size measures from the baseline to the highest point in the font.
              * Font descent measures from the baseline to the lowest point in the font.
              * Font height margin is extra spacing between the lines.
              */
-            this.currentYPosition += _DefaultFontSize + 
-                                     _DrawingContext.fontDescent(this.currentFont, this.currentFontSize) +
-                                     _FontHeightMargin;
+            this.currentYPosition += _DefaultFontSize +
+                _DrawingContext.fontDescent(this.currentFont, this.currentFontSize) +
+                _FontHeightMargin;
 
-            // TODO: Handle scrolling. (iProject 1)
+            // If the Y position is not visible, keep removing the oldest line. Prevent recursion with canvasIsResetting.
+            while ((this.currentYPosition > _Canvas.height) && !this.canvasIsResetting) {
+                this.removeOldestLine();
+            }
+
+        }
+
+        public removeOldestLine(): void {
+            // Record we are resetting canvas so we don't store this text as new text in textLog.
+            this.canvasIsResetting = true;
+            // Clear canvas.
+            this.clearScreen();
+            this.resetXY();
+
+            // Slim down textLog, removing the oldest line from the string.
+            this.textLog = this.textLog.slice(this.textLog.indexOf("\n") + 1);
+
+            // For every text in textLog, draw to canvas.
+            var text: String = "";
+            var textLogArray: String[] = this.textLog.split("\n");
+            for (let i: number = 0; i < textLogArray.length; i++) {
+                this.putText(textLogArray[i]);
+                this.advanceLine();
+            }
+
+            this.canvasIsResetting = false;
         }
     }
- }
+}

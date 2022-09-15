@@ -12,12 +12,17 @@ var TSOS;
         currentXPosition;
         currentYPosition;
         buffer;
+        // Holds a log for text, to be utilized for redrawing canvas.
+        textLog;
+        canvasIsResetting;
         constructor(currentFont = _DefaultFontFamily, currentFontSize = _DefaultFontSize, currentXPosition = 0, currentYPosition = _DefaultFontSize, buffer = "") {
             this.currentFont = currentFont;
             this.currentFontSize = currentFontSize;
             this.currentXPosition = currentXPosition;
             this.currentYPosition = currentYPosition;
             this.buffer = buffer;
+            this.textLog = "";
+            this.canvasIsResetting = false;
         }
         init() {
             this.clearScreen();
@@ -61,14 +66,29 @@ var TSOS;
                 decided to write one function and use the term "text" to connote string or char.
             */
             if (text !== "") {
-                // Draw the text at the current X and Y coordinates.
-                _DrawingContext.drawText(this.currentFont, this.currentFontSize, this.currentXPosition, this.currentYPosition, text);
-                // Move the current X position.
-                var offset = _DrawingContext.measureText(this.currentFont, this.currentFontSize, text);
-                this.currentXPosition = this.currentXPosition + offset;
+                let index = 0;
+                var textArray = text.split("");
+                var offset;
+                // Draw every character individually to properly calculate what text fits on the line.
+                while (index < textArray.length) {
+                    // If text does not fit on x axis, advance line.
+                    if (_DrawingContext.measureText(this.currentFont, this.currentFontSize, textArray[index]) + this.currentXPosition >= _Canvas.width) {
+                        this.advanceLine();
+                    }
+                    _DrawingContext.drawText(this.currentFont, this.currentFontSize, this.currentXPosition, this.currentYPosition, textArray[index]);
+                    offset = _DrawingContext.measureText(this.currentFont, this.currentFontSize, textArray[index]);
+                    this.currentXPosition = this.currentXPosition + offset;
+                    if (!this.canvasIsResetting) {
+                        this.textLog += textArray[index];
+                    }
+                    index++;
+                }
             }
         }
         advanceLine() {
+            if (!this.canvasIsResetting) {
+                this.textLog += "\n";
+            }
             this.currentXPosition = 0;
             /*
              * Font size measures from the baseline to the highest point in the font.
@@ -78,7 +98,27 @@ var TSOS;
             this.currentYPosition += _DefaultFontSize +
                 _DrawingContext.fontDescent(this.currentFont, this.currentFontSize) +
                 _FontHeightMargin;
-            // TODO: Handle scrolling. (iProject 1)
+            // If the Y position is not visible, keep removing the oldest line. Prevent recursion with canvasIsResetting.
+            while ((this.currentYPosition > _Canvas.height) && !this.canvasIsResetting) {
+                this.removeOldestLine();
+            }
+        }
+        removeOldestLine() {
+            // Record we are resetting canvas so we don't store this text as new text in textLog.
+            this.canvasIsResetting = true;
+            // Clear canvas.
+            this.clearScreen();
+            this.resetXY();
+            // Slim down textLog, removing the oldest line from the string.
+            this.textLog = this.textLog.slice(this.textLog.indexOf("\n") + 1);
+            // For every text in textLog, draw to canvas.
+            var text = "";
+            var textLogArray = this.textLog.split("\n");
+            for (let i = 0; i < textLogArray.length; i++) {
+                this.putText(textLogArray[i]);
+                this.advanceLine();
+            }
+            this.canvasIsResetting = false;
         }
     }
     TSOS.Console = Console;
