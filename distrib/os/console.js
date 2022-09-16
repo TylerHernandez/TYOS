@@ -116,7 +116,10 @@ var TSOS;
             var textLogArray = this.textLog.split("\n");
             for (let i = 0; i < textLogArray.length; i++) {
                 this.putText(textLogArray[i]);
-                this.advanceLine();
+                // Prevent extra line being added at end of loop.
+                if (i != textLogArray.length - 1) {
+                    this.advanceLine();
+                }
             }
             this.canvasIsResetting = false;
         }
