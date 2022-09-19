@@ -31,6 +31,9 @@ var TSOS;
             if (keyCode == 8) { // Backspace
                 chr = String.fromCharCode(keyCode);
             }
+            else if (keyCode == 9) { // Tab
+                chr = String.fromCharCode(keyCode);
+            }
             else if (keyCode == 13) { // Enter
                 chr = String.fromCharCode(keyCode);
             }

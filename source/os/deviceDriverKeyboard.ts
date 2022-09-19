@@ -37,19 +37,18 @@ module TSOS {
             if (keyCode == 8) { // Backspace
                 chr = String.fromCharCode(keyCode);
             }
-
+            else if (keyCode == 9) { // Tab
+                chr = String.fromCharCode(keyCode);
+            }
             else if (keyCode == 13) { // Enter
                 chr = String.fromCharCode(keyCode);
             }
-
             else if (keyCode == 32) { // Space
                 chr = String.fromCharCode(keyCode);
             }
-
             else if (isShifted && (keyCode >= 65 && keyCode <= 90)) { //Letter
                 chr = String.fromCharCode(keyCode); // Uppercase A-Z
             }
-
             else if (!isShifted && (keyCode >= 48) && (keyCode <= 57)) { // Digits
                 chr = String.fromCharCode(keyCode);
             }
