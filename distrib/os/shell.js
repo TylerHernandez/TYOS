@@ -264,10 +264,14 @@ var TSOS;
         }
         shellStatus(args) {
             if (args.length > 0) {
-                document.getElementById("status").innerHTML = args[0];
+                var argsString = "";
+                for (var i = 0; i < args.length; i++) {
+                    argsString += args[i] + " ";
+                }
+                document.getElementById("status").innerHTML = argsString;
             }
             else {
-                _StdOut.putText("Usage: prompt <string>  Please supply a string.");
+                _StdOut.putText("Usage: status <string>  Please supply a string.");
             }
         }
         shellDate(args) {
