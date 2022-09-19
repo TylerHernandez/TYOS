@@ -37,6 +37,7 @@ module TSOS {
         }
 
         public handleInput(): void {
+            console.log(this.buffer);
             while (_KernelInputQueue.getSize() > 0) {
                 // Get the next character from the kernel input queue.
                 var chr = _KernelInputQueue.dequeue();
@@ -47,6 +48,8 @@ module TSOS {
                     _OsShell.handleInput(this.buffer);
                     // ... and reset our buffer.
                     this.buffer = "";
+                } else if (chr === String.fromCharCode(8)) { // Backspace, remove the last char.
+                    this.removeLastCharFromScreen();
                 } else {
                     // This is a "normal" character, so ...
                     // ... draw it on the screen...
@@ -58,6 +61,15 @@ module TSOS {
             }
         }
 
+        // Removes the last char from textlog, screen, and buffer.
+        public removeLastCharFromScreen(): void {
+            if (this.buffer.length > 0) {
+                this.textLog = this.textLog.substring(0, this.textLog.length - 1);
+                this.buffer = this.buffer.substring(0, this.buffer.length - 1);
+                this.repaintCanvas();
+            }
+        }
+
         public putText(text): void {
             /*  My first inclination here was to write two functions: putChar() and putString().
                 Then I remembered that JavaScript is (sadly) untyped and it won't differentiate
@@ -66,6 +78,7 @@ module TSOS {
                 do the same thing, thereby encouraging confusion and decreasing readability, I
                 decided to write one function and use the term "text" to connote string or char.
             */
+
             if (text !== "") {
 
                 let index = 0;
@@ -133,7 +146,32 @@ module TSOS {
                 this.putText(textLogArray[i]);
 
                 // Prevent extra line being added at end of loop.
-                if (i != textLogArray.length - 1){
+                if (i != textLogArray.length - 1) {
+                    this.advanceLine();
+                }
+            }
+
+            this.canvasIsResetting = false;
+        }
+
+        public repaintCanvas(): void {
+            // Record we are resetting canvas so we don't store this text as new text in textLog.
+            this.canvasIsResetting = true;
+            // Clear canvas.
+            this.clearScreen();
+            this.resetXY();
+
+            // Slim down textLog, removing the oldest line from the string.
+            // this.textLog = this.textLog.slice(this.textLog.indexOf("\n") + 1);
+
+            // For every text in textLog, draw to canvas.
+            var text: String = "";
+            var textLogArray: String[] = this.textLog.split("\n");
+            for (let i: number = 0; i < textLogArray.length; i++) {
+                this.putText(textLogArray[i]);
+
+                // Prevent extra line being added at end of loop.
+                if (i != textLogArray.length - 1) {
                     this.advanceLine();
                 }
             }
