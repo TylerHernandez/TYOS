@@ -149,7 +149,13 @@ var TSOS;
         }
         krnTrapError(msg) {
             TSOS.Control.hostLog("OS ERROR - TRAP: " + msg);
-            // TODO: Display error on console, perhaps in some sort of colored screen. (Maybe blue?)
+            // Exhaustive for loop to simulate slow background processs.
+            for (var i = 0; i < 100; i += .1) {
+                if (i % 25 == 0) {
+                    _Console.clearScreen();
+                }
+                _Console.putText(msg);
+            }
             this.krnShutdown();
         }
     }

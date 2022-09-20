@@ -15,6 +15,8 @@ var TSOS;
         // Holds a log for text, to be utilized for redrawing canvas.
         textLog;
         canvasIsResetting;
+        commandHistory;
+        commandIndex;
         constructor(currentFont = _DefaultFontFamily, currentFontSize = _DefaultFontSize, currentXPosition = 0, currentYPosition = _DefaultFontSize, buffer = "") {
             this.currentFont = currentFont;
             this.currentFontSize = currentFontSize;
@@ -23,6 +25,8 @@ var TSOS;
             this.buffer = buffer;
             this.textLog = "";
             this.canvasIsResetting = false;
+            this.commandHistory = [];
+            this.commandIndex = 0;
         }
         init() {
             this.clearScreen();
@@ -44,8 +48,40 @@ var TSOS;
                     // The enter key marks the end of a console command, so ...
                     // ... tell the shell ...
                     _OsShell.handleInput(this.buffer);
+                    // record command in history.
+                    this.commandHistory[this.commandHistory.length] = this.buffer;
+                    this.commandIndex = this.commandHistory.length;
                     // ... and reset our buffer.
                     this.buffer = "";
+                }
+                else if (chr === String.fromCharCode(8)) { // Backspace, remove the last char.
+                    this.removeLastCharFromScreen();
+                }
+                else if (chr === String.fromCharCode(9)) { // Tab key.
+                    this.autoComplete();
+                }
+                else if (chr === String.fromCharCode(38)) { // Up arrow key
+                    this.commandIndex -= 1;
+                    this.keepIndexInBounds();
+                    // put this in the buffer and redraw screen.
+                    this.textLog = this.textLog.substring(0, this.textLog.length - this.buffer.length);
+                    this.buffer = this.commandHistory[this.commandIndex];
+                    this.textLog += this.buffer;
+                    this.repaintCanvas();
+                }
+                else if (chr === String.fromCharCode(40)) { // Down arrow key
+                    this.commandIndex += 1;
+                    this.keepIndexInBounds();
+                    if (this.commandHistory[this.commandIndex] == undefined) {
+                        this.textLog = this.textLog.substring(0, this.textLog.length - this.buffer.length);
+                        this.buffer = "";
+                    }
+                    else {
+                        this.textLog = this.textLog.substring(0, this.textLog.length - this.buffer.length);
+                        this.buffer = this.commandHistory[this.commandIndex];
+                        this.textLog += this.buffer;
+                    }
+                    this.repaintCanvas();
                 }
                 else {
                     // This is a "normal" character, so ...
@@ -116,9 +152,81 @@ var TSOS;
             var textLogArray = this.textLog.split("\n");
             for (let i = 0; i < textLogArray.length; i++) {
                 this.putText(textLogArray[i]);
-                this.advanceLine();
+                // Prevent extra line being added at end of loop.
+                if (i != textLogArray.length - 1) {
+                    this.advanceLine();
+                }
             }
             this.canvasIsResetting = false;
+        }
+        repaintCanvas() {
+            // Record we are resetting canvas so we don't store this text as new text in textLog.
+            this.canvasIsResetting = true;
+            // Clear canvas.
+            this.clearScreen();
+            this.resetXY();
+            // For every text in textLog, draw to canvas.
+            var text = "";
+            var textLogArray = this.textLog.split("\n");
+            for (let i = 0; i < textLogArray.length; i++) {
+                this.putText(textLogArray[i]);
+                // Prevent extra line being added at end of loop.
+                if (i != textLogArray.length - 1) {
+                    this.advanceLine();
+                }
+            }
+            this.canvasIsResetting = false;
+        }
+        // Given a string, if any existing commands in commands list start with the string.
+        autoComplete() {
+            const firstFewLetters = this.buffer;
+            var matchedCommands = [];
+            if (!firstFewLetters.includes(" ")) { // Only allow tab command on first word in buffer.
+                for (var i = 0; _OsShell.commandList.length > i; i++) {
+                    // matches user input with the first few letters of each command.
+                    if (_OsShell.commandList[i].command.substring(0, firstFewLetters.length) == firstFewLetters) {
+                        matchedCommands[matchedCommands.length] = _OsShell.commandList[i].command;
+                    }
+                }
+                if (matchedCommands.length > 1) {
+                    this.textLog = this.textLog.substring(0, this.textLog.length - firstFewLetters.length);
+                    this.advanceLine();
+                    // Write the available commands,
+                    for (var i = 0; matchedCommands.length > i; i++) {
+                        this.putText(matchedCommands[i] + ", ");
+                    }
+                    // Repaint buffer on the next line.
+                    this.advanceLine();
+                    this.textLog += ">" + firstFewLetters;
+                    this.repaintCanvas();
+                }
+                else { // We found one command the user would probably like to use.
+                    // Remove buffer from textLog.
+                    this.textLog = this.textLog.substring(0, this.textLog.length - firstFewLetters.length);
+                    // Replace buffer with matched command and repaint canvas.
+                    this.buffer = matchedCommands[0];
+                    this.textLog += this.buffer;
+                    this.repaintCanvas();
+                }
+            }
+        }
+        // Removes the last char from textlog, screen, and buffer.
+        removeLastCharFromScreen() {
+            if (this.buffer.length > 0) {
+                this.textLog = this.textLog.substring(0, this.textLog.length - 1);
+                this.buffer = this.buffer.substring(0, this.buffer.length - 1);
+                this.repaintCanvas();
+            }
+        }
+        // Calculate highest length index we can get using commandHistory
+        // Simplify the index to stay between 0 and commandHistory.length
+        keepIndexInBounds() {
+            if (this.commandIndex < 0) {
+                this.commandIndex = 0;
+            }
+            else if (this.commandIndex > this.commandHistory.length) {
+                this.commandIndex = this.commandHistory.length;
+            }
         }
     }
     TSOS.Console = Console;

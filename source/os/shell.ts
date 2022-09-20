@@ -91,6 +91,24 @@ module TSOS {
                 "- Displays a surprise.");
             this.commandList[this.commandList.length] = sc;
 
+            // status <string>
+            sc = new ShellCommand(this.shellStatus,
+                "status",
+                "<string> - Sets the status.");
+            this.commandList[this.commandList.length] = sc;
+
+            // crash
+            sc = new ShellCommand(this.shellCrash,
+                "crash",
+                "- Triggers a kernel trap error.");
+            this.commandList[this.commandList.length] = sc;
+
+            // load
+            sc = new ShellCommand(this.shellLoad,
+                "load",
+                "- Displays if the input program is valid or not.");
+            this.commandList[this.commandList.length] = sc;
+
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
 
@@ -308,6 +326,20 @@ module TSOS {
             }
         }
 
+        public shellStatus(args: string[]) {
+            if (args.length > 0) {
+
+                var argsString = "";
+                for (var i = 0; i < args.length; i++) {
+                    argsString += args[i] + " ";
+                }
+
+                document.getElementById("status").innerHTML = argsString;
+            } else {
+                _StdOut.putText("Usage: status <string>  Please supply a string.");
+            }
+        }
+
         public shellDate(args: string[]) {
             _StdOut.putText(new Date().toLocaleString());
         }
@@ -321,6 +353,23 @@ module TSOS {
                 _StdOut.putText("Surprise!");
             else
                 _StdOut.putText("\n");
+        }
+
+        public shellCrash(args: string[]) {
+            _Kernel.krnTrapError("SPOOKY BLU SCREEN! Try downloading more ram!");
+        }
+
+        public shellLoad(args: string[]) {
+            var program: string[] = (<HTMLInputElement>document.getElementById('taProgramInput')).value.split("");
+            let acceptableItems = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "A", "B", "C", "D", "E", "F", " "]
+            // If there is something other than an acceptable item, program is invalid.
+            for (var i = 0; i < program.length; i++) {
+                if (!acceptableItems.includes(program[i])) {
+                    _StdOut.putText("This is not a valid program.");
+                    return;
+                }
+            }
+            _StdOut.putText("This is a valid program.");
         }
 
     }
