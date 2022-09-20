@@ -57,6 +57,9 @@ var TSOS;
             // status <string>
             sc = new TSOS.ShellCommand(this.shellStatus, "status", "<string> - Sets the status.");
             this.commandList[this.commandList.length] = sc;
+            // crash
+            sc = new TSOS.ShellCommand(this.shellCrash, "crash", "- Triggers a kernel trap error.");
+            this.commandList[this.commandList.length] = sc;
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
             // Display the initial prompt.
@@ -285,6 +288,9 @@ var TSOS;
                 _StdOut.putText("Surprise!");
             else
                 _StdOut.putText("\n");
+        }
+        shellCrash(args) {
+            _Kernel.krnTrapError("SPOOKY BLU SCREEN! Try downloading more ram!");
         }
     }
     TSOS.Shell = Shell;

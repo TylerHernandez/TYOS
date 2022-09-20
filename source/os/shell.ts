@@ -97,6 +97,12 @@ module TSOS {
                 "<string> - Sets the status.");
             this.commandList[this.commandList.length] = sc;
 
+            // crash
+            sc = new ShellCommand(this.shellCrash,
+                "crash",
+                "- Triggers a kernel trap error.");
+            this.commandList[this.commandList.length] = sc;
+
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
 
@@ -341,6 +347,10 @@ module TSOS {
                 _StdOut.putText("Surprise!");
             else
                 _StdOut.putText("\n");
+        }
+
+        public shellCrash(args: string[]) {
+            _Kernel.krnTrapError("SPOOKY BLU SCREEN! Try downloading more ram!");
         }
 
     }
