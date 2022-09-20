@@ -60,6 +60,9 @@ var TSOS;
             // crash
             sc = new TSOS.ShellCommand(this.shellCrash, "crash", "- Triggers a kernel trap error.");
             this.commandList[this.commandList.length] = sc;
+            // load
+            sc = new TSOS.ShellCommand(this.shellLoad, "load", "- Displays if the input program is valid or not.");
+            this.commandList[this.commandList.length] = sc;
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
             // Display the initial prompt.
@@ -291,6 +294,18 @@ var TSOS;
         }
         shellCrash(args) {
             _Kernel.krnTrapError("SPOOKY BLU SCREEN! Try downloading more ram!");
+        }
+        shellLoad(args) {
+            var program = document.getElementById('taProgramInput').value.split("");
+            let acceptableItems = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "A", "B", "C", "D", "E", "F", " "];
+            // If there is something other than an acceptable item, program is invalid.
+            for (var i = 0; i < program.length; i++) {
+                if (!acceptableItems.includes(program[i])) {
+                    _StdOut.putText("This is not a valid program.");
+                    return;
+                }
+            }
+            _StdOut.putText("This is a valid program.");
         }
     }
     TSOS.Shell = Shell;

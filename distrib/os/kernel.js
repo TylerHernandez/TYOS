@@ -152,7 +152,6 @@ var TSOS;
             // Exhaustive for loop to simulate slow background processs.
             for (var i = 0; i < 100; i += .1) {
                 if (i % 25 == 0) {
-                    console.log("true");
                     _Console.clearScreen();
                 }
                 _Console.putText(msg);
