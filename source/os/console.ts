@@ -12,6 +12,8 @@ module TSOS {
         // Holds a log for text, to be utilized for redrawing canvas.
         private textLog: String;
         private canvasIsResetting: Boolean;
+        private commandHistory: string[];
+        private commandIndex: number;
 
         constructor(public currentFont = _DefaultFontFamily,
             public currentFontSize = _DefaultFontSize,
@@ -20,6 +22,8 @@ module TSOS {
             public buffer = "") {
             this.textLog = "";
             this.canvasIsResetting = false;
+            this.commandHistory = [];
+            this.commandIndex = 0;
         }
 
         public init(): void {
@@ -45,12 +49,41 @@ module TSOS {
                     // The enter key marks the end of a console command, so ...
                     // ... tell the shell ...
                     _OsShell.handleInput(this.buffer);
+                    // record command in history.
+                    this.commandHistory[this.commandHistory.length] = this.buffer;
+                    this.commandIndex = this.commandHistory.length;
                     // ... and reset our buffer.
                     this.buffer = "";
                 } else if (chr === String.fromCharCode(8)) { // Backspace, remove the last char.
                     this.removeLastCharFromScreen();
                 } else if (chr === String.fromCharCode(9)) { // Tab key.
                     this.autoComplete();
+                } else if (chr === String.fromCharCode(38)) { // Up arrow key
+
+                    this.commandIndex -= 1;
+                    this.keepIndexInBounds();
+
+                    // put this in the buffer and redraw screen.
+                    this.textLog = this.textLog.substring(0, this.textLog.length - this.buffer.length);
+                    this.buffer = this.commandHistory[this.commandIndex];
+                    this.textLog += this.buffer;
+                    this.repaintCanvas();
+
+                } else if (chr === String.fromCharCode(40)) { // Down arrow key
+
+                    this.commandIndex += 1;
+                    this.keepIndexInBounds();
+
+                    if (this.commandHistory[this.commandIndex] == undefined) {
+                        this.textLog = this.textLog.substring(0, this.textLog.length - this.buffer.length);
+                        this.buffer = "";
+                    } else {
+                        this.textLog = this.textLog.substring(0, this.textLog.length - this.buffer.length);
+                        this.buffer = this.commandHistory[this.commandIndex];
+                        this.textLog += this.buffer;
+                    }
+
+                    this.repaintCanvas();
                 } else {
                     // This is a "normal" character, so ...
                     // ... draw it on the screen...
@@ -213,6 +246,17 @@ module TSOS {
                 this.textLog = this.textLog.substring(0, this.textLog.length - 1);
                 this.buffer = this.buffer.substring(0, this.buffer.length - 1);
                 this.repaintCanvas();
+            }
+        }
+
+        // Calculate highest length index we can get using commandHistory
+        // Simplify the index to stay between 0 and commandHistory.length
+        public keepIndexInBounds(): void {
+            if (this.commandIndex < 0) {
+                this.commandIndex = 0;
+            }
+            else if (this.commandIndex > this.commandHistory.length) {
+                this.commandIndex = this.commandHistory.length;
             }
         }
     }

@@ -40,6 +40,12 @@ var TSOS;
             else if (keyCode == 32) { // Space
                 chr = String.fromCharCode(keyCode);
             }
+            else if (keyCode == 38) { // Up arrow key
+                chr = String.fromCharCode(keyCode);
+            }
+            else if (keyCode == 40) { // Down arrow key
+                chr = String.fromCharCode(keyCode);
+            }
             else if (isShifted && (keyCode >= 65 && keyCode <= 90)) { //Letter
                 chr = String.fromCharCode(keyCode); // Uppercase A-Z
             }
