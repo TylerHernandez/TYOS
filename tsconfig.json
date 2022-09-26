@@ -1,14 +1,13 @@
 {
-    "compilerOptions": {
-      "target"              : "ES2022",
-      "rootDir"             : "source",
-      "outDir"              : "distrib",
-      "sourceMap"           : true,
-      "extendedDiagnostics" : true,
-      "listEmittedFiles"    : true
-    },
-
-    "include": [
-        "source/**/*"
-    ],
+  "compilerOptions": {
+    "target": "ES2022",
+    "rootDir": "source",
+    "outDir": "distrib",
+    "sourceMap": true,
+    "extendedDiagnostics": true,
+    "listEmittedFiles": true
+  },
+  "include": [
+    "source/**/*"
+  ],
 }
