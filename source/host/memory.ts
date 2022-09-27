@@ -2,91 +2,91 @@
 
 module TSOS {
 
-    // export class Memory{
+    export class Memory {
 
-    //     // Creates MemoryArray with up to FFFF(65535) +1 addressable spaces.
-    //     private MemoryArray: Array<number> = [0x0000];
-    //     // // Memory Address Register.
-    //     private MAR = 0x0000;
-    //     // // Memory Data Register.
-    //     private MDR = 0x00;
-
-
-    //     constructor() {
-    //     }
+        // Creates MemoryArray with up to FFFF(65535) +1 addressable spaces.
+        private MemoryArray: Array<number> = [0x0000];
+        // // Memory Address Register.
+        private MAR = 0x0000;
+        // // Memory Data Register.
+        private MDR = 0x00;
 
 
-    //     // init() {
-    //     //     this.MAR = 0x0000;
-    //     //     this.MDR = 0x00;
-    //     // }
+        constructor() {
+        }
 
-    //     // Sets all (65536)MemoryArray elements to '0x00'.
-    //     public reset(): void {
-    //         for (let index = 0x00; index <= 0xFFFF; index++) {
-    //             this.MemoryArray[index] = 0x00;
-    //         }
-    //     }
 
-    //     // Returns MAR.
-    //     public getMAR(): number {
-    //         return this.MAR;
-    //     }
-    //     // Sets MAR to a given input.
-    //     public setMAR(input: number): void {
-    //         this.MAR = input;
-    //     }
-    //     // Returns MDR.
-    //     public getMDR(): number {
-    //         return this.MDR;
-    //     }
-    //     // Sets MDR to a given input.
-    //     public setMDR(input: number): void {
-    //         this.MDR = input;
-    //     }
+        // init() {
+        //     this.MAR = 0x0000;
+        //     this.MDR = 0x00;
+        // }
 
-    //     // Grabs MAR memory location and gives data output to MDR.
-    //     public read(): void {
-    //         var data = this.MemoryArray[this.MAR];
-    //         this.setMDR(data);
-    //     }
+        // Sets all (65536)MemoryArray elements to '0x00'.
+        public reset(): void {
+            for (let index = 0x00; index <= 0xFFFF; index++) {
+                this.MemoryArray[index] = 0x00;
+            }
+        }
 
-    //     // Writes contents of MDR to Memory Location : MAR.
-    //     public write(): void {
-    //         this.MemoryArray[this.MAR] = this.MDR;
-    //     }
+        // Returns MAR.
+        public getMAR(): number {
+            return this.MAR;
+        }
+        // Sets MAR to a given input.
+        public setMAR(input: number): void {
+            this.MAR = input;
+        }
+        // Returns MDR.
+        public getMDR(): number {
+            return this.MDR;
+        }
+        // Sets MDR to a given input.
+        public setMDR(input: number): void {
+            this.MDR = input;
+        }
 
-    //     // Returns Memory value at a given index.
-    //     public getMemoryAt(index): number {
-    //         return this.MemoryArray[index];
-    //     }
+        // Grabs MAR memory location and gives data output to MDR.
+        public read(): void {
+            var data = this.MemoryArray[this.MAR];
+            this.setMDR(data);
+        }
 
-    //     // Displays contents of memory from address 0x00 to 0x14.
-    //     public displayZeroFourteen(): void {
-    //         // loop through 0x00 -> 0x14, log each memory address + value.
-    //         for (var x = 0x00; x < 0x15; x++) {
-    //             this.displayMemory(x);
-    //         }
-    //     }
+        // Writes contents of MDR to Memory Location : MAR.
+        public write(): void {
+            this.MemoryArray[this.MAR] = this.MDR;
+        }
 
-    //     public displayMemory(location): void {
-    //         //this.log( "Address : " + this.hexLog(location, 4) + " Contains Value : " + this.hexLog(this.getMemoryAt(location), 2));
-    //     }
+        // Returns Memory value at a given index.
+        public getMemoryAt(index): number {
+            return this.MemoryArray[index];
+        }
 
-    //     public hexLog(num, desired_length): String {
-    //         if (num === undefined) {
-    //             return "ERR [hexValue conversion]: number undefined"
-    //         }
+        // Displays contents of memory from address 0x00 to 0x14.
+        public displayZeroFourteen(): void {
+            // loop through 0x00 -> 0x14, log each memory address + value.
+            for (var x = 0x00; x < 0x15; x++) {
+                this.displayMemory(x);
+            }
+        }
 
-    //         // Convert num to a string formatted in hex.
-    //         num = num.toString(16).toUpperCase();
+        public displayMemory(location): void {
+            //this.log( "Address : " + this.hexLog(location, 4) + " Contains Value : " + this.hexLog(this.getMemoryAt(location), 2));
+        }
 
-    //         // if num.length < desired_length, add starting zero's 
-    //         while (num.length < desired_length) {
-    //             num = "0" + num;
-    //         }
-    //         return num;
-    //     }
+        public hexLog(num, desired_length): String {
+            if (num === undefined) {
+                return "ERR [hexValue conversion]: number undefined"
+            }
 
-    // }
+            // Convert num to a string formatted in hex.
+            num = num.toString(16).toUpperCase();
+
+            // if num.length < desired_length, add starting zero's 
+            while (num.length < desired_length) {
+                num = "0" + num;
+            }
+            return num;
+        }
+
+    } // ends export
 }
