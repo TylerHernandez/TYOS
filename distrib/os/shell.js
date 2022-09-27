@@ -296,16 +296,36 @@ var TSOS;
             _Kernel.krnTrapError("SPOOKY BLU SCREEN! Try downloading more ram!");
         }
         shellLoad(args) {
-            var program = document.getElementById('taProgramInput').value.split("");
-            let acceptableItems = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "A", "B", "C", "D", "E", "F", " "];
-            // If there is something other than an acceptable item, program is invalid.
-            for (var i = 0; i < program.length; i++) {
-                if (!acceptableItems.includes(program[i])) {
+            var givenProgram = document.getElementById('taProgramInput').value.replaceAll(' ', '') // Removes all white spaces.
+                .replaceAll(',', '') // Removes all commas.
+                .split(""); // Splits program into each hex digit.
+            // At this point, we should only have hex digits.
+            let acceptableItems = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F"];
+            // program will contain grouped (by 2's) up hex digits.
+            var program = [];
+            for (var i = 0; i < givenProgram.length; i++) {
+                // Catches any invalid digits/characters in givenProgram.
+                if (!acceptableItems.includes(givenProgram[i])) {
                     _StdOut.putText("This is not a valid program.");
                     return;
+                    // Split program numbers into pairs and put them inside program[].
+                }
+                else if (i % 2 == 0) { // even number.
+                    /* E.g. We want to put the 0th and 1st element of givenProgram
+                     * into program's 0th index. And so on.
+                     *
+                     * 0 1     2 3     4 5       6 7
+                     *  0       1       2         3
+                     */
+                    program[i / 2] = givenProgram[i];
+                }
+                else { // odd number.
+                    // See 2 comments above for explanation.
+                    program[(i - 1) / 2] += givenProgram[i];
                 }
             }
             _StdOut.putText("This is a valid program.");
+            _MMU.insertStringProgram(program);
         }
     }
     TSOS.Shell = Shell;

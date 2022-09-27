@@ -225,6 +225,15 @@ var TSOS;
             }
             this.memoryDump(0x0000, this.program.length);
         }
+        // Inserts given string program into memory.
+        insertStringProgram(program) {
+            //loops through program and copies data to MAR and MDR
+            for (var index = 0x00; index < program.length; index++) {
+                this.writeImmediate(index, parseInt("0x" + program[index]));
+            }
+            this.memoryDump(0x0000, program.length);
+            return true;
+        }
         // Flips bytes for desired endianness. 
         flipBytes(bytes) {
             var str = String(bytes);
