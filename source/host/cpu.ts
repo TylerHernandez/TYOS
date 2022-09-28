@@ -167,19 +167,19 @@ module TSOS {
                     break;
                 }
 
-                // Load accumulator from x register.
-                case 0x8A: {
-                    this.Accumulator = this.xRegister;
-                    this.step = 7;
-                    break;
-                }
+                // // Load accumulator from x register.
+                // case 0x8A: {
+                //     this.Accumulator = this.xRegister;
+                //     this.step = 7;
+                //     break;
+                // }
 
-                // Load accumulator from y register.
-                case 0x98: {
-                    this.Accumulator = this.yRegister;
-                    this.step = 7;
-                    break;
-                }
+                // // Load accumulator from y register.
+                // case 0x98: {
+                //     this.Accumulator = this.yRegister;
+                //     this.step = 7;
+                //     break;
+                // }
 
                 // Add contents from memory address onto accumulator.
                 case 0x6D: {
@@ -211,12 +211,12 @@ module TSOS {
                     break;
                 }
 
-                // Load x register with accumulator.
-                case 0xAA: {
-                    this.xRegister = this.Accumulator;
-                    this.step = 7;
-                    break;
-                }
+                // // Load x register with accumulator.
+                // case 0xAA: {
+                //     this.xRegister = this.Accumulator;
+                //     this.step = 7;
+                //     break;
+                // }
 
                 // Load y register with a constant.
                 case 0xA0: {
@@ -321,13 +321,13 @@ module TSOS {
             this.step = 1;
         }
 
-        // logPipeline(): void {
-        //     super.log(
-        //         "CPU State | Mode: 0 PC: " + this.hexLog(this.programCounter, 4) + " IR: " + this.hexLog(this.instructionRegister, 2)
-        //         + " Acc: " + this.hexLog(this.Accumulator, 2) + " xReg: " + this.hexLog(this.xRegister, 2) + " yReg: "
-        //         + this.hexLog(this.yRegister, 2) + " zFlag: " + this.zFlag + " Step: " + this.step //+ " total instructions: " + this.instruction
-        //     );
-        // }
+        logPipeline(): void {
+            console.log(
+                "CPU State | Mode: 0 PC: " + this.hexLog(this.programCounter, 4) + " IR: " + this.hexLog(this.instructionRegister, 2)
+                + " Acc: " + this.hexLog(this.Accumulator, 2) + " xReg: " + this.hexLog(this.xRegister, 2) + " yReg: "
+                + this.hexLog(this.yRegister, 2) + " zFlag: " + this.zFlag + " Step: " + this.step //+ " total instructions: " + this.instruction
+            );
+        }
 
         determineNextStep(currentInstruction: number) {
             // Instructions that require decoding to retrieve operands.
