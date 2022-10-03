@@ -44,6 +44,7 @@ var TSOS;
             this.MMU = MMU;
         }
         cycle() {
+            this.logPipeline();
             //Steps taken by CPU pipeline
             switch (this.step) {
                 //Fetch
@@ -148,18 +149,18 @@ var TSOS;
                     this.step = 7;
                     break;
                 }
-                // Load accumulator from x register.
-                case 0x8A: {
-                    this.Accumulator = this.xRegister;
-                    this.step = 7;
-                    break;
-                }
-                // Load accumulator from y register.
-                case 0x98: {
-                    this.Accumulator = this.yRegister;
-                    this.step = 7;
-                    break;
-                }
+                // // Load accumulator from x register.
+                // case 0x8A: {
+                //     this.Accumulator = this.xRegister;
+                //     this.step = 7;
+                //     break;
+                // }
+                // // Load accumulator from y register.
+                // case 0x98: {
+                //     this.Accumulator = this.yRegister;
+                //     this.step = 7;
+                //     break;
+                // }
                 // Add contents from memory address onto accumulator.
                 case 0x6D: {
                     this.MMU.putBytesInMar();
@@ -183,12 +184,12 @@ var TSOS;
                     this.step = 7;
                     break;
                 }
-                // Load x register with accumulator.
-                case 0xAA: {
-                    this.xRegister = this.Accumulator;
-                    this.step = 7;
-                    break;
-                }
+                // // Load x register with accumulator.
+                // case 0xAA: {
+                //     this.xRegister = this.Accumulator;
+                //     this.step = 7;
+                //     break;
+                // }
                 // Load y register with a constant.
                 case 0xA0: {
                     this.yRegister = this.MMU.fetchMemoryContent();
@@ -273,13 +274,12 @@ var TSOS;
             this.instruction++;
             this.step = 1;
         }
-        // logPipeline(): void {
-        //     super.log(
-        //         "CPU State | Mode: 0 PC: " + this.hexLog(this.programCounter, 4) + " IR: " + this.hexLog(this.instructionRegister, 2)
-        //         + " Acc: " + this.hexLog(this.Accumulator, 2) + " xReg: " + this.hexLog(this.xRegister, 2) + " yReg: "
-        //         + this.hexLog(this.yRegister, 2) + " zFlag: " + this.zFlag + " Step: " + this.step //+ " total instructions: " + this.instruction
-        //     );
-        // }
+        logPipeline() {
+            console.log("CPU State | Mode: 0 PC: " + this.hexLog(this.programCounter, 4) + " IR: " + this.hexLog(this.instructionRegister, 2)
+                + " Acc: " + this.hexLog(this.Accumulator, 2) + " xReg: " + this.hexLog(this.xRegister, 2) + " yReg: "
+                + this.hexLog(this.yRegister, 2) + " zFlag: " + this.zFlag + " Step: " + this.step //+ " total instructions: " + this.instruction
+            );
+        }
         determineNextStep(currentInstruction) {
             // Instructions that require decoding to retrieve operands.
             let decodeRequired = [0xA9, 0xAD, 0x8D, 0x6D, 0xA2, 0xAE, 0xA0, 0xAC, 0xEC, 0xD0, 0xEE];

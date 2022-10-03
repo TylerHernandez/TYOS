@@ -38,52 +38,63 @@ module TSOS {
             this.MMU = MMU;
         }
 
+        // Change this to be all of these steps execute in one cycle.
         cycle(): void {
-            //Steps taken by CPU pipeline
-            switch (this.step) {
+            this.logPipeline();
 
-                //Fetch
-                case 1: {
-                    this.fetch();
-                    break;
-                }
+            var finished = 0;
 
-                //Decode
-                case 2: {
-                    this.decode();
-                    break;
-                }
+            // Since this all needs to be executed in one cycle, will run until interrupt check hits.
+            while (finished != 1) {
 
-                //Decode 2
-                case 3: {
-                    this.decode();
-                    break;
-                }
+                //Steps taken by CPU pipeline
+                switch (this.step) {
 
-                //Execute
-                case 4: {
-                    this.execute();
-                    break;
-                }
+                    //Fetch
+                    case 1: {
+                        this.fetch();
+                        break;
+                    }
 
-                //Execute 2
-                case 5: {
-                    this.execute();
-                    break;
-                }
+                    //Decode
+                    case 2: {
+                        this.decode();
+                        break;
+                    }
 
-                //Writeback
-                case 6: {
-                    this.writeback();
-                    break;
-                }
+                    //Decode 2
+                    case 3: {
+                        this.decode();
+                        break;
+                    }
 
-                //Interrupt check
-                case 7: {
-                    this.interrupt();
-                    break;
-                }
-            } // ends Switch statement.
+                    //Execute
+                    case 4: {
+                        this.execute();
+                        break;
+                    }
+
+                    //Execute 2
+                    case 5: {
+                        this.execute();
+                        break;
+                    }
+
+                    //Writeback
+                    case 6: {
+                        this.writeback();
+                        break;
+                    }
+
+                    //Interrupt check
+                    case 7: {
+                        this.interrupt();
+                        finished = 1;
+                        break;
+                    }
+                } // ends Switch statement.
+
+            } // ends while.
 
         } // ends Pulse.
 
@@ -339,6 +350,7 @@ module TSOS {
             // Step 4(execute).
             return 4;
         }
+
         public hexLog(num, desired_length): String {
             if (num === undefined) {
                 return "ERR [hexValue conversion]: number undefined"
@@ -352,6 +364,22 @@ module TSOS {
                 num = "0" + num;
             }
             return num;
+        }
+
+        // Saves current state of registers to PCB.
+        public saveCurrentState(pid: number = 0): PCB {
+            return new PCB(pid, "state", false, this.programCounter, this.instructionRegister,
+                this.Accumulator, this.xRegister, this.yRegister, this.zFlag);
+        }
+
+        // Loads a state from the CPU given a PCB.
+        public loadFromPcb(pcb: PCB): void {
+            this.programCounter = pcb.pc;
+            this.instructionRegister = pcb.ir;
+            this.Accumulator = pcb.acc;
+            this.xRegister = pcb.x;
+            this.yRegister = pcb.y;
+            this.zFlag = pcb.z;
         }
 
     }
