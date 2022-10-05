@@ -1,4 +1,4 @@
-2019 - 2021 Browser-based Operating System in TypeScript
+2019 - 2022 Browser-based Operating System in TypeScript
 ========================================================
 
 This is Alan's Operating Systems class initial project.
