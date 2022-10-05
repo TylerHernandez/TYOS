@@ -43,46 +43,52 @@ var TSOS;
         setMMU(MMU) {
             this.MMU = MMU;
         }
+        // Change this to be all of these steps execute in one cycle.
         cycle() {
             this.logPipeline();
-            //Steps taken by CPU pipeline
-            switch (this.step) {
-                //Fetch
-                case 1: {
-                    this.fetch();
-                    break;
-                }
-                //Decode
-                case 2: {
-                    this.decode();
-                    break;
-                }
-                //Decode 2
-                case 3: {
-                    this.decode();
-                    break;
-                }
-                //Execute
-                case 4: {
-                    this.execute();
-                    break;
-                }
-                //Execute 2
-                case 5: {
-                    this.execute();
-                    break;
-                }
-                //Writeback
-                case 6: {
-                    this.writeback();
-                    break;
-                }
-                //Interrupt check
-                case 7: {
-                    this.interrupt();
-                    break;
-                }
-            } // ends Switch statement.
+            var finished = 0;
+            // Since this all needs to be executed in one cycle, will run until interrupt check hits.
+            while (finished != 1) {
+                //Steps taken by CPU pipeline
+                switch (this.step) {
+                    //Fetch
+                    case 1: {
+                        this.fetch();
+                        break;
+                    }
+                    //Decode
+                    case 2: {
+                        this.decode();
+                        break;
+                    }
+                    //Decode 2
+                    case 3: {
+                        this.decode();
+                        break;
+                    }
+                    //Execute
+                    case 4: {
+                        this.execute();
+                        break;
+                    }
+                    //Execute 2
+                    case 5: {
+                        this.execute();
+                        break;
+                    }
+                    //Writeback
+                    case 6: {
+                        this.writeback();
+                        break;
+                    }
+                    //Interrupt check
+                    case 7: {
+                        this.interrupt();
+                        finished = 1;
+                        break;
+                    }
+                } // ends Switch statement.
+            } // ends while.
         } // ends Pulse.
         // Fetches instruction.
         fetch() {
@@ -301,6 +307,19 @@ var TSOS;
                 num = "0" + num;
             }
             return num;
+        }
+        // Saves current state of registers to PCB.
+        saveCurrentState(pid = 0) {
+            return new TSOS.PCB(pid, "state", false, this.programCounter, this.instructionRegister, this.Accumulator, this.xRegister, this.yRegister, this.zFlag);
+        }
+        // Loads a state from the CPU given a PCB.
+        loadFromPcb(pcb) {
+            this.programCounter = pcb.pc;
+            this.instructionRegister = pcb.ir;
+            this.Accumulator = pcb.acc;
+            this.xRegister = pcb.x;
+            this.yRegister = pcb.y;
+            this.zFlag = pcb.z;
         }
     }
     TSOS.CPU = CPU;
