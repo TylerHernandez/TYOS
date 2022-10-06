@@ -46,9 +46,9 @@ var TSOS;
         // Change this to be all of these steps execute in one cycle.
         cycle() {
             this.logPipeline();
-            var finished = 0;
+            var finishedCycle = false;
             // Since this all needs to be executed in one cycle, will run until interrupt check hits.
-            while (finished != 1) {
+            while (!finishedCycle) {
                 //Steps taken by CPU pipeline
                 switch (this.step) {
                     //Fetch
@@ -81,10 +81,11 @@ var TSOS;
                         this.writeback();
                         break;
                     }
-                    //Interrupt check
+                    // Finished cycle!
                     case 7: {
-                        this.interrupt();
-                        finished = 1;
+                        this.instruction++;
+                        this.step = 1;
+                        finishedCycle = true;
                         break;
                     }
                 } // ends Switch statement.
@@ -275,11 +276,6 @@ var TSOS;
             this.MMU.write();
             this.step++;
         }
-        interrupt() {
-            // increase instruction count
-            this.instruction++;
-            this.step = 1;
-        }
         logPipeline() {
             TSOS.Control.cpuLog("CPU State | Mode: 0 PC: " + this.hexLog(this.programCounter, 4) + " IR: " + this.hexLog(this.instructionRegister, 2)
                 + " Acc: " + this.hexLog(this.Accumulator, 2) + " xReg: " + this.hexLog(this.xRegister, 2) + " yReg: "
@@ -287,6 +283,12 @@ var TSOS;
             );
         }
         determineNextStep(currentInstruction) {
+            console.log(currentInstruction);
+            // if currentInstruction is undefined, toggle cpu is executing.
+            if (!currentInstruction) {
+                _CPU.isExecuting = false;
+                return 7;
+            }
             // Instructions that require decoding to retrieve operands.
             let decodeRequired = [0xA9, 0xAD, 0x8D, 0x6D, 0xA2, 0xAE, 0xA0, 0xAC, 0xEC, 0xD0, 0xEE];
             if (decodeRequired.includes(currentInstruction)) {

@@ -407,8 +407,12 @@ module TSOS {
             _MMU.insertStringProgram(program);
 
             // Assign a PID (this will be dynamic in future versions).
-            const assignedPid: number = 0;
-
+            var assignedPid: number = 0;
+            if (_FLAG) {
+                assignedPid = 1;
+            } else {
+                _FLAG = true;
+            }
             // Creates a PCB based on CPU's current state.
             var pcb = _CPU.saveCurrentState(assignedPid);
             _PCBLIST[assignedPid] = pcb;// PCB's index will always be it's assigned PID.
@@ -419,6 +423,14 @@ module TSOS {
 
         public shellRun(args: string[]) {
             if (args.length > 0) {
+
+                // if cpu is already executing, save state first.
+
+                if (_CPU.isExecuting) {
+                    _CPU.saveCurrentState(); // how should we retrieve our last PID? Global variable? CPU variable? shell variable?
+                }
+
+
                 const pid = args[0];
                 // given a PID, run a program already in memory.
                 _CPU.loadFromPcb(_PCBLIST[pid]);

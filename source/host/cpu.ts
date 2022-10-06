@@ -42,10 +42,10 @@ module TSOS {
         cycle(): void {
             this.logPipeline();
 
-            var finished = 0;
+            var finishedCycle = false;
 
             // Since this all needs to be executed in one cycle, will run until interrupt check hits.
-            while (finished != 1) {
+            while (!finishedCycle) {
 
                 //Steps taken by CPU pipeline
                 switch (this.step) {
@@ -86,12 +86,14 @@ module TSOS {
                         break;
                     }
 
-                    //Interrupt check
+                    // Finished cycle!
                     case 7: {
-                        this.interrupt();
-                        finished = 1;
+                        this.instruction++;
+                        this.step = 1;
+                        finishedCycle = true;
                         break;
                     }
+
                 } // ends Switch statement.
 
             } // ends while.
@@ -112,7 +114,6 @@ module TSOS {
 
             // Set next step to either decode or execute.
             this.step = this.determineNextStep(this.instructionRegister);
-
         }
 
         // Retrieves operands for full instruction.
@@ -326,11 +327,6 @@ module TSOS {
             this.step++;
         }
 
-        interrupt(): void { // Interrupts are no longer being directly handled by the CPU. TODO: refactor.
-            // increase instruction count
-            this.instruction++;
-            this.step = 1;
-        }
 
         logPipeline(): void {
             TSOS.Control.cpuLog(
@@ -341,6 +337,12 @@ module TSOS {
         }
 
         determineNextStep(currentInstruction: number) {
+            console.log(currentInstruction);
+            // if currentInstruction is undefined, toggle cpu is executing.
+            if (!currentInstruction){
+                _CPU.isExecuting = false;
+                return 7;
+            }
             // Instructions that require decoding to retrieve operands.
             let decodeRequired = [0xA9, 0xAD, 0x8D, 0x6D, 0xA2, 0xAE, 0xA0, 0xAC, 0xEC, 0xD0, 0xEE];
             if (decodeRequired.includes(currentInstruction)) {
