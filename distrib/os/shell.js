@@ -63,6 +63,9 @@ var TSOS;
             // load
             sc = new TSOS.ShellCommand(this.shellLoad, "load", "- Copies user's inputted program into main memory.");
             this.commandList[this.commandList.length] = sc;
+            // run
+            sc = new TSOS.ShellCommand(this.shellRun, "run", "<pid> - runs a program in memory.");
+            this.commandList[this.commandList.length] = sc;
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
             // Display the initial prompt.
@@ -325,7 +328,6 @@ var TSOS;
                 }
             }
             _MMU.insertStringProgram(program);
-            console.log("hit");
             // Assign a PID (this will be dynamic in future versions).
             const assignedPid = 0;
             // Creates a PCB based on CPU's current state.
@@ -334,6 +336,18 @@ var TSOS;
             _StdOut.putText("Assigned program to PID #" + assignedPid);
             TSOS.Control.refreshPcbLog();
         } // ends load
+        shellRun(args) {
+            if (args.length > 0) {
+                const pid = args[0];
+                // given a PID, run a program already in memory.
+                _CPU.loadFromPcb(_PCBLIST[pid]);
+                _CPU.isExecuting = true;
+            }
+            else {
+                _StdOut.putText("Usage: prompt <string>  Please supply a string.");
+                return;
+            }
+        } // ends run
     } // ends shell
     TSOS.Shell = Shell;
 })(TSOS || (TSOS = {})); // ends module

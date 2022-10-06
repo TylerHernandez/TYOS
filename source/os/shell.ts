@@ -109,6 +109,12 @@ module TSOS {
                 "- Copies user's inputted program into main memory.");
             this.commandList[this.commandList.length] = sc;
 
+            // run
+            sc = new ShellCommand(this.shellRun,
+                "run",
+                "<pid> - runs a program in memory.");
+            this.commandList[this.commandList.length] = sc;
+
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
 
@@ -410,6 +416,18 @@ module TSOS {
             _StdOut.putText("Assigned program to PID #" + assignedPid);
             TSOS.Control.refreshPcbLog();
         } // ends load
+
+        public shellRun(args: string[]) {
+            if (args.length > 0) {
+                const pid = args[0];
+                // given a PID, run a program already in memory.
+                _CPU.loadFromPcb(_PCBLIST[pid]);
+                _CPU.isExecuting = true;
+            } else {
+                _StdOut.putText("Usage: prompt <string>  Please supply a string.");
+                return;
+            }
+        } // ends run
 
     }// ends shell
 } // ends module
