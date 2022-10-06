@@ -55,6 +55,12 @@ var TSOS;
             taLog.value = str + taLog.value;
             // TODO in the future: Optionally update a log database or some streaming service.
         }
+        // Logs the Memory in our HTML text box.
+        static memoryLog(msg) {
+            var taLog = document.getElementById("taMemory");
+            taLog.value = msg;
+        }
+        // Logs the CPU in our HTML text box.
         static cpuLog(msg) {
             var taLog = document.getElementById("taCPU");
             taLog.value = msg + taLog.value;

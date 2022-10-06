@@ -19,7 +19,7 @@ var TSOS;
             for (var index = 0x00; index < this.program.length; index++) {
                 this.writeImmediate(index, this.program[index]);
             }
-            this.memoryDump(0x0000, this.program.length);
+            this.memoryLog(0x0000, this.program.length);
         }
         // Inserts given string program into memory.
         insertStringProgram(program) {
@@ -27,7 +27,7 @@ var TSOS;
             for (var index = 0x00; index < program.length; index++) {
                 this.writeImmediate(index, parseInt("0x" + program[index]));
             }
-            this.memoryDump(0x0000, program.length);
+            this.memoryLog(0x0000, program.length);
             return true;
         }
         // Flips bytes for desired endianness. 
@@ -80,7 +80,7 @@ var TSOS;
         getMAR() {
             return this.memory.getMAR();
         }
-        // Shows contents of memory from startAddress to endAddress.
+        // Console logs the content of memory from startAddress to endAddress.
         memoryDump(startAddress, endAddress) {
             this.log("Memory Dump: Debug");
             this.log("--------------------------------------");
@@ -90,6 +90,17 @@ var TSOS;
             }
             this.log("--------------------------------------");
             this.log("Memory Dump: Complete");
+        }
+        // Retrieves and displays contents of memory string from startAddress to endAddress in HTML.
+        memoryLog(startAddress, endAddress) {
+            var msg = "";
+            msg += ("--------------------------------------" + "\n");
+            for (let index = startAddress; index <= endAddress - 1; index++) {
+                let currentMemory = this.memory.getMemoryAt(index);
+                msg += ("Addr " + this.hexLog(index, 4) + ":   |  " + this.hexLog(currentMemory, 2) + "\n");
+            }
+            msg += ("--------------------------------------");
+            TSOS.Control.memoryLog(msg);
         }
     } // ends export MMU
     TSOS.MMU = MMU;

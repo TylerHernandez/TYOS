@@ -29,7 +29,7 @@ module TSOS {
                 this.writeImmediate(index, this.program[index]);
             }
 
-            this.memoryDump(0x0000, this.program.length);
+            this.memoryLog(0x0000, this.program.length);
 
         }
 
@@ -40,7 +40,7 @@ module TSOS {
                 this.writeImmediate(index, parseInt("0x" + program[index]));
             }
 
-            this.memoryDump(0x0000, program.length);
+            this.memoryLog(0x0000, program.length);
             return true;
         }
 
@@ -106,16 +106,28 @@ module TSOS {
         }
 
 
-        // Shows contents of memory from startAddress to endAddress.
+        // Console logs the content of memory from startAddress to endAddress.
         public memoryDump(startAddress: number, endAddress: number): void {
             this.log("Memory Dump: Debug");
-            this.log("--------------------------------------")
+            this.log("--------------------------------------");
             for (let index = startAddress; index <= endAddress - 1; index++) {
                 let currentMemory = this.memory.getMemoryAt(index);
                 this.log("Addr " + this.hexLog(index, 4) + ":   |  " + this.hexLog(currentMemory, 2));
             }
             this.log("--------------------------------------");
             this.log("Memory Dump: Complete");
+        }
+
+        // Retrieves and displays contents of memory string from startAddress to endAddress in HTML.
+        public memoryLog(startAddress: number, endAddress: number): void {
+            var msg: string = "";
+            msg += ("--------------------------------------" + "\n");
+            for (let index = startAddress; index <= endAddress - 1; index++) {
+                let currentMemory = this.memory.getMemoryAt(index);
+                msg += ("Addr " + this.hexLog(index, 4) + ":   |  " + this.hexLog(currentMemory, 2) + "\n");
+            }
+            msg += ("--------------------------------------");
+            TSOS.Control.memoryLog(msg);
         }
     } // ends export MMU
 }
