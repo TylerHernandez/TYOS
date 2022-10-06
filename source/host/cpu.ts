@@ -326,14 +326,14 @@ module TSOS {
             this.step++;
         }
 
-        interrupt(): void {
+        interrupt(): void { // Interrupts are no longer being directly handled by the CPU. TODO: refactor.
             // increase instruction count
             this.instruction++;
             this.step = 1;
         }
 
         logPipeline(): void {
-            console.log(
+            TSOS.Control.cpuLog(
                 "CPU State | Mode: 0 PC: " + this.hexLog(this.programCounter, 4) + " IR: " + this.hexLog(this.instructionRegister, 2)
                 + " Acc: " + this.hexLog(this.Accumulator, 2) + " xReg: " + this.hexLog(this.xRegister, 2) + " yReg: "
                 + this.hexLog(this.yRegister, 2) + " zFlag: " + this.zFlag + " Step: " + this.step //+ " total instructions: " + this.instruction

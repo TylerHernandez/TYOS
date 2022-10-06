@@ -33,7 +33,6 @@ module TSOS {
             _Kernel.krnOnCPUClockPulse();
             // Update user's time display.
             document.getElementById("currentDate").innerHTML = new Date().toLocaleString();
-            _CPU.cycle();
         }
 
         //

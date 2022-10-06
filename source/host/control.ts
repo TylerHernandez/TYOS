@@ -69,6 +69,28 @@ module TSOS {
             // TODO in the future: Optionally update a log database or some streaming service.
         }
 
+        public static cpuLog(msg: string){
+            var taLog = <HTMLInputElement>document.getElementById("taCPU");
+            taLog.value = msg + taLog.value;
+        }
+
+        // Refreshes PCB log when called.
+        public static refreshPcbLog(): void {
+
+            // Build the log string.
+            var str: string = "PID  State   Swapped    PC   IR   ACC   X   Y   Z \n";
+
+            _PCBLIST.forEach(function(x){
+                str += (x.pid + "  " + x.state + "  " + x.swapped + "  " + x.pc
+                + "  " + x.ir + "  " + x.x + "  " + x.y + "  " + x.z + "\n");
+              });
+
+            // Update the log console.
+            var taLog = <HTMLInputElement>document.getElementById("taPCB");
+            taLog.value = str + taLog.value;
+
+        }
+
 
         //
         // Host Events
@@ -100,6 +122,8 @@ module TSOS {
             _CPU.setMMU(_MMU);
 
 
+            // Initializes PCB list.
+            _PCBLIST = [,,];
 
 
             // ... then set the host clock pulse ...

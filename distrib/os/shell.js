@@ -61,7 +61,7 @@ var TSOS;
             sc = new TSOS.ShellCommand(this.shellCrash, "crash", "- Triggers a kernel trap error.");
             this.commandList[this.commandList.length] = sc;
             // load
-            sc = new TSOS.ShellCommand(this.shellLoad, "load", "- Displays if the input program is valid or not.");
+            sc = new TSOS.ShellCommand(this.shellLoad, "load", "- Copies user's inputted program into main memory.");
             this.commandList[this.commandList.length] = sc;
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
@@ -324,10 +324,17 @@ var TSOS;
                     program[(i - 1) / 2] += givenProgram[i];
                 }
             }
-            _StdOut.putText("This is a valid program.");
             _MMU.insertStringProgram(program);
-        }
-    }
+            console.log("hit");
+            // Assign a PID (this will be dynamic in future versions).
+            const assignedPid = 0;
+            // Creates a PCB based on CPU's current state.
+            var pcb = _CPU.saveCurrentState(assignedPid);
+            _PCBLIST[assignedPid] = pcb; // PCB's index will always be it's assigned PID.
+            _StdOut.putText("Assigned program to PID #" + assignedPid);
+            TSOS.Control.refreshPcbLog();
+        } // ends load
+    } // ends shell
     TSOS.Shell = Shell;
-})(TSOS || (TSOS = {}));
+})(TSOS || (TSOS = {})); // ends module
 //# sourceMappingURL=shell.js.map

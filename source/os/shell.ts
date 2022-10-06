@@ -106,7 +106,7 @@ module TSOS {
             // load
             sc = new ShellCommand(this.shellLoad,
                 "load",
-                "- Displays if the input program is valid or not.");
+                "- Copies user's inputted program into main memory.");
             this.commandList[this.commandList.length] = sc;
 
             // ps  - list the running processes and their IDs
@@ -397,10 +397,19 @@ module TSOS {
                 }
 
             }
-            _StdOut.putText("This is a valid program.");
 
             _MMU.insertStringProgram(program);
-        }
 
-    }
-}
+            // Assign a PID (this will be dynamic in future versions).
+            const assignedPid: number = 0;
+
+            // Creates a PCB based on CPU's current state.
+            var pcb = _CPU.saveCurrentState(assignedPid);
+            _PCBLIST[assignedPid] = pcb;// PCB's index will always be it's assigned PID.
+
+            _StdOut.putText("Assigned program to PID #" + assignedPid);
+            TSOS.Control.refreshPcbLog();
+        } // ends load
+
+    }// ends shell
+} // ends module

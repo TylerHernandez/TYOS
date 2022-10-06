@@ -55,6 +55,22 @@ var TSOS;
             taLog.value = str + taLog.value;
             // TODO in the future: Optionally update a log database or some streaming service.
         }
+        static cpuLog(msg) {
+            var taLog = document.getElementById("taCPU");
+            taLog.value = msg + taLog.value;
+        }
+        // Refreshes PCB log when called.
+        static refreshPcbLog() {
+            // Build the log string.
+            var str = "PID  State   Swapped    PC   IR   ACC   X   Y   Z \n";
+            _PCBLIST.forEach(function (x) {
+                str += (x.pid + "  " + x.state + "  " + x.swapped + "  " + x.pc
+                    + "  " + x.ir + "  " + x.x + "  " + x.y + "  " + x.z + "\n");
+            });
+            // Update the log console.
+            var taLog = document.getElementById("taPCB");
+            taLog.value = str + taLog.value;
+        }
         //
         // Host Events
         //
@@ -76,6 +92,8 @@ var TSOS;
             _MMU = new TSOS.MMU(_Memory, _CPU);
             // Initializes MMU inside CPU to allow for proper function.
             _CPU.setMMU(_MMU);
+            // Initializes PCB list.
+            _PCBLIST = [, ,];
             // ... then set the host clock pulse ...
             _hardwareClockID = setInterval(TSOS.Devices.hostClockPulse, CPU_CLOCK_INTERVAL);
             // .. and call the OS Kernel Bootstrap routine.
