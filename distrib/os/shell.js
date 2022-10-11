@@ -327,9 +327,9 @@ var TSOS;
                 }
             }
             // Since this is not dynamic yet, wipe memory.
-            _MemoryAccessor.resetMemory(); // we need to reset 
+            _MemoryManager.resetMemory(); // we need to reset 
             // Insert our program into memory!
-            _MemoryAccessor.insertStringProgram(program);
+            _MemoryManager.insertStringProgram(program);
             // Assign a PID (this will be dynamic in future versions).
             var assignedPid = 0;
             var pcb;
@@ -349,6 +349,10 @@ var TSOS;
                 // if cpu is already executing, save state first.
                 if (_CPU.isExecuting) {
                     _CPU.saveCurrentState(); // how should we retrieve our last PID? Global variable? CPU variable? shell variable?
+                    // Creates a PCB based on CPU's current state.
+                    _PCBLIST[0] = _CPU.saveCurrentState(0);
+                    ; // PCB's index will always be it's assigned PID.
+                    TSOS.Control.refreshPcbLog();
                 }
                 const pid = args[0];
                 // given a PID, run a program already in memory.

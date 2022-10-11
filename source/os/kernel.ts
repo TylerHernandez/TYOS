@@ -25,6 +25,9 @@ module TSOS {
             _Console = new Console();             // The command line interface / console I/O device.
             _Console.init();
 
+            // Initialize Memory Manager.
+            _MemoryManager = new MemoryManager();
+
             // Initialize standard input and output to the _Console.
             _StdIn = _Console;
             _StdOut = _Console;
@@ -86,9 +89,12 @@ module TSOS {
                 // TODO (maybe): Implement a priority queue based on the IRQ number/id to enforce interrupt priority.
                 var interrupt = _KernelInterruptQueue.dequeue();
                 this.krnInterruptHandler(interrupt.irq, interrupt.params);
-            } else if (_CPU.isExecuting) { // If there are no interrupts then run one CPU cycle if there is anything being processed.
+            } else if (_CPU && _CPU.isExecuting) { // If there are no interrupts then run one CPU cycle if there is anything being processed.
+                // We may have shut down the CPU. Check.
                 _CPU.cycle();
-            } else {                       // If there are no interrupts and there is nothing being executed then just be idle.
+            } else if (!_CPU) { // If CPU is removed, don't act.
+                return;
+            } else { // If there are no interrupts and there is nothing being executed then just be idle.
                 this.krnTrace("Idle");
             }
         }

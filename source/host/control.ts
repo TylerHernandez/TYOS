@@ -128,6 +128,8 @@ module TSOS {
             // Initializes MemoryAccessor inside CPU to allow for proper function.
             _CPU.setMemoryAccessor(_MemoryAccessor);
 
+            var MemoryManager: MemoryManager = null;
+
 
             // Initializes PCB list.
             _PCBLIST = [, ,];
