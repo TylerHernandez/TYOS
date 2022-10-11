@@ -101,7 +101,7 @@ var TSOS;
         memoryLog(startAddress, endAddress) {
             var msg = "";
             msg += ("--------------------------------------" + "\n");
-            for (let index = startAddress; index <= endAddress + 100; index++) {
+            for (let index = startAddress; index <= 200; index++) { // Hard coding this for now to prevent lag.
                 let currentMemory = this.memory.getMemoryAt(index);
                 msg += ("Addr " + this.hexLog(index, 4) + ":   |  " + this.hexLog(currentMemory, 2) + "\n");
             }
