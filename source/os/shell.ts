@@ -404,10 +404,10 @@ module TSOS {
             }
 
             // Since this is not dynamic yet, wipe memory.
-            _MemoryAccessor.resetMemory(); // we need to reset 
+            _MemoryManager.resetMemory(); // we need to reset 
 
             // Insert our program into memory!
-            _MemoryAccessor.insertStringProgram(program);
+            _MemoryManager.insertStringProgram(program);
 
             // Assign a PID (this will be dynamic in future versions).
             var assignedPid: number = 0;
@@ -434,6 +434,11 @@ module TSOS {
                 // if cpu is already executing, save state first.
                 if (_CPU.isExecuting) {
                     _CPU.saveCurrentState(); // how should we retrieve our last PID? Global variable? CPU variable? shell variable?
+
+                    // Creates a PCB based on CPU's current state.
+                    _PCBLIST[0] = _CPU.saveCurrentState(0);;// PCB's index will always be it's assigned PID.
+
+                    TSOS.Control.refreshPcbLog();
                 }
 
 

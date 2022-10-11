@@ -98,6 +98,7 @@ var TSOS;
             _MemoryAccessor = new TSOS.MemoryAccessor(_Memory, _CPU);
             // Initializes MemoryAccessor inside CPU to allow for proper function.
             _CPU.setMemoryAccessor(_MemoryAccessor);
+            var MemoryManager = null;
             // Initializes PCB list.
             _PCBLIST = [, ,];
             // ... then set the host clock pulse ...
