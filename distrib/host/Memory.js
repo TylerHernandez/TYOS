@@ -13,10 +13,10 @@ var TSOS;
         //     this.MAR = 0x0000;
         //     this.MDR = 0x00;
         // }
-        // Sets all (65536)MemoryArray elements to '0x00'.
+        // Sets all (65536)MemoryArray elements to undefined.
         reset() {
             for (let index = 0x00; index <= 0xFFFF; index++) {
-                this.MemoryArray[index] = 0x00;
+                this.MemoryArray[index] = undefined;
             }
         }
         // Returns MAR.

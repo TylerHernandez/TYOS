@@ -6,6 +6,7 @@ var TSOS;
         memory;
         lowOrderByte;
         highOrderByte;
+        highestNumber;
         // Hard-coded program to be added to memory.
         program = [];
         //0xA9, 0x0A, 0x8D, 0x60, 0x00, 0xA9, 0x00, 0x8D, 0x61, 0x00, 0x8D, 0x64, 0x00, 0xA9, 0x01, 0x8D, 0x62, 0x00, 0xAD, 0x61, 0x00, 0x6D, 0x62, 0x00, 0x8D, 0x63, 0x00, 0xAD, 0x62, 0x00, 0x8D, 0x61, 0x00, 0xAD, 0x63, 0x00, 0x8D, 0x62, 0x00, 0xA2, 0x01, 0xAC, 0x63, 0x00, 0xFF, 0xA9, 0xFF, 0x8D, 0x65, 0x00, 0xAD, 0x60, 0x00, 0x6D, 0x65, 0x00, 0x8D, 0x60, 0x00, 0xAE, 0x60, 0x00, 0xEC, 0x64, 0x00, 0xA2, 0x00, 0xD0, 0xCD
@@ -19,7 +20,8 @@ var TSOS;
             for (var index = 0x00; index < this.program.length; index++) {
                 this.writeImmediate(index, this.program[index]);
             }
-            this.memoryLog(0x0000, this.program.length);
+            this.highestNumber = this.program.length;
+            this.memoryLog(0x0000, this.highestNumber);
         }
         // Inserts given string program into memory.
         insertStringProgram(program) {
@@ -27,7 +29,7 @@ var TSOS;
             for (var index = 0x00; index < program.length; index++) {
                 this.writeImmediate(index, parseInt("0x" + program[index]));
             }
-            this.memoryLog(0x0000, program.length);
+            this.memoryLog(0x0000, this.highestNumber);
             return true;
         }
         // Flips bytes for desired endianness. 
@@ -62,6 +64,10 @@ var TSOS;
         // Writes to memory.
         write() {
             this.memory.write();
+            if (_Memory.getMAR() > this.highestNumber) {
+                this.highestNumber = _Memory.getMAR();
+                this.memoryLog(0x0000, this.highestNumber);
+            }
         }
         // Retrieves content at MAR Location
         fetchMemoryContent() {
@@ -95,12 +101,15 @@ var TSOS;
         memoryLog(startAddress, endAddress) {
             var msg = "";
             msg += ("--------------------------------------" + "\n");
-            for (let index = startAddress; index <= endAddress - 1; index++) {
+            for (let index = startAddress; index <= endAddress + 100; index++) {
                 let currentMemory = this.memory.getMemoryAt(index);
                 msg += ("Addr " + this.hexLog(index, 4) + ":   |  " + this.hexLog(currentMemory, 2) + "\n");
             }
             msg += ("--------------------------------------");
             TSOS.Control.memoryLog(msg);
+        }
+        resetMemory() {
+            this.memory.reset();
         }
     } // ends export MMU
     TSOS.MMU = MMU;

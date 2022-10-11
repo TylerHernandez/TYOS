@@ -20,7 +20,7 @@ var TSOS;
         }
         hexLog(num, desired_length) {
             if (num === undefined) {
-                return "ERR [hexValue conversion]: number undefined";
+                return "ERR: number undefined";
             }
             // Convert num to a string formatted in hex.
             num = num.toString(16).toUpperCase();

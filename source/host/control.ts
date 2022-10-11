@@ -78,7 +78,7 @@ module TSOS {
         // Logs the CPU in our HTML text box.
         public static cpuLog(msg: string){
             var taLog = <HTMLInputElement>document.getElementById("taCPU");
-            taLog.value = msg + taLog.value;
+            taLog.value = msg + "\n\n" + taLog.value + "\n\n";
         }
 
         // Refreshes PCB log when called.

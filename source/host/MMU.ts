@@ -8,6 +8,8 @@ module TSOS {
         public lowOrderByte;
         public highOrderByte;
 
+        public highestNumber;
+
         // Hard-coded program to be added to memory.
         public program = [];
         //0xA9, 0x0A, 0x8D, 0x60, 0x00, 0xA9, 0x00, 0x8D, 0x61, 0x00, 0x8D, 0x64, 0x00, 0xA9, 0x01, 0x8D, 0x62, 0x00, 0xAD, 0x61, 0x00, 0x6D, 0x62, 0x00, 0x8D, 0x63, 0x00, 0xAD, 0x62, 0x00, 0x8D, 0x61, 0x00, 0xAD, 0x63, 0x00, 0x8D, 0x62, 0x00, 0xA2, 0x01, 0xAC, 0x63, 0x00, 0xFF, 0xA9, 0xFF, 0x8D, 0x65, 0x00, 0xAD, 0x60, 0x00, 0x6D, 0x65, 0x00, 0x8D, 0x60, 0x00, 0xAE, 0x60, 0x00, 0xEC, 0x64, 0x00, 0xA2, 0x00, 0xD0, 0xCD
@@ -29,7 +31,9 @@ module TSOS {
                 this.writeImmediate(index, this.program[index]);
             }
 
-            this.memoryLog(0x0000, this.program.length);
+            this.highestNumber = this.program.length;
+
+            this.memoryLog(0x0000, this.highestNumber);
 
         }
 
@@ -40,7 +44,7 @@ module TSOS {
                 this.writeImmediate(index, parseInt("0x" + program[index]));
             }
 
-            this.memoryLog(0x0000, program.length);
+            this.memoryLog(0x0000, this.highestNumber);
             return true;
         }
 
@@ -82,6 +86,10 @@ module TSOS {
         // Writes to memory.
         public write(): void {
             this.memory.write();
+            if (_Memory.getMAR() > this.highestNumber){
+                this.highestNumber = _Memory.getMAR();
+                this.memoryLog(0x0000, this.highestNumber);
+            }
         }
 
         // Retrieves content at MAR Location
@@ -122,12 +130,16 @@ module TSOS {
         public memoryLog(startAddress: number, endAddress: number): void {
             var msg: string = "";
             msg += ("--------------------------------------" + "\n");
-            for (let index = startAddress; index <= endAddress - 1; index++) {
+            for (let index = startAddress; index <= endAddress + 100; index++) {
                 let currentMemory = this.memory.getMemoryAt(index);
                 msg += ("Addr " + this.hexLog(index, 4) + ":   |  " + this.hexLog(currentMemory, 2) + "\n");
             }
             msg += ("--------------------------------------");
             TSOS.Control.memoryLog(msg);
+        }
+
+        public resetMemory(): void {
+            this.memory.reset();
         }
     } // ends export MMU
 }

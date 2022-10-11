@@ -86,6 +86,7 @@ var TSOS;
                         this.instruction++;
                         this.step = 1;
                         finishedCycle = true;
+                        _MMU.memoryLog(0x0000, 0xFFFF);
                         break;
                     }
                 } // ends Switch statement.
@@ -218,10 +219,12 @@ var TSOS;
                 }
                 // No Operation.
                 case 0xEA: {
+                    this.step = 7;
                     break;
                 }
                 // Break.
                 case 0x00: {
+                    this.isExecuting = false;
                     break;
                 }
                 // Compare byte in memory to x register if zflag is set.
@@ -256,13 +259,15 @@ var TSOS;
                 // System Call.
                 case 0xFF: {
                     switch (this.xRegister) {
-                        case 0x01: {
-                            console.log(this.hexLog(this.yRegister, 2));
+                        case 0x01: { // print integer stored in y register
+                            _StdOut.putText(this.hexLog(this.yRegister, 2));
                             this.step = 7;
                             break;
                         }
-                        case 0x02: {
-                            //process.stdout.write();
+                        case 0x02: { // print 00-terminated String stored at address in y register
+                            // Print string at this memory location. 
+                            this.printStringAt(this.yRegister);
+                            this.step = 7;
                             break;
                         }
                     }
@@ -277,7 +282,7 @@ var TSOS;
             this.step++;
         }
         logPipeline() {
-            TSOS.Control.cpuLog("CPU State | Mode: 0 PC: " + this.hexLog(this.programCounter, 4) + " IR: " + this.hexLog(this.instructionRegister, 2)
+            TSOS.Control.cpuLog("CPU State | Mode: 0 PC: " + this.hexLog(this.programCounter, 2) + " IR: " + this.hexLog(this.instructionRegister, 2)
                 + " Acc: " + this.hexLog(this.Accumulator, 2) + " xReg: " + this.hexLog(this.xRegister, 2) + " yReg: "
                 + this.hexLog(this.yRegister, 2) + " zFlag: " + this.zFlag + " Step: " + this.step //+ " total instructions: " + this.instruction
             );
@@ -322,6 +327,16 @@ var TSOS;
             this.xRegister = pcb.x;
             this.yRegister = pcb.y;
             this.zFlag = pcb.z;
+        }
+        printStringAt(memoryAddress) {
+            _MMU.setMAR(memoryAddress);
+            while (_MMU.fetchMemoryContent() != 0) {
+                var digit = _MMU.fetchMemoryContent();
+                console.log(String.fromCharCode(digit));
+                _StdOut.putText(String.fromCharCode(digit));
+                memoryAddress++;
+                _MMU.setMAR(memoryAddress);
+            }
         }
     }
     TSOS.CPU = CPU;

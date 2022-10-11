@@ -12,5 +12,6 @@ module TSOS {
             public z: number
         ) { }
 
+        // TODO Create a function that returns a blank PCB. Like a fresh CPU.
     }
 }

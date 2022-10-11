@@ -63,7 +63,7 @@ var TSOS;
         // Logs the CPU in our HTML text box.
         static cpuLog(msg) {
             var taLog = document.getElementById("taCPU");
-            taLog.value = msg + taLog.value;
+            taLog.value = msg + "\n\n" + taLog.value + "\n\n";
         }
         // Refreshes PCB log when called.
         static refreshPcbLog() {
