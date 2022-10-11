@@ -122,11 +122,11 @@ module TSOS {
             _Memory = new Memory();
 
 
-            // Initializes MMU.
-            _MMU = new MMU(_Memory, _CPU);
+            // Initializes MemoryAccessor.
+            _MemoryAccessor = new MemoryAccessor(_Memory, _CPU);
 
-            // Initializes MMU inside CPU to allow for proper function.
-            _CPU.setMMU(_MMU);
+            // Initializes MemoryAccessor inside CPU to allow for proper function.
+            _CPU.setMemoryAccessor(_MemoryAccessor);
 
 
             // Initializes PCB list.

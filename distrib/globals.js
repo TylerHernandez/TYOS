@@ -21,8 +21,8 @@ const KEYBOARD_IRQ = 1;
 // TODO: Make a global object and use that instead of the "_" naming convention in the global namespace.
 //
 var _CPU; // Utilize TypeScript's type annotation system to ensure that _CPU is an instance of the Cpu class.
-var _Memory; // Same thing here and below for Memory and MMU.
-var _MMU;
+var _Memory; // Same thing here and below for Memory and MemoryAccessor.
+var _MemoryAccessor;
 var _PCBLIST; // Holds all PCB's
 var _FLAG;
 var _OSclock = 0; // Page 23.

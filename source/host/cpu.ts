@@ -14,7 +14,7 @@ module TSOS {
 
     export class CPU {
 
-        private MMU: MMU;
+        private MemoryAccessor: MemoryAccessor;
 
 
         constructor(public programCounter: number = 0,
@@ -33,9 +33,9 @@ module TSOS {
             this.isExecuting = false;
         }
 
-        // MMU is made from CPU, then System calls this function to initialize MMU in CPU.
-        setMMU(MMU: MMU) {
-            this.MMU = MMU;
+        // MemoryAccessor is made from CPU, then System calls this function to initialize MemoryAccessor in CPU.
+        setMemoryAccessor(MemoryAccessor: MemoryAccessor) {
+            this.MemoryAccessor = MemoryAccessor;
         }
 
         // Change this to be all of these steps execute in one cycle.
@@ -97,7 +97,7 @@ module TSOS {
                         this.instruction++;
                         this.step = 1;
                         finishedCycle = true;
-                        _MMU.memoryLog(0x0000, 0xFFFF);
+                        _MemoryAccessor.memoryLog(0x0000, 0xFFFF);
                         break;
                     }
 
@@ -111,13 +111,13 @@ module TSOS {
         fetch(): void {
 
             // Set MAR to programCounter.
-            this.MMU.setMAR(this.programCounter);
+            this.MemoryAccessor.setMAR(this.programCounter);
 
             // Increment program counter every time we read a byte.
             this.programCounter++;
 
-            // Grab instruction from mmu.
-            this.instructionRegister = this.MMU.fetchMemoryContent();
+            // Grab instruction from MemoryAccessor.
+            this.instructionRegister = this.MemoryAccessor.fetchMemoryContent();
 
             // Set next step to either decode or execute.
             this.step = this.determineNextStep(this.instructionRegister);
@@ -129,7 +129,7 @@ module TSOS {
             if (this.instructionRegister == 0xA9 || this.instructionRegister == 0xA2 ||
                 this.instructionRegister == 0xA0 || this.instructionRegister == 0xD0) {
                 // Read operand at program counter index.
-                this.MMU.setMAR(this.programCounter);
+                this.MemoryAccessor.setMAR(this.programCounter);
 
                 // Increment program counter after reading.
                 this.programCounter++;
@@ -139,16 +139,16 @@ module TSOS {
 
             } else { // Instruction has two operands.
                 // Read at program counter index.
-                this.MMU.setMAR(this.programCounter);
+                this.MemoryAccessor.setMAR(this.programCounter);
 
                 // Increment program counter after reading.
                 this.programCounter++;
 
                 // First of two decodes will set low order byte.
                 if (this.step == 2) {
-                    this.MMU.setLowOrderByte(this.MMU.fetchMemoryContent());
+                    this.MemoryAccessor.setLowOrderByte(this.MemoryAccessor.fetchMemoryContent());
                 } else { // Second of two decodes will set high order byte.
-                    this.MMU.setHighOrderByte(this.MMU.fetchMemoryContent());
+                    this.MemoryAccessor.setHighOrderByte(this.MemoryAccessor.fetchMemoryContent());
                 }
                 // Step to either decode 2 or execute.
                 this.step++;
@@ -162,7 +162,7 @@ module TSOS {
 
                 // Load accumulator with constant.
                 case 0xA9: {
-                    this.Accumulator = this.MMU.fetchMemoryContent();
+                    this.Accumulator = this.MemoryAccessor.fetchMemoryContent();
                     this.step = 7;
                     break;
                 }
@@ -170,8 +170,8 @@ module TSOS {
                 // Load accumulator with memory address.
                 case 0xAD: {
                     // Put the low order byte + high order byte in MAR.
-                    this.MMU.putBytesInMar();
-                    this.Accumulator = this.MMU.fetchMemoryContent();
+                    this.MemoryAccessor.putBytesInMar();
+                    this.Accumulator = this.MemoryAccessor.fetchMemoryContent();
                     this.step = 7;
                     break;
                 }
@@ -179,9 +179,9 @@ module TSOS {
                 // Store accumulator in memory.
                 case 0x8D: {
                     // Set MAR with the operand bytes (low + high).
-                    this.MMU.putBytesInMar();
-                    this.MMU.setMDR(this.Accumulator);
-                    this.MMU.write();
+                    this.MemoryAccessor.putBytesInMar();
+                    this.MemoryAccessor.setMDR(this.Accumulator);
+                    this.MemoryAccessor.write();
                     this.step = 7;
                     break;
                 }
@@ -203,8 +203,8 @@ module TSOS {
                 // Add contents from memory address onto accumulator.
                 case 0x6D: {
 
-                    this.MMU.putBytesInMar();
-                    this.Accumulator += this.MMU.fetchMemoryContent();
+                    this.MemoryAccessor.putBytesInMar();
+                    this.Accumulator += this.MemoryAccessor.fetchMemoryContent();
 
                     if (this.Accumulator >= 0x100) {
                         this.Accumulator -= 0x100
@@ -216,7 +216,7 @@ module TSOS {
 
                 // Load x register with a constant.
                 case 0xA2: {
-                    this.xRegister = this.MMU.fetchMemoryContent();
+                    this.xRegister = this.MemoryAccessor.fetchMemoryContent();
                     this.step = 7;
                     break;
                 }
@@ -224,8 +224,8 @@ module TSOS {
                 // Load x register from memory. 
                 case 0xAE: {
 
-                    this.MMU.putBytesInMar();
-                    this.xRegister = this.MMU.fetchMemoryContent();
+                    this.MemoryAccessor.putBytesInMar();
+                    this.xRegister = this.MemoryAccessor.fetchMemoryContent();
                     this.step = 7;
                     break;
                 }
@@ -239,7 +239,7 @@ module TSOS {
 
                 // Load y register with a constant.
                 case 0xA0: {
-                    this.yRegister = this.MMU.fetchMemoryContent();
+                    this.yRegister = this.MemoryAccessor.fetchMemoryContent();
                     this.step = 7;
                     break;
                 }
@@ -247,8 +247,8 @@ module TSOS {
                 // Load y register from memory. 
                 case 0xAC: {
 
-                    this.MMU.putBytesInMar();
-                    this.yRegister = this.MMU.fetchMemoryContent();
+                    this.MemoryAccessor.putBytesInMar();
+                    this.yRegister = this.MemoryAccessor.fetchMemoryContent();
                     this.step = 7;
                     break;
                 }
@@ -274,8 +274,8 @@ module TSOS {
 
                 // Compare byte in memory to x register if zflag is set.
                 case 0xEC: {
-                    this.MMU.putBytesInMar();
-                    if (this.xRegister == this.MMU.fetchMemoryContent()) {
+                    this.MemoryAccessor.putBytesInMar();
+                    if (this.xRegister == this.MemoryAccessor.fetchMemoryContent()) {
                         this.zFlag = 1;
                     }
                     this.step = 7;
@@ -285,7 +285,7 @@ module TSOS {
                 // Branch n bytes if zflag == 0.
                 case 0xD0: {
                     if (this.zFlag == 0) {
-                        this.programCounter -= ((0xFF - this.MMU.fetchMemoryContent()) + 1);
+                        this.programCounter -= ((0xFF - this.MemoryAccessor.fetchMemoryContent()) + 1);
                     }
                     this.step = 7;
                     break;
@@ -295,8 +295,8 @@ module TSOS {
                 case 0xEE: {
 
                     if (this.step == 4) {
-                        this.MMU.putBytesInMar();
-                        this.Accumulator = this.MMU.fetchMemoryContent();
+                        this.MemoryAccessor.putBytesInMar();
+                        this.Accumulator = this.MemoryAccessor.fetchMemoryContent();
                     } else {
                         this.Accumulator++;
                     }
@@ -333,9 +333,9 @@ module TSOS {
         }
 
         writeback(): void {
-            this.MMU.putBytesInMar();
-            this.MMU.setMDR(this.Accumulator);
-            this.MMU.write();
+            this.MemoryAccessor.putBytesInMar();
+            this.MemoryAccessor.setMDR(this.Accumulator);
+            this.MemoryAccessor.write();
             this.step++;
         }
 
@@ -398,14 +398,14 @@ module TSOS {
 
         public printStringAt(memoryAddress: number) {
 
-            _MMU.setMAR(memoryAddress);
-            while (_MMU.fetchMemoryContent() != 0) {
+            _MemoryAccessor.setMAR(memoryAddress);
+            while (_MemoryAccessor.fetchMemoryContent() != 0) {
 
-                var char = _MMU.fetchMemoryContent();
+                var char = _MemoryAccessor.fetchMemoryContent();
                 _StdOut.putText(String.fromCharCode(char));
                 memoryAddress++;
 
-                _MMU.setMAR(memoryAddress);
+                _MemoryAccessor.setMAR(memoryAddress);
             }
         }
 

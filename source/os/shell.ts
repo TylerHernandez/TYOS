@@ -404,10 +404,10 @@ module TSOS {
             }
 
             // Since this is not dynamic yet, wipe memory.
-            _MMU.resetMemory(); // we need to reset 
+            _MemoryAccessor.resetMemory(); // we need to reset 
 
             // Insert our program into memory!
-            _MMU.insertStringProgram(program);
+            _MemoryAccessor.insertStringProgram(program);
 
             // Assign a PID (this will be dynamic in future versions).
             var assignedPid: number = 0;

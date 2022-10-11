@@ -94,10 +94,10 @@ var TSOS;
             // Initializes Memory.
             // _Memory = new Memory();
             _Memory = new TSOS.Memory();
-            // Initializes MMU.
-            _MMU = new TSOS.MMU(_Memory, _CPU);
-            // Initializes MMU inside CPU to allow for proper function.
-            _CPU.setMMU(_MMU);
+            // Initializes MemoryAccessor.
+            _MemoryAccessor = new TSOS.MemoryAccessor(_Memory, _CPU);
+            // Initializes MemoryAccessor inside CPU to allow for proper function.
+            _CPU.setMemoryAccessor(_MemoryAccessor);
             // Initializes PCB list.
             _PCBLIST = [, ,];
             // ... then set the host clock pulse ...
