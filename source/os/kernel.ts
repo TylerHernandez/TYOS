@@ -56,6 +56,11 @@ module TSOS {
 
         public krnShutdown() {
             this.krnTrace("begin shutdown OS");
+
+            this.krnTrace("begin CPU shutdown");
+            _CPU = undefined; // Manually reset CPU to prevent continuous execution.
+            this.krnTrace("end CPU shutdown");
+
             // TODO: Check for running processes.  If there are some, alert and stop. Else...
             // ... Disable the Interrupts.
             this.krnTrace("Disabling the interrupts.");

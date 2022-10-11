@@ -40,6 +40,12 @@ module TSOS {
 
         // Change this to be all of these steps execute in one cycle.
         cycle(): void {
+            // Prevents execution.
+            // if (this.isExecuting = false) { // not sure why this isn't being changed in the shell run command.
+            //     return; 
+            // } 
+
+
             this.logPipeline();
 
             var finishedCycle = false;

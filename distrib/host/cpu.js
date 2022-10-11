@@ -45,6 +45,10 @@ var TSOS;
         }
         // Change this to be all of these steps execute in one cycle.
         cycle() {
+            // Prevents execution.
+            // if (this.isExecuting = false) { // not sure why this isn't being changed in the shell run command.
+            //     return; 
+            // } 
             this.logPipeline();
             var finishedCycle = false;
             // Since this all needs to be executed in one cycle, will run until interrupt check hits.

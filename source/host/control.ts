@@ -70,13 +70,13 @@ module TSOS {
         }
 
         // Logs the Memory in our HTML text box.
-        public static memoryLog(msg: string){
+        public static memoryLog(msg: string) {
             var taLog = <HTMLInputElement>document.getElementById("taMemory");
             taLog.value = msg;
         }
 
         // Logs the CPU in our HTML text box.
-        public static cpuLog(msg: string){
+        public static cpuLog(msg: string) {
             var taLog = <HTMLInputElement>document.getElementById("taCPU");
             taLog.value = msg + "\n\n" + taLog.value + "\n\n";
         }
@@ -87,10 +87,10 @@ module TSOS {
             // Build the log string.
             var str: string = "PID  State   Swapped    PC   IR   ACC   X   Y   Z \n";
 
-            _PCBLIST.forEach(function(x){
+            _PCBLIST.forEach(function (x) {
                 str += (x.pid + "  " + x.state + "  " + x.swapped + "  " + x.pc
-                + "  " + x.ir + "  " + x.x + "  " + x.y + "  " + x.z + "\n");
-              });
+                    + "  " + x.ir + "  " + x.x + "  " + x.y + "  " + x.z + "\n");
+            });
 
             // Update the log console.
             var taLog = <HTMLInputElement>document.getElementById("taPCB");
@@ -130,7 +130,7 @@ module TSOS {
 
 
             // Initializes PCB list.
-            _PCBLIST = [,,];
+            _PCBLIST = [, ,];
 
 
             // ... then set the host clock pulse ...
