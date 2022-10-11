@@ -16,6 +16,10 @@
    <script type="text/javascript" src="distrib/host/control.js"></script>
    <script type="text/javascript" src="distrib/host/devices.js"></script>
    <script type="text/javascript" src="distrib/host/cpu.js"></script>
+   <script type="text/javascript" src="distrib/host/Hardware.js"></script>
+   <script type="text/javascript" src="distrib/host/Memory.js"></script>
+   <script type="text/javascript" src="distrib/host/MMU.js"></script>
+   <script type="text/javascript" src="distrib/host/PCB.js"></script>
 
    <!-- Virtual OS Routines: Make sure Kernel code is last, since it needs those above it. -->
    <script type="text/javascript" src="distrib/os/interrupt.js"></script>
@@ -56,6 +60,32 @@
          </canvas>
       </div>
 
+      <div id="chunk" style="margin-right: 240px; margin: 4px; float:right;">
+         <div id="Memory">
+            <label>
+               Memory
+               <br>
+               <textarea name="taMemory" id="taMemory" rows="8" cols="48"></textarea>
+            </label>
+         </div>
+
+         <div id="CPU">
+            <label>
+               CPU
+               <br>
+               <textarea name="taCPU" id="taCPU" rows="8" cols="48"></textarea>
+            </label>
+         </div>
+
+         <div id="PCB">
+            <label>
+               PCB
+               <br>
+               <textarea name="taPCB" id="taPCB" rows="8" cols="48"></textarea>
+            </label>
+         </div>
+      </div> <!--   ends my chunk -->
+
       <div id="divLog" style="margin-left:520px;">
          <label>
             Host Log
@@ -71,15 +101,18 @@
             <textarea name="taProgramInput" id="taProgramInput" rows="8" cols="48"></textarea>
          </label>
       </div>
+
+      <div id="graphicTaskBar" style="margin-left:4px;">
+         <p id="currentDate">Turn device on to display date.</p>
+         <br>
+         <p id="status">Try using the status command!</p>
+
+         </label>
+      </div>
+
    </div>
 
-   <div id="graphicTaskBar" style="margin-left:240px;">
-      <p id="currentDate">Turn device on to display date.</p>
-      <br>
-      <p id="status">Try using the status command!</p>
 
-      </label>
-   </div>
 
    <p class="footerText" style="clear:both;">
       <br>

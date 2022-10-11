@@ -55,6 +55,28 @@ var TSOS;
             taLog.value = str + taLog.value;
             // TODO in the future: Optionally update a log database or some streaming service.
         }
+        // Logs the Memory in our HTML text box.
+        static memoryLog(msg) {
+            var taLog = document.getElementById("taMemory");
+            taLog.value = msg;
+        }
+        // Logs the CPU in our HTML text box.
+        static cpuLog(msg) {
+            var taLog = document.getElementById("taCPU");
+            taLog.value = msg + "\n\n" + taLog.value + "\n\n";
+        }
+        // Refreshes PCB log when called.
+        static refreshPcbLog() {
+            // Build the log string.
+            var str = "PID  State   Swapped    PC   IR   ACC   X   Y   Z \n";
+            _PCBLIST.forEach(function (x) {
+                str += (x.pid + "  " + x.state + "  " + x.swapped + "  " + x.pc
+                    + "  " + x.ir + "  " + x.x + "  " + x.y + "  " + x.z + "\n");
+            });
+            // Update the log console.
+            var taLog = document.getElementById("taPCB");
+            taLog.value = str + taLog.value;
+        }
         //
         // Host Events
         //
@@ -67,8 +89,17 @@ var TSOS;
             // .. set focus on the OS console display ...
             document.getElementById("display").focus();
             // ... Create and initialize the CPU (because it's part of the hardware)  ...
-            _CPU = new TSOS.Cpu(); // Note: We could simulate multi-core systems by instantiating more than one instance of the CPU here.
+            _CPU = new TSOS.CPU(); // Note: We could simulate multi-core systems by instantiating more than one instance of the CPU here.
             _CPU.init(); //       There's more to do, like dealing with scheduling and such, but this would be a start. Pretty cool.
+            // Initializes Memory.
+            // _Memory = new Memory();
+            _Memory = new TSOS.Memory();
+            // Initializes MMU.
+            _MMU = new TSOS.MMU(_Memory, _CPU);
+            // Initializes MMU inside CPU to allow for proper function.
+            _CPU.setMMU(_MMU);
+            // Initializes PCB list.
+            _PCBLIST = [, ,];
             // ... then set the host clock pulse ...
             _hardwareClockID = setInterval(TSOS.Devices.hostClockPulse, CPU_CLOCK_INTERVAL);
             // .. and call the OS Kernel Bootstrap routine.

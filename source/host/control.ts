@@ -36,11 +36,11 @@ module TSOS {
 
             // Clear the log text box.
             // Use the TypeScript cast to HTMLInputElement
-            (<HTMLInputElement> document.getElementById("taHostLog")).value="";
+            (<HTMLInputElement>document.getElementById("taHostLog")).value = "";
 
             // Set focus on the start button.
             // Use the TypeScript cast to HTMLInputElement
-            (<HTMLInputElement> document.getElementById("btnStartOS")).focus();
+            (<HTMLInputElement>document.getElementById("btnStartOS")).focus();
 
             // Check for our testing and enrichment core, which
             // may be referenced here (from index.html) as function Glados().
@@ -60,13 +60,42 @@ module TSOS {
             var now: number = new Date().getTime();
 
             // Build the log string.
-            var str: string = "({ clock:" + clock + ", source:" + source + ", msg:" + msg + ", now:" + now  + " })"  + "\n";
+            var str: string = "({ clock:" + clock + ", source:" + source + ", msg:" + msg + ", now:" + now + " })" + "\n";
 
             // Update the log console.
-            var taLog = <HTMLInputElement> document.getElementById("taHostLog");
+            var taLog = <HTMLInputElement>document.getElementById("taHostLog");
             taLog.value = str + taLog.value;
 
             // TODO in the future: Optionally update a log database or some streaming service.
+        }
+
+        // Logs the Memory in our HTML text box.
+        public static memoryLog(msg: string){
+            var taLog = <HTMLInputElement>document.getElementById("taMemory");
+            taLog.value = msg;
+        }
+
+        // Logs the CPU in our HTML text box.
+        public static cpuLog(msg: string){
+            var taLog = <HTMLInputElement>document.getElementById("taCPU");
+            taLog.value = msg + "\n\n" + taLog.value + "\n\n";
+        }
+
+        // Refreshes PCB log when called.
+        public static refreshPcbLog(): void {
+
+            // Build the log string.
+            var str: string = "PID  State   Swapped    PC   IR   ACC   X   Y   Z \n";
+
+            _PCBLIST.forEach(function(x){
+                str += (x.pid + "  " + x.state + "  " + x.swapped + "  " + x.pc
+                + "  " + x.ir + "  " + x.x + "  " + x.y + "  " + x.z + "\n");
+              });
+
+            // Update the log console.
+            var taLog = <HTMLInputElement>document.getElementById("taPCB");
+            taLog.value = str + taLog.value;
+
         }
 
 
@@ -85,8 +114,24 @@ module TSOS {
             document.getElementById("display").focus();
 
             // ... Create and initialize the CPU (because it's part of the hardware)  ...
-            _CPU = new Cpu();  // Note: We could simulate multi-core systems by instantiating more than one instance of the CPU here.
+            _CPU = new CPU();  // Note: We could simulate multi-core systems by instantiating more than one instance of the CPU here.
             _CPU.init();       //       There's more to do, like dealing with scheduling and such, but this would be a start. Pretty cool.
+
+            // Initializes Memory.
+            // _Memory = new Memory();
+            _Memory = new Memory();
+
+
+            // Initializes MMU.
+            _MMU = new MMU(_Memory, _CPU);
+
+            // Initializes MMU inside CPU to allow for proper function.
+            _CPU.setMMU(_MMU);
+
+
+            // Initializes PCB list.
+            _PCBLIST = [,,];
+
 
             // ... then set the host clock pulse ...
             _hardwareClockID = setInterval(Devices.hostClockPulse, CPU_CLOCK_INTERVAL);

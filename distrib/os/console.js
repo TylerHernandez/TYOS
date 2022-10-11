@@ -82,6 +82,7 @@ var TSOS;
                         this.textLog += this.buffer;
                     }
                     this.repaintCanvas();
+                    // TODO(@tyh): Add intercept for right arrow key, this will call _CPU.cycle.
                 }
                 else {
                     // This is a "normal" character, so ...

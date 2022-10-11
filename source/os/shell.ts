@@ -106,7 +106,13 @@ module TSOS {
             // load
             sc = new ShellCommand(this.shellLoad,
                 "load",
-                "- Displays if the input program is valid or not.");
+                "- Copies user's inputted program into main memory.");
+            this.commandList[this.commandList.length] = sc;
+
+            // run
+            sc = new ShellCommand(this.shellRun,
+                "run",
+                "<pid> - runs a program in memory.");
             this.commandList[this.commandList.length] = sc;
 
             // ps  - list the running processes and their IDs
@@ -360,17 +366,93 @@ module TSOS {
         }
 
         public shellLoad(args: string[]) {
-            var program: string[] = (<HTMLInputElement>document.getElementById('taProgramInput')).value.split("");
-            let acceptableItems = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "A", "B", "C", "D", "E", "F", " "]
-            // If there is something other than an acceptable item, program is invalid.
-            for (var i = 0; i < program.length; i++) {
-                if (!acceptableItems.includes(program[i])) {
+            var givenProgram: string[] = (<HTMLInputElement>document.getElementById('taProgramInput')
+            ).value.replaceAll(' ', '') // Removes all white spaces.
+                .replaceAll(',', '') // Removes all commas.
+                .split(""); // Splits program into each hex digit.
+
+            // At this point, we should only have hex digits.
+            let acceptableItems = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F"];
+            // program will contain grouped (by 2's) up hex digits.
+            var program: string[] = [];
+
+            for (var i = 0; i < givenProgram.length; i++) {
+
+                // Catches any invalid digits/characters in givenProgram.
+                if (!acceptableItems.includes(givenProgram[i])) {
                     _StdOut.putText("This is not a valid program.");
                     return;
-                }
-            }
-            _StdOut.putText("This is a valid program.");
-        }
 
-    }
-}
+                    // Split program numbers into pairs and put them inside program[].
+                } else if (i % 2 == 0) { // even number.
+
+
+                    /* E.g. We want to put the 0th and 1st element of givenProgram 
+                     * into program's 0th index. And so on.
+                     *
+                     * 0 1     2 3     4 5       6 7
+                     *  0       1       2         3
+                     */
+
+                    program[i / 2] = givenProgram[i];
+
+                } else { // odd number.
+
+                    // See 2 comments above for explanation.
+                    program[(i - 1) / 2] += givenProgram[i];
+                }
+
+            }
+
+            // Since this is not dynamic yet, wipe memory.
+            _MMU.resetMemory(); // we need to reset 
+
+            // Insert our program into memory!
+            _MMU.insertStringProgram(program);
+
+            // Assign a PID (this will be dynamic in future versions).
+            var assignedPid: number = 0;
+            var pcb;
+
+            // // Write over existing PCB.
+            // // If assigned PCB is not empty, create blank pcb.
+            // if (!_PCBLIST[assignedPid].isEmpty()) {
+            //     pcb = new PCB(assignedPid);
+
+            // }
+
+            // Creates a PCB based on CPU's current state.
+            pcb = _CPU.saveCurrentState(assignedPid);
+            _PCBLIST[assignedPid] = pcb;// PCB's index will always be it's assigned PID.
+
+            _StdOut.putText("Assigned program to PID #" + assignedPid);
+            TSOS.Control.refreshPcbLog();
+        } // ends load
+
+        public shellRun(args: string[]) {
+            if (args.length > 0) {
+
+                // if cpu is already executing, save state first.
+                if (_CPU.isExecuting) {
+                    _CPU.saveCurrentState(); // how should we retrieve our last PID? Global variable? CPU variable? shell variable?
+                }
+
+
+                const pid = args[0];
+                // given a PID, run a program already in memory.
+
+                //Normally we'd do this, however with only 1 pcb we will only load the wrong state, given a new program.
+                //_CPU.loadFromPcb(_PCBLIST[pid]); 
+
+                const pcb = new PCB(+pid); // saw that we can cast a string to number with + in front... pretty cool.
+                _CPU.loadFromPcb(pcb);
+
+                _CPU.isExecuting = true;
+            } else {
+                _StdOut.putText("Usage: prompt <string>  Please supply a string.");
+                return;
+            }
+        } // ends run
+
+    }// ends shell
+} // ends module

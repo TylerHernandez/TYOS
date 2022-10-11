@@ -84,6 +84,8 @@ module TSOS {
                     }
 
                     this.repaintCanvas();
+
+                    // TODO(@tyh): Add intercept for right arrow key, this will call _CPU.cycle.
                 } else {
                     // This is a "normal" character, so ...
                     // ... draw it on the screen...
