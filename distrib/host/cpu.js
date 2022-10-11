@@ -288,7 +288,7 @@ var TSOS;
             );
         }
         determineNextStep(currentInstruction) {
-            console.log(currentInstruction);
+            // console.log(currentInstruction);
             // if currentInstruction is undefined, toggle cpu is executing.
             if (!currentInstruction) {
                 _CPU.isExecuting = false;
@@ -331,9 +331,8 @@ var TSOS;
         printStringAt(memoryAddress) {
             _MMU.setMAR(memoryAddress);
             while (_MMU.fetchMemoryContent() != 0) {
-                var digit = _MMU.fetchMemoryContent();
-                console.log(String.fromCharCode(digit));
-                _StdOut.putText(String.fromCharCode(digit));
+                var char = _MMU.fetchMemoryContent();
+                _StdOut.putText(String.fromCharCode(char));
                 memoryAddress++;
                 _MMU.setMAR(memoryAddress);
             }

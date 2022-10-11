@@ -412,12 +412,17 @@ module TSOS {
 
             // Assign a PID (this will be dynamic in future versions).
             var assignedPid: number = 0;
+            var pcb;
 
-            // If we have a new program, then write over our current state with new state.
+            // // Write over existing PCB.
+            // // If assigned PCB is not empty, create blank pcb.
+            // if (!_PCBLIST[assignedPid].isEmpty()) {
+            //     pcb = new PCB(assignedPid);
 
+            // }
 
             // Creates a PCB based on CPU's current state.
-            var pcb = _CPU.saveCurrentState(assignedPid);
+            pcb = _CPU.saveCurrentState(assignedPid);
             _PCBLIST[assignedPid] = pcb;// PCB's index will always be it's assigned PID.
 
             _StdOut.putText("Assigned program to PID #" + assignedPid);
@@ -435,7 +440,13 @@ module TSOS {
 
                 const pid = args[0];
                 // given a PID, run a program already in memory.
-                _CPU.loadFromPcb(_PCBLIST[pid]);
+
+                //Normally we'd do this, however with only 1 pcb we will only load the wrong state, given a new program.
+                //_CPU.loadFromPcb(_PCBLIST[pid]); 
+
+                const pcb = new PCB(+pid); // saw that we can cast a string to number with + in front... pretty cool.
+                _CPU.loadFromPcb(pcb);
+
                 _CPU.isExecuting = true;
             } else {
                 _StdOut.putText("Usage: prompt <string>  Please supply a string.");
