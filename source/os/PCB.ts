@@ -9,7 +9,7 @@ module TSOS {
             public acc: number = 0,
             public x: number = 0,
             public y: number = 0,
-            public z: number = 0
+            public z: number = 0,
         ) { }
 
         // Return whether or not PCB is merely template such as 'emptyPCB()'.

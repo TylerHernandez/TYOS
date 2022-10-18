@@ -60,33 +60,6 @@ module TSOS {
         public getMemoryAt(index): number {
             return this.MemoryArray[index];
         }
-
-        // Displays contents of memory from address 0x00 to 0x14.
-        public displayZeroFourteen(): void {
-            // loop through 0x00 -> 0x14, log each memory address + value.
-            for (var x = 0x00; x < 0x15; x++) {
-                this.displayMemory(x);
-            }
-        }
-
-        public displayMemory(location): void {
-            //this.log( "Address : " + this.hexLog(location, 4) + " Contains Value : " + this.hexLog(this.getMemoryAt(location), 2));
-        }
-
-        public hexLog(num, desired_length): String {
-            if (num === undefined) {
-                return "ERR [hexValue conversion]: number undefined"
-            }
-
-            // Convert num to a string formatted in hex.
-            num = num.toString(16).toUpperCase();
-
-            // if num.length < desired_length, add starting zero's 
-            while (num.length < desired_length) {
-                num = "0" + num;
-            }
-            return num;
-        }
-
+        
     } // ends export
 }

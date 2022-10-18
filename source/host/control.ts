@@ -77,24 +77,27 @@ module TSOS {
 
         // Logs the CPU in our HTML text box.
         public static cpuLog(msg: string) {
-            var taLog = <HTMLInputElement>document.getElementById("taCPU");
-            taLog.value = msg + "\n\n" + taLog.value + "\n\n";
+            //"PC: 18 IR: 6D Acc: 01 xReg: 00 yReg: 00 zFlag: 0 Step: 1"
+            var header = "<tr><th>PC</th><th>IR</th><th>Acc</th><th>xReg</th><th>yReg</th><th>zFlag</th><th>Step</th></tr>";
+            var taLog = <HTMLAreaElement>document.getElementById("taCPU");
+            taLog.innerHTML = header + msg + taLog.innerHTML;
         }
 
         // Refreshes PCB log when called.
         public static refreshPcbLog(): void {
 
             // Build the log string.
-            var str: string = "PID  State   Swapped    PC   IR   ACC   X   Y   Z \n";
+            // var str: string = "PID  State   Swapped    PC   IR   ACC   X   Y   Z \n";
+            var str: string = "<tr><th>PID</th><th>State</th><th>Swapped</th><th>PC</th><th>IR</th><th>ACC</th><th>X</th><th>Y</th><th>Z</th></tr>";
 
             _PCBLIST.forEach(function (x) {
-                str += (x.pid + "  " + x.state + "  " + x.swapped + "  " + x.pc
-                    + "  " + x.ir + "  " + x.x + "  " + x.y + "  " + x.z + "\n");
+                str += ("<tr> <td>" + x.pid + "</td> <td>" + x.state + "</td> <td>" + x.swapped + "</td> <td>" + x.pc
+                    + "</td> <td>" + x.ir + "</td> <td>" + x.acc + "</td> <td>" + x.x + "</td> <td>" + x.y + "</td> <td>" + x.z + "</td> </tr>");
             });
 
             // Update the log console.
-            var taLog = <HTMLInputElement>document.getElementById("taPCB");
-            taLog.value = str + taLog.value;
+            var taLog = <HTMLAreaElement>document.getElementById("taPCB");
+            taLog.innerHTML = str + taLog.innerHTML;
 
         }
 
@@ -134,7 +137,9 @@ module TSOS {
             // Initializes PCB list.
             _PCBLIST = [, ,];
 
-            (<HTMLInputElement>document.getElementById('taProgramInput')).innerText = "A9038D6000A9008D61008D6400A9018D6200AD61006D62008D6300AD62008D6100AD63008D6200A201AC6300FFA9FF8D6500AD60006D65008D6000AE6000EC6400A200D0CD";
+            // Loads program input with default value (Fibonacci of 1-5).
+            (<HTMLInputElement>document.getElementById('taProgramInput')).innerText =
+                "A9058D6000A9008D61008D6400A9018D6200AD61006D62008D6300AD62008D6100AD63008D6200A201AC6300FFA9FF8D6500AD60006D65008D6000AE6000EC6400A200D0CD";
 
             // ... then set the host clock pulse ...
             _hardwareClockID = setInterval(Devices.hostClockPulse, CPU_CLOCK_INTERVAL);

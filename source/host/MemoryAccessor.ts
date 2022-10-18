@@ -1,6 +1,6 @@
 module TSOS {
     // Memory Accessor will bridge communication between Memory and CPU.
-    export class MemoryAccessor extends Hardware {
+    export class MemoryAccessor {
 
         private cpu: CPU;
         private memory: Memory;
@@ -16,14 +16,10 @@ module TSOS {
 
         constructor(memory: Memory, cpu: CPU) {
 
-            super(0, "MemoryAccessor");
-
-            this.log("created");
-
             this.cpu = cpu;
             this.memory = memory;
 
-            this.log("Initialized Memory");
+            console.log("Initialized Memory");
 
 
             //loops through program and copies data to MAR and MDR
@@ -72,7 +68,7 @@ module TSOS {
         // Puts low and high order bytes in MAR
         public putBytesInMar() {
             //Construct hexadecimal value 0xLOHO with "lowOrderByte + highOrderByte"
-            var byte = this.hexLog(this.lowOrderByte, 2) + "" + this.hexLog(this.highOrderByte, 2);
+            var byte = Utils.hexLog(this.lowOrderByte, 2) + "" + Utils.hexLog(this.highOrderByte, 2);
             this.setMAR(parseInt(byte));
         }
 
@@ -116,37 +112,37 @@ module TSOS {
 
         // Console logs the content of memory from startAddress to endAddress.
         public memoryDump(startAddress: number, endAddress: number): void {
-            this.log("Memory Dump: Debug");
-            this.log("--------------------------------------");
+            console.log("Memory Dump: Debug");
+            console.log("--------------------------------------");
             for (let index = startAddress; index <= endAddress - 1; index++) {
                 let currentMemory = this.memory.getMemoryAt(index);
-                this.log("Addr " + this.hexLog(index, 4) + ":   |  " + this.hexLog(currentMemory, 2));
+                console.log("Addr " + Utils.hexLog(index, 4) + ":   |  " + Utils.hexLog(currentMemory, 2));
             }
-            this.log("--------------------------------------");
-            this.log("Memory Dump: Complete");
+            console.log("--------------------------------------");
+            console.log("Memory Dump: Complete");
         }
 
         // Retrieves and displays contents of memory string from startAddress to endAddress in HTML.
         public memoryLog(startAddress: number, endAddress: number): void {
             // Set up the table headers.
-            var msg: string = "<tr><td>Address</td><td>Content </td><td>Address</td><td>Content </td><td>Address</td><td>Content </td><td>Address</td><td>Content</td></tr>";
+            var msg: string = "<tr><th>Address</th><th>Content </th><th>Address</th><th>Content </th><th>Address</th><th>Content </th><th>Address</th><th>Content</th></tr>";
             for (let index = startAddress; index <= endAddress; index += 4) { // Incrementing by four to display four chunks at a time.
 
                 // Get's the first chunk of memory.
                 let firstMemory = this.memory.getMemoryAt(index);
-                msg += ("<tr><td>" + this.hexLog(index, 4) + "</td> <td>" + this.hexLog(firstMemory, 2) + "</td>");
+                msg += ("<tr><td>" + Utils.hexLog(index, 4) + "</td> <td>" + Utils.hexLog(firstMemory, 2) + "</td>");
 
                 // Then the second.
                 let secondMemory = this.memory.getMemoryAt(index + 1)
-                msg += ("<td>" + this.hexLog(index + 1, 4) + "</td> <td>" + this.hexLog(secondMemory, 2) + "</td>");
+                msg += ("<td>" + Utils.hexLog(index + 1, 4) + "</td> <td>" + Utils.hexLog(secondMemory, 2) + "</td>");
 
                 // Third.
                 let thirdMemory = this.memory.getMemoryAt(index + 2);
-                msg += ("<td>" + this.hexLog(index + 2, 4) + "</td> <td>" + this.hexLog(thirdMemory, 2) + "</td>");
+                msg += ("<td>" + Utils.hexLog(index + 2, 4) + "</td> <td>" + Utils.hexLog(thirdMemory, 2) + "</td>");
 
                 // Lastly, the fourth.
                 let fourthMemory = this.memory.getMemoryAt(index + 3)
-                msg += ("<td>" + this.hexLog(index + 3, 4) + "</td> <td>" + this.hexLog(fourthMemory, 2) + "</td></tr>");
+                msg += ("<td>" + Utils.hexLog(index + 3, 4) + "</td> <td>" + Utils.hexLog(fourthMemory, 2) + "</td></tr>");
             }
 
             TSOS.Control.memoryLog(msg);

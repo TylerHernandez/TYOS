@@ -16,7 +16,6 @@
    <script type="text/javascript" src="distrib/host/control.js"></script>
    <script type="text/javascript" src="distrib/host/devices.js"></script>
    <script type="text/javascript" src="distrib/host/cpu.js"></script>
-   <script type="text/javascript" src="distrib/host/Hardware.js"></script>
    <script type="text/javascript" src="distrib/host/Memory.js"></script>
    <script type="text/javascript" src="distrib/host/MemoryAccessor.js"></script>
 
@@ -79,7 +78,12 @@
             <label>
                CPU
                <br>
-               <textarea name="taCPU" id="taCPU" rows="8" cols="48"></textarea>
+               <div style="height: 200px; width: 630px; overflow: auto;">
+                  <table>
+                     <tbody name="taCPU" id="taCPU">
+                     </tbody>
+                  </table>
+               </div>
             </label>
          </div>
 
@@ -87,7 +91,13 @@
             <label>
                PCB
                <br>
-               <textarea name="taPCB" id="taPCB" rows="8" cols="48"></textarea>
+               <div style="height: 300px; width: 600px; overflow: auto;">
+                  <table>
+                     <tbody name="taPCB" id="taPCB">
+                     </tbody>
+                  </table>
+               </div>
+               <!-- <textarea name="taPCB" id="taPCB" rows="8" cols="48"></textarea> -->
             </label>
          </div>
       </div> <!--   ends my chunk -->
