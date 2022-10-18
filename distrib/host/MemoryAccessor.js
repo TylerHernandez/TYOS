@@ -98,7 +98,7 @@ var TSOS;
         // Retrieves and displays contents of memory string from startAddress to endAddress in HTML.
         memoryLog(startAddress, endAddress) {
             // Set up the table headers.
-            var msg = "<tr><td>Address</td><td>Content </td><td>Address</td><td>Content </td><td>Address</td><td>Content </td><td>Address</td><td>Content</td></tr>";
+            var msg = "<tr><th>Address</th><th>Content </th><th>Address</th><th>Content </th><th>Address</th><th>Content </th><th>Address</th><th>Content</th></tr>";
             for (let index = startAddress; index <= endAddress; index += 4) { // Incrementing by four to display four chunks at a time.
                 // Get's the first chunk of memory.
                 let firstMemory = this.memory.getMemoryAt(index);

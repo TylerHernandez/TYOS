@@ -62,14 +62,16 @@ var TSOS;
         }
         // Logs the CPU in our HTML text box.
         static cpuLog(msg) {
+            //"PC: 18 IR: 6D Acc: 01 xReg: 00 yReg: 00 zFlag: 0 Step: 1"
+            var header = "<tr><th>PC</th><th>IR</th><th>Acc</th><th>xReg</th><th>yReg</th><th>zFlag</th><th>Step</th></tr>";
             var taLog = document.getElementById("taCPU");
-            taLog.value = msg + "\n\n" + taLog.value + "\n\n";
+            taLog.innerHTML = header + msg + taLog.innerHTML;
         }
         // Refreshes PCB log when called.
         static refreshPcbLog() {
             // Build the log string.
             // var str: string = "PID  State   Swapped    PC   IR   ACC   X   Y   Z \n";
-            var str = "<tr><td>PID</td><td>State</td><td>Swapped</td><td>PC</td><td>IR</td><td>ACC</td><td>X</td><td>Y</td><td>Z</td></tr>";
+            var str = "<tr><th>PID</th><th>State</th><th>Swapped</th><th>PC</th><th>IR</th><th>ACC</th><th>X</th><th>Y</th><th>Z</th></tr>";
             _PCBLIST.forEach(function (x) {
                 str += ("<tr> <td>" + x.pid + "</td> <td>" + x.state + "</td> <td>" + x.swapped + "</td> <td>" + x.pc
                     + "</td> <td>" + x.ir + "</td> <td>" + x.acc + "</td> <td>" + x.x + "</td> <td>" + x.y + "</td> <td>" + x.z + "</td> </tr>");

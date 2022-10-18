@@ -286,9 +286,9 @@ var TSOS;
             this.step++;
         }
         logPipeline() {
-            TSOS.Control.cpuLog("CPU State | Mode: 0 PC: " + TSOS.Utils.hexLog(this.programCounter, 2) + " IR: " + TSOS.Utils.hexLog(this.instructionRegister, 2)
-                + " Acc: " + TSOS.Utils.hexLog(this.Accumulator, 2) + " xReg: " + TSOS.Utils.hexLog(this.xRegister, 2) + " yReg: "
-                + TSOS.Utils.hexLog(this.yRegister, 2) + " zFlag: " + this.zFlag + " Step: " + this.step //+ " total instructions: " + this.instruction
+            TSOS.Control.cpuLog("<tr><td>" + TSOS.Utils.hexLog(this.programCounter, 2) + "</td><td>" + TSOS.Utils.hexLog(this.instructionRegister, 2)
+                + "</td><td>" + TSOS.Utils.hexLog(this.Accumulator, 2) + "</td><td>" + TSOS.Utils.hexLog(this.xRegister, 2) + "</td><td>"
+                + TSOS.Utils.hexLog(this.yRegister, 2) + "</td><td>" + this.zFlag + "</td><td>" + this.step + "</td></tr>" //+ " total instructions: " + this.instruction
             );
         }
         determineNextStep(currentInstruction) {

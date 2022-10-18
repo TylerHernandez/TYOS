@@ -342,9 +342,9 @@ module TSOS {
 
         logPipeline(): void {
             TSOS.Control.cpuLog(
-                "CPU State | Mode: 0 PC: " + Utils.hexLog(this.programCounter, 2) + " IR: " + Utils.hexLog(this.instructionRegister, 2)
-                + " Acc: " + Utils.hexLog(this.Accumulator, 2) + " xReg: " + Utils.hexLog(this.xRegister, 2) + " yReg: "
-                + Utils.hexLog(this.yRegister, 2) + " zFlag: " + this.zFlag + " Step: " + this.step //+ " total instructions: " + this.instruction
+                "<tr><td>" + Utils.hexLog(this.programCounter, 2) + "</td><td>" + Utils.hexLog(this.instructionRegister, 2)
+                + "</td><td>" + Utils.hexLog(this.Accumulator, 2) + "</td><td>" + Utils.hexLog(this.xRegister, 2) + "</td><td>"
+                + Utils.hexLog(this.yRegister, 2) + "</td><td>" + this.zFlag + "</td><td>" + this.step + "</td></tr>"//+ " total instructions: " + this.instruction
             );
         }
 
