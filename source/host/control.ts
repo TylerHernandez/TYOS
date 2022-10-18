@@ -85,16 +85,17 @@ module TSOS {
         public static refreshPcbLog(): void {
 
             // Build the log string.
-            var str: string = "PID  State   Swapped    PC   IR   ACC   X   Y   Z \n";
+            // var str: string = "PID  State   Swapped    PC   IR   ACC   X   Y   Z \n";
+            var str: string = "<tr><td>PID</td><td>State</td><td>Swapped</td><td>PC</td><td>IR</td><td>ACC</td><td>X</td><td>Y</td><td>Z</td></tr>";
 
             _PCBLIST.forEach(function (x) {
-                str += (x.pid + "  " + x.state + "  " + x.swapped + "  " + x.pc
-                    + "  " + x.ir + "  " + x.x + "  " + x.y + "  " + x.z + "\n");
+                str += ("<tr> <td>" + x.pid + "</td> <td>" + x.state + "</td> <td>" + x.swapped + "</td> <td>" + x.pc
+                    + "</td> <td>" + x.ir + "</td> <td>" + x.acc + "</td> <td>" + x.x + "</td> <td>" + x.y + "</td> <td>" + x.z + "</td> </tr>");
             });
 
             // Update the log console.
-            var taLog = <HTMLInputElement>document.getElementById("taPCB");
-            taLog.value = str + taLog.value;
+            var taLog = <HTMLAreaElement>document.getElementById("taPCB");
+            taLog.innerHTML = str + taLog.innerHTML;
 
         }
 
