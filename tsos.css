@@ -46,3 +46,7 @@ h3 {
   font-size: 8pt;
   text-align: center;
 }
+
+table, td, th {
+  border: 1.5px solid;
+}

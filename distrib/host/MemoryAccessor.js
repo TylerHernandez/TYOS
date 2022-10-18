@@ -99,13 +99,22 @@ var TSOS;
         }
         // Retrieves and displays contents of memory string from startAddress to endAddress in HTML.
         memoryLog(startAddress, endAddress) {
-            var msg = "";
-            msg += ("--------------------------------------" + "\n");
-            for (let index = startAddress; index <= 200; index++) { // Hard coding this for now to prevent lag.
-                let currentMemory = this.memory.getMemoryAt(index);
-                msg += ("Addr " + this.hexLog(index, 4) + ":   |  " + this.hexLog(currentMemory, 2) + "\n");
+            // Set up the table headers.
+            var msg = "<tr><td>Address</td><td>Content </td><td>Address</td><td>Content </td><td>Address</td><td>Content </td><td>Address</td><td>Content</td></tr>";
+            for (let index = startAddress; index <= endAddress; index += 4) { // Incrementing by four to display four chunks at a time.
+                // Get's the first chunk of memory.
+                let firstMemory = this.memory.getMemoryAt(index);
+                msg += ("<tr><td>" + this.hexLog(index, 4) + "</td> <td>" + this.hexLog(firstMemory, 2) + "</td>");
+                // Then the second.
+                let secondMemory = this.memory.getMemoryAt(index + 1);
+                msg += ("<td>" + this.hexLog(index + 1, 4) + "</td> <td>" + this.hexLog(secondMemory, 2) + "</td>");
+                // Third.
+                let thirdMemory = this.memory.getMemoryAt(index + 2);
+                msg += ("<td>" + this.hexLog(index + 2, 4) + "</td> <td>" + this.hexLog(thirdMemory, 2) + "</td>");
+                // Lastly, the fourth.
+                let fourthMemory = this.memory.getMemoryAt(index + 3);
+                msg += ("<td>" + this.hexLog(index + 3, 4) + "</td> <td>" + this.hexLog(fourthMemory, 2) + "</td></tr>");
             }
-            msg += ("--------------------------------------");
             TSOS.Control.memoryLog(msg);
         }
         resetMemory() {

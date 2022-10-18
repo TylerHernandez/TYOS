@@ -85,7 +85,9 @@ module TSOS {
 
                     this.repaintCanvas();
 
-                    // TODO(@tyh): Add intercept for right arrow key, this will call _CPU.cycle.
+                    // TODO: Add a case for Ctrl-C that would allow the user to break the current program.
+                } else if (chr === String.fromCharCode(39)) {
+                    _CPU.isExecuting = false;
                 } else {
                     // This is a "normal" character, so ...
                     // ... draw it on the screen...
@@ -93,7 +95,7 @@ module TSOS {
                     // ... and add it to our buffer.
                     this.buffer += chr;
                 }
-                // TODO: Add a case for Ctrl-C that would allow the user to break the current program.
+
             }
         }
 
