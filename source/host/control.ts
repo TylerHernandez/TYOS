@@ -71,8 +71,8 @@ module TSOS {
 
         // Logs the Memory in our HTML text box.
         public static memoryLog(msg: string) {
-            var taLog = <HTMLInputElement>document.getElementById("taMemory");
-            taLog.value = msg;
+            var taLog = <HTMLAreaElement>document.getElementById("taMemory");
+            taLog.innerHTML = msg;
         }
 
         // Logs the CPU in our HTML text box.

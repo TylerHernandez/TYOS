@@ -20,7 +20,12 @@ var TSOS;
         }
         hexLog(num, desired_length) {
             if (num === undefined) {
-                return "ERR: number undefined";
+                var blankStr = "";
+                // This looks nice. Displays as many dashes as desired_length.
+                for (var i = 0; i < desired_length; i++) {
+                    blankStr += "-";
+                }
+                return blankStr;
             }
             // Convert num to a string formatted in hex.
             num = num.toString(16).toUpperCase();

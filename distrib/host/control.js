@@ -58,7 +58,7 @@ var TSOS;
         // Logs the Memory in our HTML text box.
         static memoryLog(msg) {
             var taLog = document.getElementById("taMemory");
-            taLog.value = msg;
+            taLog.innerHTML = msg;
         }
         // Logs the CPU in our HTML text box.
         static cpuLog(msg) {
