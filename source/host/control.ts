@@ -134,6 +134,7 @@ module TSOS {
             // Initializes PCB list.
             _PCBLIST = [, ,];
 
+            (<HTMLInputElement>document.getElementById('taProgramInput')).innerText = "A9038D6000A9008D61008D6400A9018D6200AD61006D62008D6300AD62008D6100AD63008D6200A201AC6300FFA9FF8D6500AD60006D65008D6000AE6000EC6400A200D0CD";
 
             // ... then set the host clock pulse ...
             _hardwareClockID = setInterval(Devices.hostClockPulse, CPU_CLOCK_INTERVAL);

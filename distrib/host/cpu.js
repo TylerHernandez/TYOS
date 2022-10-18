@@ -90,7 +90,7 @@ var TSOS;
                         this.instruction++;
                         this.step = 1;
                         finishedCycle = true;
-                        _MemoryAccessor.memoryLog(0x0000, 0xFFFF);
+                        _MemoryAccessor.memoryLog(0x0000, _MemoryAccessor.highestNumber);
                         break;
                     }
                 } // ends Switch statement.
