@@ -264,7 +264,7 @@ var TSOS;
                 case 0xFF: {
                     switch (this.xRegister) {
                         case 0x01: { // print integer stored in y register
-                            _StdOut.putText(this.hexLog(this.yRegister, 2));
+                            _StdOut.putText(TSOS.Utils.hexLog(this.yRegister, 2));
                             this.step = 7;
                             break;
                         }
@@ -286,9 +286,9 @@ var TSOS;
             this.step++;
         }
         logPipeline() {
-            TSOS.Control.cpuLog("CPU State | Mode: 0 PC: " + this.hexLog(this.programCounter, 2) + " IR: " + this.hexLog(this.instructionRegister, 2)
-                + " Acc: " + this.hexLog(this.Accumulator, 2) + " xReg: " + this.hexLog(this.xRegister, 2) + " yReg: "
-                + this.hexLog(this.yRegister, 2) + " zFlag: " + this.zFlag + " Step: " + this.step //+ " total instructions: " + this.instruction
+            TSOS.Control.cpuLog("CPU State | Mode: 0 PC: " + TSOS.Utils.hexLog(this.programCounter, 2) + " IR: " + TSOS.Utils.hexLog(this.instructionRegister, 2)
+                + " Acc: " + TSOS.Utils.hexLog(this.Accumulator, 2) + " xReg: " + TSOS.Utils.hexLog(this.xRegister, 2) + " yReg: "
+                + TSOS.Utils.hexLog(this.yRegister, 2) + " zFlag: " + this.zFlag + " Step: " + this.step //+ " total instructions: " + this.instruction
             );
         }
         determineNextStep(currentInstruction) {
@@ -307,21 +307,9 @@ var TSOS;
             // Step 4(execute).
             return 4;
         }
-        hexLog(num, desired_length) {
-            if (num === undefined) {
-                return "ERR [hexValue conversion]: number undefined";
-            }
-            // Convert num to a string formatted in hex.
-            num = num.toString(16).toUpperCase();
-            // if num.length < desired_length, add starting zero's 
-            while (num.length < desired_length) {
-                num = "0" + num;
-            }
-            return num;
-        }
         // Saves current state of registers to PCB.
         saveCurrentState(pid = 0) {
-            return new TSOS.PCB(pid, "state", false, this.programCounter, this.instructionRegister, this.Accumulator, this.xRegister, this.yRegister, this.zFlag);
+            return new TSOS.PCB(pid, "Ready", false, this.programCounter, this.instructionRegister, this.Accumulator, this.xRegister, this.yRegister, this.zFlag);
         }
         // Loads a state from the CPU given a PCB.
         loadFromPcb(pcb) {
