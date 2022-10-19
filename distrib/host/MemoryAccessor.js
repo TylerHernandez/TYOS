@@ -86,10 +86,10 @@ var TSOS;
         memoryLog(startAddress, endAddress) {
             // Set up the table headers.
             var msg = "<tr><th>Address</th></tr>";
-            for (let index = startAddress; index <= endAddress; index += 8) { // Incrementing by eight to display eight chunks at a time.
+            for (let index = startAddress; index < endAddress; index += 8) { // Incrementing by eight to display eight chunks at a time.
                 // Get's the first chunk of memory.
                 let firstMemory = this.memory.getMemoryAt(index);
-                msg += ("<tr><td>" + TSOS.Utils.hexLog(index, 4) + "</td> <td>" + TSOS.Utils.hexLog(firstMemory, 2) + "</td>");
+                msg += ("<tr><td>0x" + TSOS.Utils.hexLog(index, 4) + "</td> <td>" + TSOS.Utils.hexLog(firstMemory, 2) + "</td>");
                 // Then the second.
                 let secondMemory = this.memory.getMemoryAt(index + 1);
                 msg += ("<td>" + TSOS.Utils.hexLog(secondMemory, 2) + "</td>");

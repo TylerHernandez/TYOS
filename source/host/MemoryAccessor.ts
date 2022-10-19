@@ -109,11 +109,11 @@ module TSOS {
         public memoryLog(startAddress: number, endAddress: number): void {
             // Set up the table headers.
             var msg: string = "<tr><th>Address</th></tr>";
-            for (let index = startAddress; index <= endAddress; index += 8) { // Incrementing by eight to display eight chunks at a time.
+            for (let index = startAddress; index < endAddress; index += 8) { // Incrementing by eight to display eight chunks at a time.
 
                 // Get's the first chunk of memory.
                 let firstMemory = this.memory.getMemoryAt(index);
-                msg += ("<tr><td>" + Utils.hexLog(index, 4) + "</td> <td>" + Utils.hexLog(firstMemory, 2) + "</td>");
+                msg += ("<tr><td>0x" + Utils.hexLog(index, 4) + "</td> <td>" + Utils.hexLog(firstMemory, 2) + "</td>");
 
                 // Then the second.
                 let secondMemory = this.memory.getMemoryAt(index + 1)
