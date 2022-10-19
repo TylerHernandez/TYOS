@@ -329,7 +329,7 @@ var TSOS;
             // Since this is not dynamic yet, wipe memory.
             _MemoryManager.resetMemory(); // we need to reset 
             // Insert our program into memory!
-            _MemoryManager.insertStringProgram(program);
+            _Kernel.insertStringProgram(program);
             // Assign a PID (this will be dynamic in future versions).
             var assignedPid = 0;
             var pcb;
