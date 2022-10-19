@@ -21,12 +21,6 @@ module TSOS {
 
             console.log("Initialized Memory");
 
-
-            //loops through program and copies data to MAR and MDR
-            for (var index = 0x00; index < this.program.length; index++) {
-                this.writeImmediate(index, this.program[index]);
-            }
-
             this.highestNumber = this.program.length;
 
             this.memoryLog(0x0000, this.highestNumber);
@@ -114,8 +108,8 @@ module TSOS {
         // Retrieves and displays contents of memory string from startAddress to endAddress in HTML.
         public memoryLog(startAddress: number, endAddress: number): void {
             // Set up the table headers.
-            var msg: string = "<tr><th>Address</th><th>Content </th><th>Address</th><th>Content </th><th>Address</th><th>Content </th><th>Address</th><th>Content</th></tr>";
-            for (let index = startAddress; index <= endAddress; index += 4) { // Incrementing by four to display four chunks at a time.
+            var msg: string = "<tr><th>Address</th></tr>";
+            for (let index = startAddress; index <= endAddress; index += 8) { // Incrementing by eight to display eight chunks at a time.
 
                 // Get's the first chunk of memory.
                 let firstMemory = this.memory.getMemoryAt(index);
@@ -123,15 +117,31 @@ module TSOS {
 
                 // Then the second.
                 let secondMemory = this.memory.getMemoryAt(index + 1)
-                msg += ("<td>" + Utils.hexLog(index + 1, 4) + "</td> <td>" + Utils.hexLog(secondMemory, 2) + "</td>");
+                msg += ("<td>" + Utils.hexLog(secondMemory, 2) + "</td>");
 
                 // Third.
                 let thirdMemory = this.memory.getMemoryAt(index + 2);
-                msg += ("<td>" + Utils.hexLog(index + 2, 4) + "</td> <td>" + Utils.hexLog(thirdMemory, 2) + "</td>");
+                msg += ("<td>" + Utils.hexLog(thirdMemory, 2) + "</td>");
 
-                // Lastly, the fourth.
-                let fourthMemory = this.memory.getMemoryAt(index + 3)
-                msg += ("<td>" + Utils.hexLog(index + 3, 4) + "</td> <td>" + Utils.hexLog(fourthMemory, 2) + "</td></tr>");
+                // Then the fourth.
+                let fourthMemory = this.memory.getMemoryAt(index + 1)
+                msg += ("<td>" + Utils.hexLog(fourthMemory, 2) + "</td>");
+
+                // fifth.
+                let fifthMemory = this.memory.getMemoryAt(index + 2);
+                msg += ("<td>" + Utils.hexLog(fifthMemory, 2) + "</td>");
+
+                // Then the sixth.
+                let sixthMemory = this.memory.getMemoryAt(index + 1)
+                msg += ("<td>" + Utils.hexLog(sixthMemory, 2) + "</td>");
+
+                // seventh.
+                let seventhMemory = this.memory.getMemoryAt(index + 2);
+                msg += ("<td>" + Utils.hexLog(seventhMemory, 2) + "</td>");
+
+                // Lastly, the eighth.
+                let eighthMemory = this.memory.getMemoryAt(index + 3)
+                msg += ("<td>" + Utils.hexLog(eighthMemory, 2) + "</td></tr>");
             }
 
             TSOS.Control.memoryLog(msg);

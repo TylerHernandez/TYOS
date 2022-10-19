@@ -14,10 +14,6 @@ var TSOS;
             this.cpu = cpu;
             this.memory = memory;
             console.log("Initialized Memory");
-            //loops through program and copies data to MAR and MDR
-            for (var index = 0x00; index < this.program.length; index++) {
-                this.writeImmediate(index, this.program[index]);
-            }
             this.highestNumber = this.program.length;
             this.memoryLog(0x0000, this.highestNumber);
         }
@@ -89,20 +85,32 @@ var TSOS;
         // Retrieves and displays contents of memory string from startAddress to endAddress in HTML.
         memoryLog(startAddress, endAddress) {
             // Set up the table headers.
-            var msg = "<tr><th>Address</th><th>Content </th><th>Address</th><th>Content </th><th>Address</th><th>Content </th><th>Address</th><th>Content</th></tr>";
-            for (let index = startAddress; index <= endAddress; index += 4) { // Incrementing by four to display four chunks at a time.
+            var msg = "<tr><th>Address</th></tr>";
+            for (let index = startAddress; index <= endAddress; index += 8) { // Incrementing by eight to display eight chunks at a time.
                 // Get's the first chunk of memory.
                 let firstMemory = this.memory.getMemoryAt(index);
                 msg += ("<tr><td>" + TSOS.Utils.hexLog(index, 4) + "</td> <td>" + TSOS.Utils.hexLog(firstMemory, 2) + "</td>");
                 // Then the second.
                 let secondMemory = this.memory.getMemoryAt(index + 1);
-                msg += ("<td>" + TSOS.Utils.hexLog(index + 1, 4) + "</td> <td>" + TSOS.Utils.hexLog(secondMemory, 2) + "</td>");
+                msg += ("<td>" + TSOS.Utils.hexLog(secondMemory, 2) + "</td>");
                 // Third.
                 let thirdMemory = this.memory.getMemoryAt(index + 2);
-                msg += ("<td>" + TSOS.Utils.hexLog(index + 2, 4) + "</td> <td>" + TSOS.Utils.hexLog(thirdMemory, 2) + "</td>");
-                // Lastly, the fourth.
-                let fourthMemory = this.memory.getMemoryAt(index + 3);
-                msg += ("<td>" + TSOS.Utils.hexLog(index + 3, 4) + "</td> <td>" + TSOS.Utils.hexLog(fourthMemory, 2) + "</td></tr>");
+                msg += ("<td>" + TSOS.Utils.hexLog(thirdMemory, 2) + "</td>");
+                // Then the fourth.
+                let fourthMemory = this.memory.getMemoryAt(index + 1);
+                msg += ("<td>" + TSOS.Utils.hexLog(fourthMemory, 2) + "</td>");
+                // fifth.
+                let fifthMemory = this.memory.getMemoryAt(index + 2);
+                msg += ("<td>" + TSOS.Utils.hexLog(fifthMemory, 2) + "</td>");
+                // Then the sixth.
+                let sixthMemory = this.memory.getMemoryAt(index + 1);
+                msg += ("<td>" + TSOS.Utils.hexLog(sixthMemory, 2) + "</td>");
+                // seventh.
+                let seventhMemory = this.memory.getMemoryAt(index + 2);
+                msg += ("<td>" + TSOS.Utils.hexLog(seventhMemory, 2) + "</td>");
+                // Lastly, the eighth.
+                let eighthMemory = this.memory.getMemoryAt(index + 3);
+                msg += ("<td>" + TSOS.Utils.hexLog(eighthMemory, 2) + "</td></tr>");
             }
             TSOS.Control.memoryLog(msg);
         }
