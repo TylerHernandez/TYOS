@@ -5,9 +5,6 @@ module TSOS {
 
         constructor() { }
 
-        insertStringProgram(program: string[]) {
-            _MemoryAccessor.insertStringProgram(program);
-        }
         resetMemory() {
             _MemoryAccessor.resetMemory();
         }

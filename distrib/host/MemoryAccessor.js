@@ -21,15 +21,6 @@ var TSOS;
             this.highestNumber = this.program.length;
             this.memoryLog(0x0000, this.highestNumber);
         }
-        // Inserts given string program into memory.
-        insertStringProgram(program) {
-            //loops through program and copies data to MAR and MDR
-            for (var index = 0x00; index < program.length; index++) {
-                this.writeImmediate(index, parseInt("0x" + program[index]));
-            }
-            this.memoryLog(0x0000, this.highestNumber);
-            return true;
-        }
         // Flips bytes for desired endianness. 
         flipBytes(bytes) {
             var str = String(bytes);

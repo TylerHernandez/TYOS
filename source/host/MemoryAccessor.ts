@@ -33,17 +33,6 @@ module TSOS {
 
         }
 
-        // Inserts given string program into memory.
-        public insertStringProgram(program: string[]): boolean {
-            //loops through program and copies data to MAR and MDR
-            for (var index = 0x00; index < program.length; index++) {
-                this.writeImmediate(index, parseInt("0x" + program[index]));
-            }
-
-            this.memoryLog(0x0000, this.highestNumber);
-            return true;
-        }
-
         // Flips bytes for desired endianness. 
         public flipBytes(bytes: number): number {
             var str = String(bytes);
