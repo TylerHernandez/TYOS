@@ -411,7 +411,10 @@ module TSOS {
 
 
             // Assign a PID (this will be dynamic in future versions).
-            var assignedPid: number = 0;
+            var assignedPid: number = _PIDCounter;
+            _PIDCounter++;
+
+            
             var pcb;
 
             // // Write over existing PCB.

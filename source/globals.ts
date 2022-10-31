@@ -31,6 +31,7 @@ var _MemoryAccessor: TSOS.MemoryAccessor;
 var _MemoryManager: TSOS.MemoryManager;
 var _PCBLIST: Array<TSOS.PCB>; // Holds all PCB's
 var _FLAG: boolean;
+var _PIDCounter: number = 0; // Tracks the next number available for a PID.
 
 var _OSclock: number = 0;  // Page 23.
 

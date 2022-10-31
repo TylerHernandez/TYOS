@@ -93,7 +93,7 @@ module TSOS {
 
             // Update the log console.
             var taLog = <HTMLAreaElement>document.getElementById("taPCB");
-            taLog.innerHTML = str + taLog.innerHTML;
+            taLog.innerHTML = str;
         }
 
 

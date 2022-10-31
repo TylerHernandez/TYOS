@@ -331,7 +331,8 @@ var TSOS;
             // Insert our program into memory!
             _Kernel.insertStringProgram(program);
             // Assign a PID (this will be dynamic in future versions).
-            var assignedPid = 0;
+            var assignedPid = _PIDCounter;
+            _PIDCounter++;
             var pcb;
             // // Write over existing PCB.
             // // If assigned PCB is not empty, create blank pcb.

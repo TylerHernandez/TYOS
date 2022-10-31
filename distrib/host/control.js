@@ -75,7 +75,7 @@ var TSOS;
             });
             // Update the log console.
             var taLog = document.getElementById("taPCB");
-            taLog.innerHTML = str + taLog.innerHTML;
+            taLog.innerHTML = str;
         }
         //
         // Host Events
