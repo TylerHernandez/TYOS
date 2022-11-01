@@ -60,7 +60,6 @@ module TSOS {
         // Finds next available segment to be used.
         public determineNextSegment(): number {
             for (let [key, value] of this.memorySegments) {
-                console.log(key, value);
                 if (value == "AVAILABLE") {
                     return key;
                 }

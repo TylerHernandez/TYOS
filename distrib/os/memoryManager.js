@@ -53,7 +53,6 @@ var TSOS;
         // Finds next available segment to be used.
         determineNextSegment() {
             for (let [key, value] of this.memorySegments) {
-                console.log(key, value);
                 if (value == "AVAILABLE") {
                     return key;
                 }

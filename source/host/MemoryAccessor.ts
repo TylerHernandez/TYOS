@@ -149,23 +149,23 @@ module TSOS {
                 msg += ("<td>" + Utils.hexLog(thirdMemory, 2) + "</td>");
 
                 // Then the fourth.
-                let fourthMemory = this.memory.getMemoryAt(index + 1)
+                let fourthMemory = this.memory.getMemoryAt(index + 3)
                 msg += ("<td>" + Utils.hexLog(fourthMemory, 2) + "</td>");
 
                 // fifth.
-                let fifthMemory = this.memory.getMemoryAt(index + 2);
+                let fifthMemory = this.memory.getMemoryAt(index + 4);
                 msg += ("<td>" + Utils.hexLog(fifthMemory, 2) + "</td>");
 
                 // Then the sixth.
-                let sixthMemory = this.memory.getMemoryAt(index + 1)
+                let sixthMemory = this.memory.getMemoryAt(index + 5)
                 msg += ("<td>" + Utils.hexLog(sixthMemory, 2) + "</td>");
 
                 // seventh.
-                let seventhMemory = this.memory.getMemoryAt(index + 2);
+                let seventhMemory = this.memory.getMemoryAt(index + 6);
                 msg += ("<td>" + Utils.hexLog(seventhMemory, 2) + "</td>");
 
                 // Lastly, the eighth.
-                let eighthMemory = this.memory.getMemoryAt(index + 3)
+                let eighthMemory = this.memory.getMemoryAt(index + 7)
                 msg += ("<td>" + Utils.hexLog(eighthMemory, 2) + "</td></tr>");
             }
 

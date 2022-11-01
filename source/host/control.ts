@@ -132,9 +132,11 @@ module TSOS {
             // Initializes PCB list.
             _PCBLIST = [];
 
-            // Loads program input with default value (Fibonacci of 1-5).
+            // Loads program input with "12DONE" program as default value.
             (<HTMLInputElement>document.getElementById('taProgramInput')).innerText =
-                "A9058D6000A9008D61008D6400A9018D6200AD61006D62008D6300AD62008D6100AD63008D6200A201AC6300FFA9FF8D6500AD60006D65008D6000AE6000EC6400A200D0CD";
+                //"A9038D4100A9018D4000AC4000A201FFEE4000AE4000EC4100D0EFA9448D4200A94F8D4300A94E8D4400A9458D4500A9008D4600A202A042FF00";
+            // Loads program input with default value (Fibonacci of 1-5).
+            "A9058D6000A9008D61008D6400A9018D6200AD61006D62008D6300AD62008D6100AD63008D6200A201AC6300FFA9FF8D6500AD60006D65008D6000AE6000EC6400A200D0CD";
 
             // ... then set the host clock pulse ...
             _hardwareClockID = setInterval(Devices.hostClockPulse, CPU_CLOCK_INTERVAL);
