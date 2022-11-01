@@ -150,5 +150,10 @@ module TSOS {
         public resetMemory(): void {
             this.memory.reset();
         }
+
+        public wipe(start, stop): void{
+            this.memory.wipe(start, stop);
+        }
+        
     } // ends export MemoryAccessor
 }

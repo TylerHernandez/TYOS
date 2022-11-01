@@ -19,6 +19,12 @@ var TSOS;
                 this.MemoryArray[index] = undefined;
             }
         }
+        // Given a range of addresses, sets content of addresses to undefined. 
+        wipe(start, stop) {
+            for (let index = start; index <= stop; index++) {
+                this.MemoryArray[index] = undefined;
+            }
+        }
         // Returns MAR.
         getMAR() {
             return this.MAR;

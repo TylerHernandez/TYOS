@@ -117,6 +117,9 @@ var TSOS;
         resetMemory() {
             this.memory.reset();
         }
+        wipe(start, stop) {
+            this.memory.wipe(start, stop);
+        }
     } // ends export MemoryAccessor
     TSOS.MemoryAccessor = MemoryAccessor;
 })(TSOS || (TSOS = {}));
