@@ -10,7 +10,10 @@ var TSOS;
         x;
         y;
         z;
-        constructor(pid, state = "Waiting", swapped = false, pc = 0, ir = 0, acc = 0, x = 0, y = 0, z = 0) {
+        memoryLocation;
+        constructor(pid, state = "Waiting", swapped = false, pc = 0, ir = 0, acc = 0, x = 0, y = 0, z = 0, 
+        // Acceptable memoryLocations include 0, 1, and 2. 
+        memoryLocation = -1) {
             this.pid = pid;
             this.state = state;
             this.swapped = swapped;
@@ -20,6 +23,7 @@ var TSOS;
             this.x = x;
             this.y = y;
             this.z = z;
+            this.memoryLocation = memoryLocation;
         }
         // Return whether or not PCB is merely template such as 'emptyPCB()'.
         isEmpty() {

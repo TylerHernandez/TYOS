@@ -10,6 +10,9 @@ module TSOS {
             public x: number = 0,
             public y: number = 0,
             public z: number = 0,
+            // Acceptable memoryLocations include 0, 1, and 2. 
+            public memoryLocation: number = -1, // Default at -1 to use as flag for memory has no location. 
+
         ) { }
 
         // Return whether or not PCB is merely template such as 'emptyPCB()'.

@@ -130,7 +130,7 @@ module TSOS {
 
 
             // Initializes PCB list.
-            _PCBLIST = [, ,];
+            _PCBLIST = [];
 
             // Loads program input with default value (Fibonacci of 1-5).
             (<HTMLInputElement>document.getElementById('taProgramInput')).innerText =

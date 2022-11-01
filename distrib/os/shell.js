@@ -327,12 +327,14 @@ var TSOS;
                 }
             }
             // Since this is not dynamic yet, wipe memory.
-            _MemoryManager.resetMemory(); // we need to reset 
-            // Insert our program into memory!
-            _Kernel.insertStringProgram(program);
+            //_MemoryManager.resetMemory(); // we need to reset 
             // Assign a PID (this will be dynamic in future versions).
             var assignedPid = _PIDCounter;
             _PIDCounter++;
+            // // Insert our program into memory!
+            // _Kernel.insertStringProgram(program);
+            // TODO: Request to insert our program into memory. This request will return which memory segment program is stored in.
+            // Furthermore, use this memory segment location to store in PCB. All PCBs will need to be updated each time load runs.
             var pcb;
             // // Write over existing PCB.
             // // If assigned PCB is not empty, create blank pcb.

@@ -100,7 +100,7 @@ var TSOS;
             _CPU.setMemoryAccessor(_MemoryAccessor);
             var MemoryManager = null;
             // Initializes PCB list.
-            _PCBLIST = [, ,];
+            _PCBLIST = [];
             // Loads program input with default value (Fibonacci of 1-5).
             document.getElementById('taProgramInput').innerText =
                 "A9058D6000A9008D61008D6400A9018D6200AD61006D62008D6300AD62008D6100AD63008D6200A201AC6300FFA9FF8D6500AD60006D65008D6000AE6000EC6400A200D0CD";
