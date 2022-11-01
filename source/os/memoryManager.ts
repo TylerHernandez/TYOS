@@ -9,8 +9,6 @@ module TSOS {
             _MemoryAccessor.resetMemory();
         }
 
-        // Not sure if this is in manager or accessor: given a location, clear memory segment in said location.
-
         // Clears a given memory segment. Accepts 0, 1, or 2.
         public clearSegmemt(memorySegment: number): void {
             if (memorySegment < 0 || memorySegment > 2) {

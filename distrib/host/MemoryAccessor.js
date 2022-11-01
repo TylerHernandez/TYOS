@@ -119,6 +119,10 @@ var TSOS;
         }
         wipe(start, stop) {
             this.memory.wipe(start, stop);
+            if (stop > this.highestNumber) {
+                this.highestNumber = stop;
+            }
+            this.memoryLog(0x00, this.highestNumber);
         }
     } // ends export MemoryAccessor
     TSOS.MemoryAccessor = MemoryAccessor;

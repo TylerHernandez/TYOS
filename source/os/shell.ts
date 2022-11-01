@@ -115,6 +115,12 @@ module TSOS {
                 "<pid> - runs a program in memory.");
             this.commandList[this.commandList.length] = sc;
 
+            // clearmem
+            sc = new ShellCommand(this.shellClearMem,
+                "clearmem",
+                "- Clears all memory segments");
+            this.commandList[this.commandList.length] = sc;
+
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
 
@@ -412,7 +418,7 @@ module TSOS {
             _PIDCounter++;
 
             // // Insert our program into memory!
-            // _Kernel.insertStringProgram(program);
+            _Kernel.insertStringProgram(program);
 
             // TODO: Request to insert our program into memory. This request will return which memory segment program is stored in.
             // Furthermore, use this memory segment location to store in PCB. All PCBs will need to be updated each time load runs.
@@ -430,7 +436,7 @@ module TSOS {
             // Creates a PCB based on CPU's current state.
             pcb = _CPU.saveCurrentState(assignedPid);
             _PCBLIST[assignedPid] = pcb;// PCB's index will always be it's assigned PID.
-            
+
 
             _StdOut.putText("Assigned program to PID #" + assignedPid);
             TSOS.Control.refreshPcbLog();
@@ -465,6 +471,16 @@ module TSOS {
                 return;
             }
         } // ends run
+
+        public shellClearMem(args: string[]) {
+            _MemoryManager.clearSegmemt(0);
+            _MemoryManager.clearSegmemt(1);
+            _MemoryManager.clearSegmemt(2);
+            _StdOut.putText("Cleared memory segments 0, 1, and 2");
+        }
+
+
+
 
     }// ends shell
 } // ends module

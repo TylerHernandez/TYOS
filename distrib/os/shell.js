@@ -66,6 +66,9 @@ var TSOS;
             // run
             sc = new TSOS.ShellCommand(this.shellRun, "run", "<pid> - runs a program in memory.");
             this.commandList[this.commandList.length] = sc;
+            // clearmem
+            sc = new TSOS.ShellCommand(this.shellClearMem, "clearmem", "- Clears all memory segments");
+            this.commandList[this.commandList.length] = sc;
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
             // Display the initial prompt.
@@ -332,7 +335,7 @@ var TSOS;
             var assignedPid = _PIDCounter;
             _PIDCounter++;
             // // Insert our program into memory!
-            // _Kernel.insertStringProgram(program);
+            _Kernel.insertStringProgram(program);
             // TODO: Request to insert our program into memory. This request will return which memory segment program is stored in.
             // Furthermore, use this memory segment location to store in PCB. All PCBs will need to be updated each time load runs.
             var pcb;
@@ -370,6 +373,12 @@ var TSOS;
                 return;
             }
         } // ends run
+        shellClearMem(args) {
+            _MemoryManager.clearSegmemt(0);
+            _MemoryManager.clearSegmemt(1);
+            _MemoryManager.clearSegmemt(2);
+            _StdOut.putText("Cleared memory segments 0, 1, and 2");
+        }
     } // ends shell
     TSOS.Shell = Shell;
 })(TSOS || (TSOS = {})); // ends module

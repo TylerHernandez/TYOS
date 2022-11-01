@@ -151,9 +151,14 @@ module TSOS {
             this.memory.reset();
         }
 
-        public wipe(start, stop): void{
+        public wipe(start, stop): void {
             this.memory.wipe(start, stop);
+            if (stop > this.highestNumber) {
+                this.highestNumber = stop;
+            }
+
+            this.memoryLog(0x00, this.highestNumber);
         }
-        
+
     } // ends export MemoryAccessor
 }
