@@ -10,6 +10,9 @@ module TSOS {
 
         public highestNumber;
 
+        public base;
+        public limit;
+
         // Hard-coded program to be added to memory.
         public program = [];
         //0xA9, 0x0A, 0x8D, 0x60, 0x00, 0xA9, 0x00, 0x8D, 0x61, 0x00, 0x8D, 0x64, 0x00, 0xA9, 0x01, 0x8D, 0x62, 0x00, 0xAD, 0x61, 0x00, 0x6D, 0x62, 0x00, 0x8D, 0x63, 0x00, 0xAD, 0x62, 0x00, 0x8D, 0x61, 0x00, 0xAD, 0x63, 0x00, 0x8D, 0x62, 0x00, 0xA2, 0x01, 0xAC, 0x63, 0x00, 0xFF, 0xA9, 0xFF, 0x8D, 0x65, 0x00, 0xAD, 0x60, 0x00, 0x6D, 0x65, 0x00, 0x8D, 0x60, 0x00, 0xAE, 0x60, 0x00, 0xEC, 0x64, 0x00, 0xA2, 0x00, 0xD0, 0xCD
@@ -18,6 +21,10 @@ module TSOS {
 
             this.cpu = cpu;
             this.memory = memory;
+
+            // Initialize base and limit for memory segment 0.
+            this.base = 0x00;
+            this.limit = 0xFF;
 
             console.log("Initialized Memory");
 
@@ -57,13 +64,24 @@ module TSOS {
 
         // Loads a static program into memory
         public writeImmediate(marValue: number, mdrValue: number): void {
-            this.memory.setMAR(marValue);
+
+            let desiredMar = marValue + this.base
+            if (desiredMar > this.limit) {
+                _StdOut.putText("Memory tried to write out of bounds");
+                return;
+            }
+
+            this.memory.setMAR(desiredMar);
             this.memory.setMDR(mdrValue);
             this.write();
         }
 
         // Writes to memory.
         public write(): void {
+
+            // TODO: take into account base and limit.
+
+
             this.memory.write();
             if (_Memory.getMAR() > this.highestNumber) {
                 this.highestNumber = _Memory.getMAR();
@@ -78,8 +96,15 @@ module TSOS {
         }
 
         // Sets MAR to memory address 'x'.
-        public setMAR(x: number): void {
-            this.memory.setMAR(x);
+        public setMAR(marValue: number): void {
+
+            let desiredMar = marValue + this.base
+            if (desiredMar > this.limit) {
+                _StdOut.putText("Memory tried to read/write out of bounds");
+                return;
+            }
+
+            this.memory.setMAR(desiredMar);
         }
 
         // Sets MDR to data 'x'.

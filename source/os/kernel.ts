@@ -192,7 +192,10 @@ module TSOS {
         }
 
         // Inserts given string program into memory.
-        public insertStringProgram(program: string[]) {
+        public insertStringProgram(memorySegment, program: string[]) {
+
+            _MemoryManager.setBaseAndLimit(memorySegment);
+
             //loops through program and copies data to MAR and MDR
             for (var index = 0x00; index < program.length; index++) {
                 _MemoryAccessor.writeImmediate(index, parseInt("0x" + program[index]));

@@ -417,8 +417,8 @@ module TSOS {
             var assignedPid: number = _PIDCounter;
             _PIDCounter++;
 
-            // // Insert our program into memory!
-            _Kernel.insertStringProgram(program);
+            // Insert our program into memory!
+            _Kernel.insertStringProgram(assignedPid, program);
 
             // TODO: Request to insert our program into memory. This request will return which memory segment program is stored in.
             // Furthermore, use this memory segment location to store in PCB. All PCBs will need to be updated each time load runs.
