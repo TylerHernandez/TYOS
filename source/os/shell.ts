@@ -413,36 +413,24 @@ module TSOS {
             //_MemoryManager.resetMemory(); // we need to reset 
 
 
-            // Assign a PID (this will be dynamic in future versions).
-            var assignedPid: number = _PIDCounter;
-            _PIDCounter++;
-
             // Find a free memory segment to insert our program into.
             let memorySegment = _MemoryManager.determineNextSegment();
 
             if (memorySegment == -1) {
                 _StdOut.putText("Memory is full! Try clearing memory before inserting more programs.");
+                return;
             }
+
+            // Assign a PID (this will be dynamic in future versions).
+            var assignedPid: number = _PIDCounter;
+            _PIDCounter++;
 
             // Insert our program into memory!
             _Kernel.insertStringProgram(memorySegment, program);
 
-            // TODO: Request to insert our program into memory. This request will return which memory segment program is stored in.
-            // Furthermore, use this memory segment location to store in PCB. All PCBs will need to be updated each time load runs.
-
-
-            var pcb;
-
-            // // Write over existing PCB.
-            // // If assigned PCB is not empty, create blank pcb.
-            // if (!_PCBLIST[assignedPid].isEmpty()) {
-            //     pcb = new PCB(assignedPid);
-
-            // }
-
-            // Creates a PCB based on CPU's current state.
-            pcb = _CPU.saveCurrentState(assignedPid);
-            _PCBLIST[assignedPid] = pcb;// PCB's index will always be it's assigned PID.
+            // Create pcb for our process and put it in our list.
+            let pcb = new PCB(assignedPid, memorySegment);
+            _PCBLIST[assignedPid] = pcb; // PCB's index will always be it's assigned PID.
 
 
             _StdOut.putText("Assigned program to PID #" + assignedPid);
@@ -454,25 +442,29 @@ module TSOS {
 
                 // if cpu is already executing, save state first.
                 if (_CPU.isExecuting) {
-                    _CPU.saveCurrentState(); // how should we retrieve our last PID? Global variable? CPU variable? shell variable?
+                    let currentPid = _CPU.currentPid;
 
-                    // Creates a PCB based on CPU's current state.
-                    _PCBLIST[0] = _CPU.saveCurrentState(0);;// PCB's index will always be it's assigned PID.
+                    // Overwrite old pcb information in pcblist with our cpu's current state. (context switch!)
+                    _PCBLIST[currentPid] = _CPU.saveCurrentState(currentPid, -1);;// PCB's index will always be it's assigned PID.
 
+                    // Display the change for our users.
                     TSOS.Control.refreshPcbLog();
                 }
 
+                // Given a PID, run a process already in memory.
 
                 const pid = args[0];
-                // given a PID, run a program already in memory.
 
-                //Normally we'd do this, however with only 1 pcb we will only load the wrong state, given a new program.
-                //_CPU.loadFromPcb(_PCBLIST[pid]); 
+                let process = _PCBLIST[pid];
+                // Load the CPU with our process state.
+                _CPU.loadFromPcb(process);
 
-                const pcb = new PCB(+pid); // saw that we can cast a string to number with + in front... pretty cool.
-                _CPU.loadFromPcb(pcb);
+                // Request Memory Manager update our accessor's base and limits.
+                _MemoryManager.setBaseAndLimit(process.memorySegment); // TODO (Project 4): This will return -1 if a pid does not have an allocated memorySegment anymore.
 
+                // Tell our CPU it may start execution now!
                 _CPU.isExecuting = true;
+        
             } else {
                 _StdOut.putText("Usage: prompt <string>  Please supply a string.");
                 return;

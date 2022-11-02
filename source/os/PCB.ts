@@ -2,6 +2,8 @@ module TSOS {
     export class PCB {
         constructor(
             public pid: number,
+            // Acceptable memoryLocations include 0, 1, and 2. 
+            public memorySegment: number = -1, // Default at -1 to use as flag for memory has no location. 
             public state: string = "Waiting",
             public swapped: boolean = false,
             public pc: number = 0,
@@ -10,8 +12,6 @@ module TSOS {
             public x: number = 0,
             public y: number = 0,
             public z: number = 0,
-            // Acceptable memoryLocations include 0, 1, and 2. 
-            public memoryLocation: number = -1, // Default at -1 to use as flag for memory has no location. 
 
         ) { }
 

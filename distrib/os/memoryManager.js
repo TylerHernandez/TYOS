@@ -23,29 +23,29 @@ var TSOS;
                 return;
             }
             else if (memorySegment == 0) {
-                _MemoryAccessor.wipe(0x00, 0xFF);
+                _MemoryAccessor.wipe(0x0000, 0x00FF);
             }
             else if (memorySegment == 1) {
-                _MemoryAccessor.wipe(0x100, 0x1FF);
+                _MemoryAccessor.wipe(0x0100, 0x01FF);
             }
             else { // memorySegment = 2.
-                _MemoryAccessor.wipe(0x200, 0x2FF);
+                _MemoryAccessor.wipe(0x0200, 0x02FF);
             }
             this.memorySegments.set(memorySegment, "AVAILABLE");
         }
         // Sets base and limit for memoryAccessor according to given memory segment.
         setBaseAndLimit(memorySegment) {
             if (memorySegment == 0) {
-                _MemoryAccessor.base = 0x00;
-                _MemoryAccessor.limit = 0xFF;
+                _MemoryAccessor.base = 0x0000;
+                _MemoryAccessor.limit = 0x00FF;
             }
             else if (memorySegment == 1) {
-                _MemoryAccessor.base = 0x100;
-                _MemoryAccessor.limit = 0x1FF;
+                _MemoryAccessor.base = 0x0100;
+                _MemoryAccessor.limit = 0x01FF;
             }
             else {
-                _MemoryAccessor.base = 0x200;
-                _MemoryAccessor.limit = 0x2FF;
+                _MemoryAccessor.base = 0x0200;
+                _MemoryAccessor.limit = 0x02FF;
             }
             // Let's reserve this memorySegment for the incoming process.
             this.memorySegments.set(memorySegment, "TAKEN");

@@ -25,7 +25,8 @@ module TSOS {
             public isExecuting: boolean = false,
             private step = 1, // fetch is first step (1).
             private instruction = 0, // counts the number of instructions.
-            public instructionRegister = 0x00) {
+            public instructionRegister = 0x00,
+            public currentPid = 0) {
 
         }
 
@@ -269,6 +270,7 @@ module TSOS {
                 // Break.
                 case 0x00: {
                     this.isExecuting = false;
+                    this.step = 7;
                     break;
                 }
 
@@ -366,8 +368,8 @@ module TSOS {
         }
 
         // Saves current state of registers to PCB.
-        public saveCurrentState(pid: number = 0): PCB {
-            return new PCB(pid, "Ready", false, this.programCounter, this.instructionRegister,
+        public saveCurrentState(pid: number = 0, memorySegment: number): PCB {
+            return new PCB(pid, memorySegment, "Ready", false, this.programCounter, this.instructionRegister,
                 this.Accumulator, this.xRegister, this.yRegister, this.zFlag);
         }
 

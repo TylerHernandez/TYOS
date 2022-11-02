@@ -22,10 +22,11 @@ var TSOS;
         step;
         instruction;
         instructionRegister;
+        currentPid;
         MemoryAccessor;
         constructor(programCounter = 0, Accumulator = 0, xRegister = 0, yRegister = 0, zFlag = 0, isExecuting = false, step = 1, // fetch is first step (1).
         instruction = 0, // counts the number of instructions.
-        instructionRegister = 0x00) {
+        instructionRegister = 0x00, currentPid = 0) {
             this.programCounter = programCounter;
             this.Accumulator = Accumulator;
             this.xRegister = xRegister;
@@ -35,6 +36,7 @@ var TSOS;
             this.step = step;
             this.instruction = instruction;
             this.instructionRegister = instructionRegister;
+            this.currentPid = currentPid;
         }
         init() {
             this.isExecuting = false;
@@ -229,6 +231,7 @@ var TSOS;
                 // Break.
                 case 0x00: {
                     this.isExecuting = false;
+                    this.step = 7;
                     break;
                 }
                 // Compare byte in memory to x register if zflag is set.
@@ -308,8 +311,8 @@ var TSOS;
             return 4;
         }
         // Saves current state of registers to PCB.
-        saveCurrentState(pid = 0) {
-            return new TSOS.PCB(pid, "Ready", false, this.programCounter, this.instructionRegister, this.Accumulator, this.xRegister, this.yRegister, this.zFlag);
+        saveCurrentState(pid = 0, memorySegment) {
+            return new TSOS.PCB(pid, memorySegment, "Ready", false, this.programCounter, this.instructionRegister, this.Accumulator, this.xRegister, this.yRegister, this.zFlag);
         }
         // Loads a state from the CPU given a PCB.
         loadFromPcb(pcb) {

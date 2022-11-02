@@ -23,8 +23,8 @@ module TSOS {
             this.memory = memory;
 
             // Initialize base and limit for memory segment 0.
-            this.base = 0x00;
-            this.limit = 0xFF;
+            this.base = 0x0000;
+            this.limit = 0x00FF;
 
             console.log("Initialized Memory");
 
@@ -98,10 +98,17 @@ module TSOS {
         // Sets MAR to memory address 'x'.
         public setMAR(marValue: number): void {
 
-            let desiredMar = marValue + this.base
-            if (desiredMar > this.limit) {
-                _StdOut.putText("Memory tried to read/write out of bounds");
-                return;
+            // Since MAR value has its bytes flipped, it will always be greater than the base.
+
+            // TODO: WORK ON THIS. THIS IS CAUSING ISSUES.
+            console.log(marValue);
+            console.log(this.base);
+
+            // 4100 + 255
+
+            let desiredMar = marValue + this.base;
+            if (desiredMar > this.flipBytes(this.limit)) {
+                console.log("Memory tried to point out of bounds- " + desiredMar + "greater than " + this.flipBytes(this.limit) + " \n");
             }
 
             this.memory.setMAR(desiredMar);
