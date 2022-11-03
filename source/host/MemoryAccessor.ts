@@ -34,17 +34,6 @@ module TSOS {
 
         }
 
-        // Flips bytes for desired endianness. 
-        public flipBytes(bytes: number): number {
-            var str = String(bytes);
-            // variables are named according to conversion of little to big endian.
-            let lowOrder = str.substring(0, 2);
-            let highOrder = str.substring(2, 4);
-            str = highOrder + lowOrder;
-            return parseInt(str);
-        }
-
-
         // Puts a low order byte in register
         public setLowOrderByte(lob: number) {
             this.lowOrderByte = lob;
@@ -57,15 +46,15 @@ module TSOS {
 
         // Puts low and high order bytes in MAR
         public putBytesInMar() {
-            //Construct hexadecimal value 0xLOHO with "lowOrderByte + highOrderByte"
-            var byte = Utils.hexLog(this.lowOrderByte, 2) + "" + Utils.hexLog(this.highOrderByte, 2);
-            this.setMAR(parseInt(byte));
+            //Construct hexadecimal value 0xHOLO with "highOrderByte" + "lowOrderByte"
+            var byte = this.hexLog(this.highOrderByte, 2) + "" + this.hexLog(this.lowOrderByte, 2);
+            this.setMAR(parseInt(byte, 16));
         }
 
         // Loads a static program into memory
         public writeImmediate(marValue: number, mdrValue: number): void {
 
-            let desiredMar = marValue + this.base
+            let desiredMar = marValue + this.base;
             if (desiredMar > this.limit) {
                 _StdOut.putText("Memory tried to write out of bounds");
                 return;
@@ -78,9 +67,6 @@ module TSOS {
 
         // Writes to memory.
         public write(): void {
-
-            // TODO: take into account base and limit.
-
 
             this.memory.write();
             if (_Memory.getMAR() > this.highestNumber) {
@@ -95,23 +81,26 @@ module TSOS {
             return this.memory.getMDR();
         }
 
-        // Sets MAR to memory address 'x'.
+        // Sets MAR to memory address 'marValue'.
         public setMAR(marValue: number): void {
 
-            // Since MAR value has its bytes flipped, it will always be greater than the base.
+            // Add base to mar value.
+            let desiredMarValue = marValue + this.base;
 
-            // TODO: WORK ON THIS. THIS IS CAUSING ISSUES.
-            console.log(marValue);
-            console.log(this.base);
-
-            // 4100 + 255
-
-            let desiredMar = marValue + this.base;
-            if (desiredMar > this.flipBytes(this.limit)) {
-                console.log("Memory tried to point out of bounds- " + desiredMar + "greater than " + this.flipBytes(this.limit) + " \n");
+            // Check if within bounds of program.
+            if (desiredMarValue < this.base) {
+                console.log("Memory tried to point out of bounds- " + this.hexLog(marValue, 4) + "less than " + this.hexLog(this.base, 4) + " \n");
+                _CPU.isExecuting = false;
+                return;
             }
 
-            this.memory.setMAR(desiredMar);
+            if (desiredMarValue > this.limit) {
+                console.log("Memory tried to point out of bounds- " + this.hexLog(marValue, 4) + "greater than " + this.hexLog(this.limit, 4) + " \n");
+                _CPU.isExecuting = false;
+                return;
+            }
+        
+            this.memory.setMAR(desiredMarValue);
         }
 
         // Sets MDR to data 'x'.
@@ -190,6 +179,21 @@ module TSOS {
             }
 
             this.memoryLog(0x00, this.highestNumber);
+        }
+
+        private hexLog(num, desired_length): String {
+            if (num === undefined) {
+                return "ERR [hexValue conversion]: number undefined";
+            }
+
+            // Convert num to a string formatted in hex.
+            num = num.toString(16).toUpperCase();
+
+            // if num.length < desired_length, add starting zero's 
+            while (num.length < desired_length) {
+                num = "0" + num;
+            }
+            return num;
         }
 
     } // ends export MemoryAccessor

@@ -472,6 +472,7 @@ module TSOS {
         } // ends run
 
         public shellClearMem(args: string[]) {
+            // TODO: Tell Memory Manager to clear *taken* segments. Return which segments cleared and print return val here.
             _MemoryManager.clearSegmemt(0);
             _MemoryManager.clearSegmemt(1);
             _MemoryManager.clearSegmemt(2);
