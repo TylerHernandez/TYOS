@@ -352,7 +352,7 @@ var TSOS;
             if (args.length > 0) {
                 // if cpu is already executing, save state first.
                 if (_CPU.isExecuting) {
-                    console.log("context switch!");
+                    //console.log("context switch!");
                     _CPU.isExecuting = false;
                     let currentPid = _CPU.currentPid;
                     // Overwrite old pcb information in pcblist with our cpu's current state. (context switch!)

@@ -70,7 +70,7 @@ var TSOS;
             // Build the log string.
             var str = "";
             _PCBLIST.forEach(function (x) {
-                str += ("<tr> <td>" + x.pid + "</td> <td>" + x.state + "</td> <td>" + x.swapped + "</td> <td>" + x.pc
+                str += ("<tr> <td>" + x.pid + "</td> <td>" + x.memorySegment + "</td> <td>" + x.state + "</td> <td>" + x.swapped + "</td> <td>" + x.pc
                     + "</td> <td>" + x.ir + "</td> <td>" + x.acc + "</td> <td>" + x.x + "</td> <td>" + x.y + "</td> <td>" + x.z + "</td> </tr>");
             });
             // Update the log console.
