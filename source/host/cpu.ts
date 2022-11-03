@@ -381,6 +381,7 @@ module TSOS {
             this.xRegister = pcb.x;
             this.yRegister = pcb.y;
             this.zFlag = pcb.z;
+            this.currentPid = pcb.pid;
         }
 
         public printStringAt(memoryAddress: number) {
