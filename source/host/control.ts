@@ -87,8 +87,8 @@ module TSOS {
             // Build the log string.
             var str: string = "";
             _PCBLIST.forEach(function (x) {
-                str += ("<tr> <td>" + x.pid + "</td> <td>" + x.memorySegment + "</td> <td>" + x.state + "</td> <td>" + x.swapped + "</td> <td>" + x.pc
-                    + "</td> <td>" + x.ir + "</td> <td>" + x.acc + "</td> <td>" + x.x + "</td> <td>" + x.y + "</td> <td>" + x.z + "</td> </tr>");
+                str += ("<tr> <td>" + x.pid + "</td> <td>" + x.memorySegment + "</td> <td>" + x.state + "</td> <td>" + x.swapped + "</td> <td>" + Utils.hexLog(x.pc, 2)
+                    + "</td> <td>" + Utils.hexLog(x.ir, 2) + "</td> <td>" + Utils.hexLog(x.acc, 2) + "</td> <td>" + Utils.hexLog(x.x, 2) + "</td> <td>" + Utils.hexLog(x.y, 2) + "</td> <td>" + Utils.hexLog(x.z, 2) + "</td> </tr>");
             });
 
             // Update the log console.

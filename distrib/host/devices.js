@@ -30,6 +30,7 @@ var TSOS;
             _Kernel.krnOnCPUClockPulse();
             // Update user's time display.
             document.getElementById("currentDate").innerHTML = new Date().toLocaleString();
+            TSOS.Utils.saveState();
         }
         //
         // Keyboard Interrupt, a HARDWARE Interrupt Request. (See pages 560-561 in our text book.)
