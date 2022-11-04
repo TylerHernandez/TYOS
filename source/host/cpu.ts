@@ -24,7 +24,7 @@ module TSOS {
             public zFlag: number = 0,
             public isExecuting: boolean = false,
             private step = 1, // fetch is first step (1).
-            private instruction = 0, // counts the number of instructions.
+            private instruction = 0, // counts the number of instructions completed.
             public instructionRegister = 0x00,
             public currentPid = 0) {
 
@@ -269,6 +269,8 @@ module TSOS {
 
                 // Break.
                 case 0x00: {
+                    // saves and updates the current program's state to 'TERMINATED'.
+                    Utils.onProgramFinish();
                     this.isExecuting = false;
                     this.step = 7;
                     break;
@@ -351,12 +353,6 @@ module TSOS {
         }
 
         determineNextStep(currentInstruction: number) {
-            // console.log(currentInstruction);
-            // if currentInstruction is undefined, toggle cpu is executing.
-            if (!currentInstruction) {
-                _CPU.isExecuting = false;
-                return 7;
-            }
             // Instructions that require decoding to retrieve operands.
             let decodeRequired = [0xA9, 0xAD, 0x8D, 0x6D, 0xA2, 0xAE, 0xA0, 0xAC, 0xEC, 0xD0, 0xEE];
             if (decodeRequired.includes(currentInstruction)) {
@@ -368,8 +364,8 @@ module TSOS {
         }
 
         // Saves current state of registers to PCB.
-        public saveCurrentState(pid: number = 0, memorySegment: number): PCB {
-            return new PCB(pid, memorySegment, "Ready", false, this.programCounter, this.instructionRegister,
+        public saveCurrentState(pid: number = 0, memorySegment: number, state: string = "READY"): PCB {
+            return new PCB(pid, memorySegment, state, false, this.programCounter, this.instructionRegister,
                 this.Accumulator, this.xRegister, this.yRegister, this.zFlag);
         }
 

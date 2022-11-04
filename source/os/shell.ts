@@ -408,9 +408,7 @@ module TSOS {
                 }
 
             }
-
-            // Since this is not dynamic yet, wipe memory.
-            //_MemoryManager.resetMemory(); // we need to reset 
+            Utils.pauseProgram();
 
 
             // Find a free memory segment to insert our program into.

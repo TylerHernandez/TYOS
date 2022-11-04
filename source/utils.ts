@@ -70,7 +70,7 @@ module TSOS {
             if (_CPU.isExecuting) {
                 let currentPid = _CPU.currentPid;
 
-                // Overwrite old pcb information in pcblist with our cpu's current state. (context switch!)
+                // Overwrite old pcb information in pcblist with our cpu's current state.
                 let currentMemorySegment = _PCBLIST[currentPid].memorySegment;
                 _PCBLIST[currentPid] = _CPU.saveCurrentState(currentPid, currentMemorySegment);;// PCB's index will always be it's assigned PID.
 
@@ -78,5 +78,28 @@ module TSOS {
                 TSOS.Control.refreshPcbLog();
             }
         }
+
+        // Saves cpu state of program, changes 'state' attribute to terminated.
+        public static onProgramFinish() {
+            let currentPid = _CPU.currentPid;
+
+            // Overwrite old pcb information in pcblist with our cpu's current state.
+            let currentMemorySegment = _PCBLIST[currentPid].memorySegment;
+            _PCBLIST[currentPid] = _CPU.saveCurrentState(currentPid, currentMemorySegment, "TERMINATED");// PCB's index will always be it's assigned PID.
+
+            // Display the change for our users.
+            TSOS.Control.refreshPcbLog();
+
+        }
+
+        // Saves the state of running program and pauses execution.
+        public static pauseProgram() {
+            if (_CPU.isExecuting){
+                this.saveState();
+                _CPU.isExecuting = false;
+            }
+        }
+
+
     }
 }

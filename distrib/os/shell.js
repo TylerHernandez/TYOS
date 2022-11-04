@@ -329,8 +329,7 @@ var TSOS;
                     program[(i - 1) / 2] += givenProgram[i];
                 }
             }
-            // Since this is not dynamic yet, wipe memory.
-            //_MemoryManager.resetMemory(); // we need to reset 
+            TSOS.Utils.pauseProgram();
             // Find a free memory segment to insert our program into.
             let memorySegment = _MemoryManager.determineNextSegment();
             if (memorySegment == -1) {
