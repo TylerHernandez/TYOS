@@ -11,7 +11,7 @@
 // Global CONSTANTS (TypeScript 1.5 introduced const. Very cool.)
 //
 const APP_NAME = "TYOS"; // Had to do it.
-const APP_VERSION = "1.0.2"; // Will I change this after every closed enhancement? Who knows...
+const APP_VERSION = "2.0.4"; // Will I change this after every closed enhancement? Who knows...
 const CPU_CLOCK_INTERVAL = 100; // This is in ms (milliseconds) so 1000 = 1 second.
 const TIMER_IRQ = 0; // Pages 23 (timer), 9 (interrupts), and 561 (interrupt priority).
 // NOTE: The timer is different from hardware/host clock pulses. Don't confuse these.
@@ -30,6 +30,7 @@ var _PIDCounter = 0; // Tracks the next number available for a PID.
 var _processCycleCounter = 0; // Tracks how many cpu cycles a process has gone through.
 var _quantum = 6; // Used for round robin cpu scheduling.
 var _ReadyQueue;
+var _RoundRobinEnabled = false; // Flag to detect if we are using round robin.
 var _OSclock = 0; // Page 23.
 var _Mode = 0; // (currently unused)  0 = Kernel Mode, 1 = User Mode.  See page 21.
 var _Canvas; // Initialized in Control.hostInit().

@@ -11,6 +11,8 @@ module TSOS {
 
             // put current process back in ready queue if it is not terminated.
             let oldPid = _CPU.currentPid;
+
+
             if (_PCBLIST[oldPid].state == "READY") {
                 _ReadyQueue.enqueue(oldPid);
             }

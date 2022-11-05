@@ -8,21 +8,13 @@ var TSOS;
             this.readyQueue = readyQueue;
             this.quantum = quantum;
         }
-        // Give a process in the ready queue 'quantum' cycles, then grab the next process until readyQueue is empty
-        roundRobin() {
-            // Loop until readyQueue is empty.
-            while (!this.readyQueue.isEmpty) {
-                let currentPid = this.readyQueue.dequeue();
-                for (var i = 0; i < this.quantum; i++) {
-                    // Set up CPU for this new process's context.
-                    if (_CPU.currentPid != currentPid) {
-                        _CPU.loadFromPcb(_PCBLIST[currentPid]);
-                        _MemoryManager.setBaseAndLimit(_PCBLIST[currentPid].memorySegment);
-                    }
-                }
-            }
-        }
+        // Sets up CPU and Memory Manager for a context switch if needed.
         static roundRobinSetup() {
+            // put current process back in ready queue if it is not terminated.
+            let oldPid = _CPU.currentPid;
+            if (_PCBLIST[oldPid].state == "READY") {
+                _ReadyQueue.enqueue(oldPid);
+            }
             // get new process id from ready queue.
             let currentPid = _ReadyQueue.dequeue();
             // Set up CPU for this new process's context.

@@ -66,6 +66,9 @@ var TSOS;
             // run
             sc = new TSOS.ShellCommand(this.shellRun, "run", "<pid> - runs a program in memory.");
             this.commandList[this.commandList.length] = sc;
+            // runall
+            sc = new TSOS.ShellCommand(this.shellRunAll, "runall", "- runs all programs in memory.");
+            this.commandList[this.commandList.length] = sc;
             // clearmem
             sc = new TSOS.ShellCommand(this.shellClearMem, "clearmem", "- Clears all memory segments");
             this.commandList[this.commandList.length] = sc;
@@ -344,6 +347,8 @@ var TSOS;
             // Create pcb for our process and put it in our list.
             let pcb = new TSOS.PCB(assignedPid, memorySegment);
             _PCBLIST[assignedPid] = pcb; // PCB's index will always be it's assigned PID.
+            // Put process id in the ready queue for round robin scheduling!
+            _ReadyQueue.enqueue(assignedPid);
             _StdOut.putText("Assigned program to PID #" + assignedPid);
             TSOS.Control.refreshPcbLog();
         } // ends load
@@ -351,7 +356,6 @@ var TSOS;
             if (args.length > 0) {
                 // if cpu is already executing, save state first.
                 if (_CPU.isExecuting) {
-                    //console.log("context switch!");
                     _CPU.isExecuting = false;
                     let currentPid = _CPU.currentPid;
                     // Overwrite old pcb information in pcblist with our cpu's current state. (context switch!)
@@ -376,6 +380,12 @@ var TSOS;
                 return;
             }
         } // ends run
+        shellRunAll(args) {
+            _RoundRobinEnabled = true;
+            // Start execution on our CPU!
+            _CPU.isExecuting = true;
+            _StdOut.putText("Round Robin enabled with quantum " + _quantum);
+        }
         shellClearMem(args) {
             // TODO: Tell Memory Manager to clear *taken* segments. Return which segments cleared and print return val here.
             _MemoryManager.clearSegmemt(0);

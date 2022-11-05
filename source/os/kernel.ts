@@ -28,6 +28,9 @@ module TSOS {
             // Initialize Memory Manager.
             _MemoryManager = new MemoryManager();
 
+            // Initialize Ready Queue.
+            _ReadyQueue = new Queue();
+
             // Initialize standard input and output to the _Console.
             _StdIn = _Console;
             _StdOut = _Console;
@@ -97,6 +100,8 @@ module TSOS {
                         _CPU.cycle();
                         _processCycleCounter++;
                     } else {
+                        // Save state of our current program and context switch.
+                        Utils.saveState();
                         cpuScheduler.roundRobinSetup();
                     }
                 } else { // Otherwise, just run our program

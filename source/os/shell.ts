@@ -115,6 +115,12 @@ module TSOS {
                 "<pid> - runs a program in memory.");
             this.commandList[this.commandList.length] = sc;
 
+            // runall
+            sc = new ShellCommand(this.shellRunAll,
+                "runall",
+                "- runs all programs in memory.");
+            this.commandList[this.commandList.length] = sc;
+
             // clearmem
             sc = new ShellCommand(this.shellClearMem,
                 "clearmem",
@@ -472,6 +478,15 @@ module TSOS {
                 return;
             }
         } // ends run
+
+        public shellRunAll(args: string[]) {
+            _RoundRobinEnabled = true;
+
+            // Start execution on our CPU!
+            _CPU.isExecuting = true;
+
+            _StdOut.putText("Round Robin enabled with quantum " + _quantum);
+        }
 
         public shellClearMem(args: string[]) {
             // TODO: Tell Memory Manager to clear *taken* segments. Return which segments cleared and print return val here.

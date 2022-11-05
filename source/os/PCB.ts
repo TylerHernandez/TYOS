@@ -4,7 +4,7 @@ module TSOS {
             public pid: number,
             // Acceptable memoryLocations include 0, 1, and 2. 
             public memorySegment: number = -1, // Default at -1 to use as flag for memory has no location. 
-            public state: string = "Waiting",
+            public state: string = "READY",
             public swapped: boolean = false,
             public pc: number = 0,
             public ir: number = 0,
@@ -17,7 +17,7 @@ module TSOS {
 
         // Return whether or not PCB is merely template such as 'emptyPCB()'.
         isEmpty() {
-            if (this.state == "Waiting" &&
+            if (this.state == "READY" &&
                 this.swapped == false &&
                 this.pc == 0 &&
                 this.ir == 0 &&

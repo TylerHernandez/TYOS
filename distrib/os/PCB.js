@@ -14,7 +14,7 @@ var TSOS;
         constructor(pid, 
         // Acceptable memoryLocations include 0, 1, and 2. 
         memorySegment = -1, // Default at -1 to use as flag for memory has no location. 
-        state = "Waiting", swapped = false, pc = 0, ir = 0, acc = 0, x = 0, y = 0, z = 0) {
+        state = "READY", swapped = false, pc = 0, ir = 0, acc = 0, x = 0, y = 0, z = 0) {
             this.pid = pid;
             this.memorySegment = memorySegment;
             this.state = state;
@@ -28,7 +28,7 @@ var TSOS;
         }
         // Return whether or not PCB is merely template such as 'emptyPCB()'.
         isEmpty() {
-            if (this.state == "Waiting" &&
+            if (this.state == "READY" &&
                 this.swapped == false &&
                 this.pc == 0 &&
                 this.ir == 0 &&

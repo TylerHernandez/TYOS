@@ -23,6 +23,8 @@ var TSOS;
             _Console.init();
             // Initialize Memory Manager.
             _MemoryManager = new TSOS.MemoryManager();
+            // Initialize Ready Queue.
+            _ReadyQueue = new TSOS.Queue();
             // Initialize standard input and output to the _Console.
             _StdIn = _Console;
             _StdOut = _Console;
@@ -75,13 +77,20 @@ var TSOS;
                 this.krnInterruptHandler(interrupt.irq, interrupt.params);
             }
             else if (_CPU && _CPU.isExecuting) { // If there are no interrupts then run one CPU cycle if there is anything being processed.
-                if (_processCycleCounter <= _quantum) {
-                    _CPU.cycle();
-                    // 
-                    _processCycleCounter++;
+                // If we are using round Robin, allocate cycles to cpu and context switch when needed.
+                if (_RoundRobinEnabled) {
+                    if (_processCycleCounter <= _quantum) {
+                        _CPU.cycle();
+                        _processCycleCounter++;
+                    }
+                    else {
+                        // Save state of our current program and context switch.
+                        TSOS.Utils.saveState();
+                        TSOS.cpuScheduler.roundRobinSetup();
+                    }
                 }
-                else {
-                    TSOS.cpuScheduler.roundRobinSetup();
+                else { // Otherwise, just run our program
+                    _CPU.cycle();
                 }
             }
             else if (!_CPU) { // If CPU is removed, don't act.
