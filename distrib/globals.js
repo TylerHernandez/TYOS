@@ -27,6 +27,9 @@ var _MemoryManager;
 var _PCBLIST; // Holds all PCB's
 var _FLAG;
 var _PIDCounter = 0; // Tracks the next number available for a PID.
+var _processCycleCounter = 0; // Tracks how many cpu cycles a process has gone through.
+var _quantum = 6; // Used for round robin cpu scheduling.
+var _ReadyQueue;
 var _OSclock = 0; // Page 23.
 var _Mode = 0; // (currently unused)  0 = Kernel Mode, 1 = User Mode.  See page 21.
 var _Canvas; // Initialized in Control.hostInit().

@@ -430,6 +430,8 @@ module TSOS {
             let pcb = new PCB(assignedPid, memorySegment);
             _PCBLIST[assignedPid] = pcb; // PCB's index will always be it's assigned PID.
 
+            // Put process id in the ready queue for round robin scheduling!
+            _ReadyQueue.enqueue(assignedPid);
 
             _StdOut.putText("Assigned program to PID #" + assignedPid);
             TSOS.Control.refreshPcbLog();
@@ -440,7 +442,6 @@ module TSOS {
 
                 // if cpu is already executing, save state first.
                 if (_CPU.isExecuting) {
-                    //console.log("context switch!");
                     _CPU.isExecuting = false;
                     let currentPid = _CPU.currentPid;
 

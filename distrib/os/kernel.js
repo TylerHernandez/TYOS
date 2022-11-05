@@ -75,8 +75,14 @@ var TSOS;
                 this.krnInterruptHandler(interrupt.irq, interrupt.params);
             }
             else if (_CPU && _CPU.isExecuting) { // If there are no interrupts then run one CPU cycle if there is anything being processed.
-                // We may have shut down the CPU. Check.
-                _CPU.cycle();
+                if (_processCycleCounter <= _quantum) {
+                    _CPU.cycle();
+                    // 
+                    _processCycleCounter++;
+                }
+                else {
+                    TSOS.cpuScheduler.roundRobinSetup();
+                }
             }
             else if (!_CPU) { // If CPU is removed, don't act.
                 return;

@@ -32,6 +32,10 @@ var _MemoryManager: TSOS.MemoryManager;
 var _PCBLIST: Array<TSOS.PCB>; // Holds all PCB's
 var _FLAG: boolean;
 var _PIDCounter: number = 0; // Tracks the next number available for a PID.
+var _processCycleCounter = 0; // Tracks how many cpu cycles a process has gone through.
+var _quantum = 6; // Used for round robin cpu scheduling.
+var _ReadyQueue: TSOS.Queue;
+var _RoundRobinEnabled = false; // Flag to detect if we are using round robin.
 
 var _OSclock: number = 0;  // Page 23.
 

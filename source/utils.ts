@@ -94,7 +94,7 @@ module TSOS {
 
         // Saves the state of running program and pauses execution.
         public static pauseProgram() {
-            if (_CPU.isExecuting){
+            if (_CPU.isExecuting) {
                 this.saveState();
                 _CPU.isExecuting = false;
             }
