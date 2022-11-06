@@ -25,6 +25,17 @@ var TSOS;
             // reset _processCycleCounter.
             _processCycleCounter = 0;
         }
+        // Turns on round robin flag and sets up for initial execution.
+        static initializeRoundRobin() {
+            _RoundRobinEnabled = true;
+            // get a process id from ready queue.
+            let currentPid = _ReadyQueue.dequeue();
+            // Set up CPU for this new process's context.
+            _CPU.loadFromPcb(_PCBLIST[currentPid]);
+            _MemoryManager.setBaseAndLimit(_PCBLIST[currentPid].memorySegment);
+            // reset _processCycleCounter.
+            _processCycleCounter = 0;
+        }
     }
     TSOS.cpuScheduler = cpuScheduler;
 })(TSOS || (TSOS = {}));

@@ -480,7 +480,8 @@ module TSOS {
         } // ends run
 
         public shellRunAll(args: string[]) {
-            _RoundRobinEnabled = true;
+
+            cpuScheduler.initializeRoundRobin();
 
             // Start execution on our CPU!
             _CPU.isExecuting = true;

@@ -381,7 +381,7 @@ var TSOS;
             }
         } // ends run
         shellRunAll(args) {
-            _RoundRobinEnabled = true;
+            TSOS.cpuScheduler.initializeRoundRobin();
             // Start execution on our CPU!
             _CPU.isExecuting = true;
             _StdOut.putText("Round Robin enabled with quantum " + _quantum);
