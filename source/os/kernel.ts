@@ -31,6 +31,9 @@ module TSOS {
             // Initialize Ready Queue.
             _ReadyQueue = new Queue();
 
+            // Display Initial Quantum.
+            Control.quantumLog();
+
             // Initialize standard input and output to the _Console.
             _StdIn = _Console;
             _StdOut = _Console;

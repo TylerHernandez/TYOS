@@ -25,6 +25,8 @@ var TSOS;
             _MemoryManager = new TSOS.MemoryManager();
             // Initialize Ready Queue.
             _ReadyQueue = new TSOS.Queue();
+            // Display Initial Quantum.
+            TSOS.Control.quantumLog();
             // Initialize standard input and output to the _Console.
             _StdIn = _Console;
             _StdOut = _Console;

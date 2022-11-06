@@ -75,6 +75,12 @@ module TSOS {
             taLog.innerHTML = msg;
         }
 
+        // Logs the Quantum in our HTML text area.
+        public static quantumLog() {
+            var taLog = <HTMLAreaElement>document.getElementById("taQuantum");
+            taLog.innerHTML = String(_quantum);
+        }
+
         // Logs the CPU in our HTML text box.
         public static cpuLog(msg: string) {
             var taLog = <HTMLAreaElement>document.getElementById("taCPU");

@@ -60,6 +60,11 @@ var TSOS;
             var taLog = document.getElementById("taMemory");
             taLog.innerHTML = msg;
         }
+        // Logs the Quantum in our HTML text area.
+        static quantumLog() {
+            var taLog = document.getElementById("taQuantum");
+            taLog.innerHTML = String(_quantum);
+        }
         // Logs the CPU in our HTML text box.
         static cpuLog(msg) {
             var taLog = document.getElementById("taCPU");
