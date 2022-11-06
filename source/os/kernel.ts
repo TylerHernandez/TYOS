@@ -99,7 +99,7 @@ module TSOS {
 
                 // If we are using round Robin, allocate cycles to cpu and context switch when needed.
                 if (_RoundRobinEnabled) {
-                    if (_processCycleCounter <= _quantum) {
+                    if (_processCycleCounter < _quantum) {
                         _CPU.cycle();
 
                         // If current process finishes after this cycle, move on to the next process.

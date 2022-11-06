@@ -127,6 +127,12 @@ module TSOS {
                 "- Clears all memory segments");
             this.commandList[this.commandList.length] = sc;
 
+            // quantum
+            sc = new ShellCommand(this.shellQuantum,
+                "quantum",
+                "<int> - Changes the quantum.");
+            this.commandList[this.commandList.length] = sc;
+
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
 
@@ -485,6 +491,26 @@ module TSOS {
             _MemoryManager.clearSegmemt(1);
             _MemoryManager.clearSegmemt(2);
             _StdOut.putText("Cleared memory segments 0, 1, and 2");
+        }
+
+        public shellQuantum(args: string[]) {
+            if (args.length > 0) {
+
+                let newQuantum = Number(args[0]);
+
+                if (newQuantum <= 0) {
+                    _Kernel.krnTrapError("TYOS: Wow. You think you're cool or whatever don't ya.");
+                    return;
+                }
+
+                _quantum = newQuantum;
+                Control.quantumLog();
+
+                _StdOut.putText("Changed quantum to " + _quantum);
+            } else {
+                _StdOut.putText("Usage: prompt <int>  Please supply an integer greater than 0.");
+            }
+
         }
 
 
