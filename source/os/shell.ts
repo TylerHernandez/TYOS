@@ -447,17 +447,7 @@ module TSOS {
             if (args.length > 0) {
 
                 // if cpu is already executing, save state first.
-                if (_CPU.isExecuting) {
-                    _CPU.isExecuting = false;
-                    let currentPid = _CPU.currentPid;
-
-                    // Overwrite old pcb information in pcblist with our cpu's current state. (context switch!)
-                    let currentMemorySegment = _PCBLIST[currentPid].memorySegment;
-                    _PCBLIST[currentPid] = _CPU.saveCurrentState(currentPid, currentMemorySegment);;// PCB's index will always be it's assigned PID.
-
-                    // Display the change for our users.
-                    TSOS.Control.refreshPcbLog();
-                }
+                Utils.saveState();
 
                 // Given a PID, run a process already in memory.
 

@@ -26,7 +26,7 @@ var TSOS;
         MemoryAccessor;
         constructor(programCounter = 0, Accumulator = 0, xRegister = 0, yRegister = 0, zFlag = 0, isExecuting = false, step = 1, // fetch is first step (1).
         instruction = 0, // counts the number of instructions completed.
-        instructionRegister = 0x00, currentPid = 0) {
+        instructionRegister = 0x01, currentPid = 0) {
             this.programCounter = programCounter;
             this.Accumulator = Accumulator;
             this.xRegister = xRegister;
@@ -232,7 +232,6 @@ var TSOS;
                 case 0x00: {
                     // saves and updates the current program's state to 'TERMINATED'.
                     TSOS.Utils.onProgramFinish();
-                    this.isExecuting = false;
                     this.step = 7;
                     break;
                 }
@@ -282,6 +281,10 @@ var TSOS;
                     }
                     break;
                 }
+                case undefined: {
+                    this.instructionRegister = 0x00;
+                    break;
+                }
             }
         }
         writeback() {
@@ -307,7 +310,7 @@ var TSOS;
             return 4;
         }
         // Saves current state of registers to PCB.
-        saveCurrentState(pid = 0, memorySegment, state = "READY") {
+        saveCurrentState(pid = 0, memorySegment, state) {
             return new TSOS.PCB(pid, memorySegment, state, false, this.programCounter, this.instructionRegister, this.Accumulator, this.xRegister, this.yRegister, this.zFlag);
         }
         // Loads a state from the CPU given a PCB.

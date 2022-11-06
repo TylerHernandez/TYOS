@@ -72,7 +72,17 @@ module TSOS {
 
                 // Overwrite old pcb information in pcblist with our cpu's current state.
                 let currentMemorySegment = _PCBLIST[currentPid].memorySegment;
-                _PCBLIST[currentPid] = _CPU.saveCurrentState(currentPid, currentMemorySegment);;// PCB's index will always be it's assigned PID.
+
+                let processState;
+
+                if (_CPU.instructionRegister === 0x00) {
+                    processState = "TERMINATED";
+                } else {
+                    processState = "READY";
+                }
+
+
+                _PCBLIST[currentPid] = _CPU.saveCurrentState(currentPid, currentMemorySegment, processState);;// PCB's index will always be it's assigned PID.
 
                 // Display the change for our users.
                 TSOS.Control.refreshPcbLog();

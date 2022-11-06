@@ -25,7 +25,7 @@ module TSOS {
             public isExecuting: boolean = false,
             private step = 1, // fetch is first step (1).
             private instruction = 0, // counts the number of instructions completed.
-            public instructionRegister = 0x00,
+            public instructionRegister = 0x01,
             public currentPid = 0) {
 
         }
@@ -271,7 +271,6 @@ module TSOS {
                 case 0x00: {
                     // saves and updates the current program's state to 'TERMINATED'.
                     Utils.onProgramFinish();
-                    this.isExecuting = false;
                     this.step = 7;
                     break;
                 }
@@ -332,6 +331,11 @@ module TSOS {
                     break;
                 }
 
+                case undefined: {
+                    this.instructionRegister = 0x00;
+                    break;
+                }
+
 
             }
         }
@@ -364,7 +368,7 @@ module TSOS {
         }
 
         // Saves current state of registers to PCB.
-        public saveCurrentState(pid: number = 0, memorySegment: number, state: string = "READY"): PCB {
+        public saveCurrentState(pid: number = 0, memorySegment: number, state: string): PCB {
             return new PCB(pid, memorySegment, state, false, this.programCounter, this.instructionRegister,
                 this.Accumulator, this.xRegister, this.yRegister, this.zFlag);
         }

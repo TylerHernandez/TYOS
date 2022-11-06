@@ -7,7 +7,7 @@ module TSOS {
             public state: string = "READY",
             public swapped: boolean = false,
             public pc: number = 0,
-            public ir: number = 0,
+            public ir: number = 0x01, // Default at 0x01 to protect process from 'break' case '0x00'.
             public acc: number = 0,
             public x: number = 0,
             public y: number = 0,
@@ -20,7 +20,7 @@ module TSOS {
             if (this.state == "READY" &&
                 this.swapped == false &&
                 this.pc == 0 &&
-                this.ir == 0 &&
+                this.ir == 0x01 &&
                 this.acc == 0 &&
                 this.x == 0 &&
                 this.y == 0 &&
