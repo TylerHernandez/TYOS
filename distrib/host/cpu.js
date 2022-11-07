@@ -285,6 +285,15 @@ var TSOS;
                     this.instructionRegister = 0x00;
                     break;
                 }
+                // Invalid OP code detected.
+                case this.instructionRegister: {
+                    console.log("Invalid OP code detected. Shutting down program.");
+                    _ResidentList[this.currentPid].state = "TERMINATED";
+                    this.isExecuting = false;
+                    this.step = 7;
+                    TSOS.Control.refreshPcbLog();
+                    break;
+                }
             }
         }
         writeback() {
