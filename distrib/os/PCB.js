@@ -11,7 +11,7 @@ var TSOS;
         x;
         y;
         z;
-        constructor(pid, 
+        constructor(pid = -1, 
         // Acceptable memoryLocations include 0, 1, and 2. 
         memorySegment = -1, // Default at -1 to use as flag for memory has no location. 
         state = "READY", swapped = false, pc = 0, ir = 0x01, // Default at 0x01 to protect process from 'break' case '0x00'.
@@ -36,7 +36,8 @@ var TSOS;
                 this.acc == 0 &&
                 this.x == 0 &&
                 this.y == 0 &&
-                this.z == 0) {
+                this.z == 0 &&
+                this.pid == -1) {
                 return true;
             }
             return false;

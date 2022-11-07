@@ -36,6 +36,17 @@ var TSOS;
             // reset _processCycleCounter.
             _processCycleCounter = 0;
         }
+        static removeProcessFromReadyQueue(targetPid) {
+            var pid = _ReadyQueue.dequeue();
+            var i = 0;
+            while (i < _ReadyQueue.q.length) {
+                if (pid != targetPid) {
+                    pid = _ReadyQueue.dequeue();
+                    _ReadyQueue.enqueue(pid);
+                }
+                i++;
+            }
+        }
     }
     TSOS.cpuScheduler = cpuScheduler;
 })(TSOS || (TSOS = {}));

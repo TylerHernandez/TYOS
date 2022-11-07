@@ -133,6 +133,12 @@ module TSOS {
                 "<int> - Changes the quantum.");
             this.commandList[this.commandList.length] = sc;
 
+            // kill
+            sc = new ShellCommand(this.shellKill,
+                "kill",
+                "<pid> - kills a program in memory.");
+            this.commandList[this.commandList.length] = sc;
+
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
 
@@ -457,7 +463,12 @@ module TSOS {
 
                 // Given a PID, run a process already in memory.
 
-                const pid = args[0];
+                const pid = Number(args[0]);
+
+                if (_PCBLIST[pid].state == "TERMINATED") {
+                    _StdOut.putText("You cannot run a terminated process. ");
+                    return;
+                }
 
                 let process = _PCBLIST[pid];
                 // Load the CPU with our process state.
@@ -499,7 +510,7 @@ module TSOS {
         public shellQuantum(args: string[]) {
             if (args.length > 0) {
 
-                let newQuantum = Number(args[0]);
+                const newQuantum = Number(args[0]);
 
                 if (newQuantum <= 0) {
                     _Kernel.krnTrapError("TYOS: Wow. You think you're cool or whatever don't ya.");
@@ -514,6 +525,35 @@ module TSOS {
                 _StdOut.putText("Usage: prompt <int>  Please supply an integer greater than 0.");
             }
 
+        }
+
+        public shellKill(args) {
+            if (args.length > 0) {
+
+                // Ensure we don't mess up a currently running program.
+                if (_CPU.isExecuting) {
+                    Utils.saveState();
+                }
+
+                _CPU.isExecuting = false;
+
+                const pid = args[0];
+
+                _PCBLIST[pid].state = "TERMINATED";
+
+                // If our current pid is in the cpu, remove it.
+                if (_CPU.currentPid = pid) {
+                    _CPU.loadFromPcb(new PCB());
+                }
+
+                // Make sure remove the process from the ready queue.
+                cpuScheduler.removeProcessFromReadyQueue(pid);
+
+                TSOS.Control.refreshPcbLog();
+
+            } else {
+                _StdOut.putText("Usage: prompt <pid>  Please supply a process ID.");
+            }
         }
 
 
