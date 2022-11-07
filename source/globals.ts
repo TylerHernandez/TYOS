@@ -29,7 +29,7 @@ var _CPU: TSOS.CPU;  // Utilize TypeScript's type annotation system to ensure th
 var _Memory: TSOS.Memory; // Same thing here and below for Memory and MemoryAccessor.
 var _MemoryAccessor: TSOS.MemoryAccessor;
 var _MemoryManager: TSOS.MemoryManager;
-var _PCBLIST: Array<TSOS.PCB>; // Holds all PCB's
+var _ResidentList: Array<TSOS.PCB>; // Holds all PCB's
 var _FLAG: boolean;
 var _PIDCounter: number = 0; // Tracks the next number available for a PID.
 var _processCycleCounter = 0; // Tracks how many cpu cycles a process has gone through.

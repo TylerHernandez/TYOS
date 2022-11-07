@@ -64,7 +64,7 @@ var TSOS;
             if (_CPU.isExecuting) {
                 let currentPid = _CPU.currentPid;
                 // Overwrite old pcb information in pcblist with our cpu's current state.
-                let currentMemorySegment = _PCBLIST[currentPid].memorySegment;
+                let currentMemorySegment = _ResidentList[currentPid].memorySegment;
                 let processState;
                 if (_CPU.instructionRegister === 0x00) {
                     processState = "TERMINATED";
@@ -72,7 +72,7 @@ var TSOS;
                 else {
                     processState = "READY";
                 }
-                _PCBLIST[currentPid] = _CPU.saveCurrentState(currentPid, currentMemorySegment, processState);
+                _ResidentList[currentPid] = _CPU.saveCurrentState(currentPid, currentMemorySegment, processState);
                 ; // PCB's index will always be it's assigned PID.
                 // Display the change for our users.
                 TSOS.Control.refreshPcbLog();
@@ -82,8 +82,8 @@ var TSOS;
         static onProgramFinish() {
             let currentPid = _CPU.currentPid;
             // Overwrite old pcb information in pcblist with our cpu's current state.
-            let currentMemorySegment = _PCBLIST[currentPid].memorySegment;
-            _PCBLIST[currentPid] = _CPU.saveCurrentState(currentPid, currentMemorySegment, "TERMINATED"); // PCB's index will always be it's assigned PID.
+            let currentMemorySegment = _ResidentList[currentPid].memorySegment;
+            _ResidentList[currentPid] = _CPU.saveCurrentState(currentPid, currentMemorySegment, "TERMINATED"); // PCB's index will always be it's assigned PID.
             // Display the change for our users.
             TSOS.Control.refreshPcbLog();
         }

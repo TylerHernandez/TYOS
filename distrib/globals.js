@@ -24,7 +24,7 @@ var _CPU; // Utilize TypeScript's type annotation system to ensure that _CPU is 
 var _Memory; // Same thing here and below for Memory and MemoryAccessor.
 var _MemoryAccessor;
 var _MemoryManager;
-var _PCBLIST; // Holds all PCB's
+var _ResidentList; // Holds all PCB's
 var _FLAG;
 var _PIDCounter = 0; // Tracks the next number available for a PID.
 var _processCycleCounter = 0; // Tracks how many cpu cycles a process has gone through.

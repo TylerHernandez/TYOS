@@ -74,7 +74,7 @@ var TSOS;
         static refreshPcbLog() {
             // Build the log string.
             var str = "";
-            _PCBLIST.forEach(function (x) {
+            _ResidentList.forEach(function (x) {
                 str += ("<tr> <td>" + x.pid + "</td> <td>" + x.memorySegment + "</td> <td>" + x.state + "</td> <td>" + x.swapped + "</td> <td>" + TSOS.Utils.hexLog(x.pc, 2)
                     + "</td> <td>" + TSOS.Utils.hexLog(x.ir, 2) + "</td> <td>" + TSOS.Utils.hexLog(x.acc, 2) + "</td> <td>" + TSOS.Utils.hexLog(x.x, 2) + "</td> <td>" + TSOS.Utils.hexLog(x.y, 2) + "</td> <td>" + TSOS.Utils.hexLog(x.z, 2) + "</td> </tr>");
             });
@@ -105,7 +105,7 @@ var TSOS;
             _CPU.setMemoryAccessor(_MemoryAccessor);
             var MemoryManager = null;
             // Initializes PCB list.
-            _PCBLIST = [];
+            _ResidentList = [];
             document.getElementById('taProgramInput').innerText =
                 //"A9008D7B00A9008D7B00A9008D7C00A9008D7C00A9018D7A00A200EC7A00D039A07DA202FFAC7B00A201FFAD7B008D7A00A9016D7A008D7B00A903AE7B008D7A00A900EC7A00D002A9018D7A00A201EC7A00D005A9018D7C00A900AE7C008D7A00A900EC7A00D002A9018D7A00A200EC7A00D0ACA07FA202FF00000000610061646F6E6500";
                 // Loads program input with "12DONE" program as default value.

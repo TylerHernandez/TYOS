@@ -356,7 +356,7 @@ var TSOS;
             _Kernel.insertStringProgram(memorySegment, program);
             // Create pcb for our process and put it in our list.
             let pcb = new TSOS.PCB(assignedPid, memorySegment);
-            _PCBLIST[assignedPid] = pcb; // PCB's index will always be it's assigned PID.
+            _ResidentList[assignedPid] = pcb; // PCB's index will always be it's assigned PID.
             // Put process id in the ready queue for round robin scheduling!
             _ReadyQueue.enqueue(assignedPid);
             _StdOut.putText("Assigned program to PID #" + assignedPid);
@@ -368,11 +368,11 @@ var TSOS;
                 TSOS.Utils.saveState();
                 // Given a PID, run a process already in memory.
                 const pid = Number(args[0]);
-                if (_PCBLIST[pid].state == "TERMINATED") {
+                if (_ResidentList[pid].state == "TERMINATED") {
                     _StdOut.putText("You cannot run a terminated process. ");
                     return;
                 }
-                let process = _PCBLIST[pid];
+                let process = _ResidentList[pid];
                 // Load the CPU with our process state.
                 _CPU.loadFromPcb(process);
                 // Request Memory Manager update our accessor's base and limits.
@@ -406,8 +406,8 @@ var TSOS;
             // Since we're clearing memory, the cpu should not have any processes loaded.
             _CPU.loadFromPcb(new TSOS.PCB());
             // This will prevent running processes out of memory.
-            for (var i = 0; i < _PCBLIST.length; i++) {
-                _PCBLIST[i].memorySegment = -1;
+            for (var i = 0; i < _ResidentList.length; i++) {
+                _ResidentList[i].memorySegment = -1;
                 TSOS.cpuScheduler.removeProcessFromReadyQueue(i); // tells our cpu scheduler this process is off limits.
                 TSOS.Control.refreshPcbLog();
             }
@@ -438,7 +438,7 @@ var TSOS;
                 }
                 _CPU.isExecuting = false;
                 const pid = Number(args[0]);
-                _PCBLIST[pid].state = "TERMINATED";
+                _ResidentList[pid].state = "TERMINATED";
                 // If our current pid is in the cpu, remove it.
                 if (_CPU.currentPid = pid) {
                     _CPU.loadFromPcb(new TSOS.PCB());
@@ -452,7 +452,7 @@ var TSOS;
                 _StdOut.putText("Usage: prompt <pid>  Please supply a process ID.");
             }
         }
-        // Kills all processes in resident list (_PCBLIST) and cpu.
+        // Kills all processes in resident list (_ResidentList) and cpu.
         shellKillAll(args) {
             // This is just used to tell user which processes have been killed by this command.
             var killedProcesses = "";
@@ -461,13 +461,13 @@ var TSOS;
             TSOS.Utils.saveState();
             // Now.... we kill it!
             killedProcesses += _CPU.currentPid + ", ";
-            _PCBLIST[_CPU.currentPid].state = "TERMINATED";
+            _ResidentList[_CPU.currentPid].state = "TERMINATED";
             _CPU.loadFromPcb(new TSOS.PCB());
             TSOS.Control.refreshPcbLog();
             // Next, remove all processes from the ready queue and set them to terminated.
             var pid = _ReadyQueue.dequeue();
             while (pid != null) {
-                _PCBLIST[pid].state = "TERMINATED";
+                _ResidentList[pid].state = "TERMINATED";
                 killedProcesses += pid + ", ";
                 pid = _ReadyQueue.dequeue();
                 TSOS.Control.refreshPcbLog();
@@ -480,8 +480,8 @@ var TSOS;
         shellPs(args) {
             var str = ""; // will hold string to be printed out.
             // Loop through resident list (PCBLIST) and print out pid : state
-            for (var i = 0; i < _PCBLIST.length; i++) {
-                str += ("process " + i + " : " + _PCBLIST[i].state + "\n");
+            for (var i = 0; i < _ResidentList.length; i++) {
+                str += ("process " + i + " : " + _ResidentList[i].state + "\n");
             }
             _StdOut.putText(str);
         }

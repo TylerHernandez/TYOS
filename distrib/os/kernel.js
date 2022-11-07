@@ -84,7 +84,7 @@ var TSOS;
                     if (_processCycleCounter < _quantum) {
                         _CPU.cycle();
                         // If current process finishes after this cycle, move on to the next process.
-                        if (_PCBLIST[_CPU.currentPid].state == "TERMINATED") {
+                        if (_ResidentList[_CPU.currentPid].state == "TERMINATED") {
                             _processCycleCounter = _quantum;
                         }
                         _processCycleCounter++;

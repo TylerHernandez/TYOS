@@ -457,7 +457,7 @@ module TSOS {
 
             // Create pcb for our process and put it in our list.
             let pcb = new PCB(assignedPid, memorySegment);
-            _PCBLIST[assignedPid] = pcb; // PCB's index will always be it's assigned PID.
+            _ResidentList[assignedPid] = pcb; // PCB's index will always be it's assigned PID.
 
             // Put process id in the ready queue for round robin scheduling!
             _ReadyQueue.enqueue(assignedPid);
@@ -476,12 +476,12 @@ module TSOS {
 
                 const pid = Number(args[0]);
 
-                if (_PCBLIST[pid].state == "TERMINATED") {
+                if (_ResidentList[pid].state == "TERMINATED") {
                     _StdOut.putText("You cannot run a terminated process. ");
                     return;
                 }
 
-                let process = _PCBLIST[pid];
+                let process = _ResidentList[pid];
                 // Load the CPU with our process state.
                 _CPU.loadFromPcb(process);
 
@@ -524,8 +524,8 @@ module TSOS {
             _CPU.loadFromPcb(new PCB());
 
             // This will prevent running processes out of memory.
-            for (var i = 0; i < _PCBLIST.length; i++) {
-                _PCBLIST[i].memorySegment = -1;
+            for (var i = 0; i < _ResidentList.length; i++) {
+                _ResidentList[i].memorySegment = -1;
 
                 cpuScheduler.removeProcessFromReadyQueue(i); // tells our cpu scheduler this process is off limits.
                 TSOS.Control.refreshPcbLog();
@@ -568,7 +568,7 @@ module TSOS {
 
                 const pid = Number(args[0]);
 
-                _PCBLIST[pid].state = "TERMINATED";
+                _ResidentList[pid].state = "TERMINATED";
 
                 // If our current pid is in the cpu, remove it.
                 if (_CPU.currentPid = pid) {
@@ -587,7 +587,7 @@ module TSOS {
             }
         }
 
-        // Kills all processes in resident list (_PCBLIST) and cpu.
+        // Kills all processes in resident list (_ResidentList) and cpu.
         public shellKillAll(args: string[]) {
 
             // This is just used to tell user which processes have been killed by this command.
@@ -599,7 +599,7 @@ module TSOS {
 
             // Now.... we kill it!
             killedProcesses += _CPU.currentPid + ", ";
-            _PCBLIST[_CPU.currentPid].state = "TERMINATED";
+            _ResidentList[_CPU.currentPid].state = "TERMINATED";
             _CPU.loadFromPcb(new PCB());
             TSOS.Control.refreshPcbLog();
 
@@ -607,7 +607,7 @@ module TSOS {
             var pid = _ReadyQueue.dequeue();
 
             while (pid != null) {
-                _PCBLIST[pid].state = "TERMINATED";
+                _ResidentList[pid].state = "TERMINATED";
                 killedProcesses += pid + ", ";
                 pid = _ReadyQueue.dequeue();
                 TSOS.Control.refreshPcbLog();
@@ -625,8 +625,8 @@ module TSOS {
             var str = ""; // will hold string to be printed out.
             // Loop through resident list (PCBLIST) and print out pid : state
 
-            for (var i = 0; i < _PCBLIST.length; i++) {
-                str += ("process " + i + " : " + _PCBLIST[i].state + "\n");
+            for (var i = 0; i < _ResidentList.length; i++) {
+                str += ("process " + i + " : " + _ResidentList[i].state + "\n");
             }
 
             _StdOut.putText(str);

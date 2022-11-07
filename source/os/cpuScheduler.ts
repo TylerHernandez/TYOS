@@ -12,23 +12,26 @@ module TSOS {
             // put current process back in ready queue if it is not terminated.
             const oldPid = _CPU.currentPid;
 
-            if (_ReadyQueue.isEmpty() && _PCBLIST[_CPU.currentPid].state == "TERMINATED") {
+            if (_ReadyQueue.isEmpty() && _ResidentList[_CPU.currentPid].state == "TERMINATED") {
+                _StdOut.putText("Finished execution of all programs. ");
                 _CPU.isExecuting = false;
                 return;
             }
 
 
-            if (_PCBLIST[oldPid].state == "READY" && _PCBLIST[oldPid].memorySegment != -1) {
+            if (_ResidentList[oldPid].state == "READY" && _ResidentList[oldPid].memorySegment != -1) {
                 _ReadyQueue.enqueue(oldPid);
             }
 
             // get new process id from ready queue.
-            let currentPid = _ReadyQueue.dequeue();
+            const currentPid = _ReadyQueue.dequeue();
+
 
             // Set up CPU for this new process's context.
             if (_CPU.currentPid != currentPid) {
-                _CPU.loadFromPcb(_PCBLIST[currentPid]);
-                _MemoryManager.setBaseAndLimit(_PCBLIST[currentPid].memorySegment);
+                console.log("Context switching from process " + oldPid + " to " + currentPid);
+                _CPU.loadFromPcb(_ResidentList[currentPid]);
+                _MemoryManager.setBaseAndLimit(_ResidentList[currentPid].memorySegment);
             }
 
             // reset _processCycleCounter.
@@ -45,8 +48,8 @@ module TSOS {
             let currentPid = _ReadyQueue.dequeue();
 
             // Set up CPU for this new process's context.
-            _CPU.loadFromPcb(_PCBLIST[currentPid]);
-            _MemoryManager.setBaseAndLimit(_PCBLIST[currentPid].memorySegment);
+            _CPU.loadFromPcb(_ResidentList[currentPid]);
+            _MemoryManager.setBaseAndLimit(_ResidentList[currentPid].memorySegment);
 
             // reset _processCycleCounter.
             _processCycleCounter = 0;
