@@ -486,6 +486,9 @@ module TSOS {
         }
 
         public shellClearMem(args: string[]) {
+            if (_CPU.isExecuting) {
+                _StdOut.putText("You cannot clear memory while CPU is executing.")
+            }
             // TODO: Tell Memory Manager to clear *taken* segments. Return which segments cleared and print return val here.
             _MemoryManager.clearSegmemt(0);
             _MemoryManager.clearSegmemt(1);
