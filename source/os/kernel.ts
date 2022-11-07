@@ -28,6 +28,12 @@ module TSOS {
             // Initialize Memory Manager.
             _MemoryManager = new MemoryManager();
 
+            // Initialize Ready Queue.
+            _ReadyQueue = new Queue();
+
+            // Display Initial Quantum.
+            Control.quantumLog();
+
             // Initialize standard input and output to the _Console.
             _StdIn = _Console;
             _StdOut = _Console;
@@ -90,8 +96,29 @@ module TSOS {
                 var interrupt = _KernelInterruptQueue.dequeue();
                 this.krnInterruptHandler(interrupt.irq, interrupt.params);
             } else if (_CPU && _CPU.isExecuting) { // If there are no interrupts then run one CPU cycle if there is anything being processed.
-                // We may have shut down the CPU. Check.
-                _CPU.cycle();
+
+                // If we are using round Robin, allocate cycles to cpu and context switch when needed.
+                if (_RoundRobinEnabled) {
+                    if (_processCycleCounter < _quantum) {
+                        _CPU.cycle();
+
+                        // If current process finishes after this cycle, move on to the next process.
+                        if (_ResidentList[_CPU.currentPid].state == "TERMINATED") {
+                            _processCycleCounter = _quantum;
+                        }
+
+
+                        _processCycleCounter++;
+                    } else {
+                        // Save state of our current program and context switch.
+                        Utils.saveState();
+                        cpuScheduler.roundRobinSetup();
+                    }
+                } else { // Otherwise, just run our program
+                    _CPU.cycle();
+                }
+
+
             } else if (!_CPU) { // If CPU is removed, don't act.
                 return;
             } else { // If there are no interrupts and there is nothing being executed then just be idle.
@@ -192,7 +219,10 @@ module TSOS {
         }
 
         // Inserts given string program into memory.
-        public insertStringProgram(program: string[]) {
+        public insertStringProgram(memorySegment, program: string[]) {
+
+            _MemoryManager.setBaseAndLimit(memorySegment);
+
             //loops through program and copies data to MAR and MDR
             for (var index = 0x00; index < program.length; index++) {
                 _MemoryAccessor.writeImmediate(index, parseInt("0x" + program[index]));

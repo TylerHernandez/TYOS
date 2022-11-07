@@ -23,6 +23,7 @@
    <script type="text/javascript" src="distrib/os/interrupt.js"></script>
    <script type="text/javascript" src="distrib/os/canvastext.js"></script>
    <script type="text/javascript" src="distrib/os/console.js"></script>
+   <script type="text/javascript" src="distrib/os/cpuScheduler.js"></script>
    <script type="text/javascript" src="distrib/os/deviceDriver.js"></script>
    <script type="text/javascript" src="distrib/os/deviceDriverKeyboard.js"></script>
    <script type="text/javascript" src="distrib/os/queue.js"></script>
@@ -78,6 +79,7 @@
             <label>
                CPU
                <br>
+               Current Quantum: <a name="taQuantum" id="taQuantum"></a>
                <div style="height: 200px; width: 630px; overflow: auto;">
                   <table>
                      <tr>
@@ -104,6 +106,7 @@
                   <table>
                      <tr>
                         <th>PID</th>
+                        <th>MemSeg</th>
                         <th>State</th>
                         <th>Swapped</th>
                         <th>PC</th>

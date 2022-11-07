@@ -28,6 +28,13 @@ module TSOS {
             }
         }
 
+        // Given a range of addresses, sets content of addresses to undefined. 
+        public wipe(start, stop): void {
+            for (let index = start; index <= stop; index++) {
+                this.MemoryArray[index] = undefined;
+            }
+        }
+
         // Returns MAR.
         public getMAR(): number {
             return this.MAR;

@@ -63,5 +63,53 @@ module TSOS {
             }
             return num;
         }
+
+        public static saveState() {
+
+            // if cpu is already executing, save state first.
+            if (_CPU.isExecuting) {
+                let currentPid = _CPU.currentPid;
+
+                // Overwrite old pcb information in pcblist with our cpu's current state.
+                let currentMemorySegment = _ResidentList[currentPid].memorySegment;
+
+                let processState;
+
+                if (_CPU.instructionRegister === 0x00) {
+                    processState = "TERMINATED";
+                } else {
+                    processState = "READY";
+                }
+
+
+                _ResidentList[currentPid] = _CPU.saveCurrentState(currentPid, currentMemorySegment, processState);;// PCB's index will always be it's assigned PID.
+
+                // Display the change for our users.
+                TSOS.Control.refreshPcbLog();
+            }
+        }
+
+        // Saves cpu state of program, changes 'state' attribute to terminated.
+        public static onProgramFinish() {
+            let currentPid = _CPU.currentPid;
+
+            // Overwrite old pcb information in pcblist with our cpu's current state.
+            let currentMemorySegment = _ResidentList[currentPid].memorySegment;
+            _ResidentList[currentPid] = _CPU.saveCurrentState(currentPid, currentMemorySegment, "TERMINATED");// PCB's index will always be it's assigned PID.
+
+            // Display the change for our users.
+            TSOS.Control.refreshPcbLog();
+
+        }
+
+        // Saves the state of running program and pauses execution.
+        public static pauseProgram() {
+            if (_CPU.isExecuting) {
+                this.saveState();
+                _CPU.isExecuting = false;
+            }
+        }
+
+
     }
 }

@@ -22,10 +22,11 @@ var TSOS;
         step;
         instruction;
         instructionRegister;
+        currentPid;
         MemoryAccessor;
         constructor(programCounter = 0, Accumulator = 0, xRegister = 0, yRegister = 0, zFlag = 0, isExecuting = false, step = 1, // fetch is first step (1).
-        instruction = 0, // counts the number of instructions.
-        instructionRegister = 0x00) {
+        instruction = 0, // counts the number of instructions completed.
+        instructionRegister = 0x01, currentPid = 0) {
             this.programCounter = programCounter;
             this.Accumulator = Accumulator;
             this.xRegister = xRegister;
@@ -35,6 +36,7 @@ var TSOS;
             this.step = step;
             this.instruction = instruction;
             this.instructionRegister = instructionRegister;
+            this.currentPid = currentPid;
         }
         init() {
             this.isExecuting = false;
@@ -228,7 +230,9 @@ var TSOS;
                 }
                 // Break.
                 case 0x00: {
-                    this.isExecuting = false;
+                    // saves and updates the current program's state to 'TERMINATED'.
+                    TSOS.Utils.onProgramFinish();
+                    this.step = 7;
                     break;
                 }
                 // Compare byte in memory to x register if zflag is set.
@@ -277,6 +281,19 @@ var TSOS;
                     }
                     break;
                 }
+                case undefined: {
+                    this.instructionRegister = 0x00;
+                    break;
+                }
+                // Invalid OP code detected.
+                case this.instructionRegister: {
+                    console.log("Invalid OP code detected. Shutting down program.");
+                    _ResidentList[this.currentPid].state = "TERMINATED";
+                    this.isExecuting = false;
+                    this.step = 7;
+                    TSOS.Control.refreshPcbLog();
+                    break;
+                }
             }
         }
         writeback() {
@@ -292,12 +309,6 @@ var TSOS;
             );
         }
         determineNextStep(currentInstruction) {
-            // console.log(currentInstruction);
-            // if currentInstruction is undefined, toggle cpu is executing.
-            if (!currentInstruction) {
-                _CPU.isExecuting = false;
-                return 7;
-            }
             // Instructions that require decoding to retrieve operands.
             let decodeRequired = [0xA9, 0xAD, 0x8D, 0x6D, 0xA2, 0xAE, 0xA0, 0xAC, 0xEC, 0xD0, 0xEE];
             if (decodeRequired.includes(currentInstruction)) {
@@ -308,8 +319,8 @@ var TSOS;
             return 4;
         }
         // Saves current state of registers to PCB.
-        saveCurrentState(pid = 0) {
-            return new TSOS.PCB(pid, "Ready", false, this.programCounter, this.instructionRegister, this.Accumulator, this.xRegister, this.yRegister, this.zFlag);
+        saveCurrentState(pid = 0, memorySegment, state) {
+            return new TSOS.PCB(pid, memorySegment, state, false, this.programCounter, this.instructionRegister, this.Accumulator, this.xRegister, this.yRegister, this.zFlag);
         }
         // Loads a state from the CPU given a PCB.
         loadFromPcb(pcb) {
@@ -319,6 +330,7 @@ var TSOS;
             this.xRegister = pcb.x;
             this.yRegister = pcb.y;
             this.zFlag = pcb.z;
+            this.currentPid = pcb.pid;
         }
         printStringAt(memoryAddress) {
             _MemoryAccessor.setMAR(memoryAddress);

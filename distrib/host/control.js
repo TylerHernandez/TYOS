@@ -60,6 +60,11 @@ var TSOS;
             var taLog = document.getElementById("taMemory");
             taLog.innerHTML = msg;
         }
+        // Logs the Quantum in our HTML text area.
+        static quantumLog() {
+            var taLog = document.getElementById("taQuantum");
+            taLog.innerHTML = String(_quantum);
+        }
         // Logs the CPU in our HTML text box.
         static cpuLog(msg) {
             var taLog = document.getElementById("taCPU");
@@ -69,13 +74,13 @@ var TSOS;
         static refreshPcbLog() {
             // Build the log string.
             var str = "";
-            _PCBLIST.forEach(function (x) {
-                str += ("<tr> <td>" + x.pid + "</td> <td>" + x.state + "</td> <td>" + x.swapped + "</td> <td>" + x.pc
-                    + "</td> <td>" + x.ir + "</td> <td>" + x.acc + "</td> <td>" + x.x + "</td> <td>" + x.y + "</td> <td>" + x.z + "</td> </tr>");
+            _ResidentList.forEach(function (x) {
+                str += ("<tr> <td>" + x.pid + "</td> <td>" + x.memorySegment + "</td> <td>" + x.state + "</td> <td>" + x.swapped + "</td> <td>" + TSOS.Utils.hexLog(x.pc, 2)
+                    + "</td> <td>" + TSOS.Utils.hexLog(x.ir, 2) + "</td> <td>" + TSOS.Utils.hexLog(x.acc, 2) + "</td> <td>" + TSOS.Utils.hexLog(x.x, 2) + "</td> <td>" + TSOS.Utils.hexLog(x.y, 2) + "</td> <td>" + TSOS.Utils.hexLog(x.z, 2) + "</td> </tr>");
             });
             // Update the log console.
             var taLog = document.getElementById("taPCB");
-            taLog.innerHTML = str + taLog.innerHTML;
+            taLog.innerHTML = str;
         }
         //
         // Host Events
@@ -100,10 +105,13 @@ var TSOS;
             _CPU.setMemoryAccessor(_MemoryAccessor);
             var MemoryManager = null;
             // Initializes PCB list.
-            _PCBLIST = [, ,];
-            // Loads program input with default value (Fibonacci of 1-5).
+            _ResidentList = [];
             document.getElementById('taProgramInput').innerText =
-                "A9058D6000A9008D61008D6400A9018D6200AD61006D62008D6300AD62008D6100AD63008D6200A201AC6300FFA9FF8D6500AD60006D65008D6000AE6000EC6400A200D0CD";
+                //"A9008D7B00A9008D7B00A9008D7C00A9008D7C00A9018D7A00A200EC7A00D039A07DA202FFAC7B00A201FFAD7B008D7A00A9016D7A008D7B00A903AE7B008D7A00A900EC7A00D002A9018D7A00A201EC7A00D005A9018D7C00A900AE7C008D7A00A900EC7A00D002A9018D7A00A200EC7A00D0ACA07FA202FF00000000610061646F6E6500";
+                // Loads program input with "12DONE" program as default value.
+                //"A9038D4100A9018D4000AC4000A201FFEE4000AE4000EC4100D0EFA9448D4200A94F8D4300A94E8D4400A9458D4500A9008D4600A202A042FF00";
+                // Loads program input with default value (Fibonacci of 1-5).
+                "A9058D6000A9008D61008D6400A9018D6200AD61006D62008D6300AD62008D6100AD63008D6200A201AC6300FFA9FF8D6500AD60006D65008D6000AE6000EC6400A200D0CD00";
             // ... then set the host clock pulse ...
             _hardwareClockID = setInterval(TSOS.Devices.hostClockPulse, CPU_CLOCK_INTERVAL);
             // .. and call the OS Kernel Bootstrap routine.

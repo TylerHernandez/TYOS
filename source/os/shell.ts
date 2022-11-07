@@ -115,8 +115,43 @@ module TSOS {
                 "<pid> - runs a program in memory.");
             this.commandList[this.commandList.length] = sc;
 
-            // ps  - list the running processes and their IDs
-            // kill <id> - kills the specified process id.
+            // runall
+            sc = new ShellCommand(this.shellRunAll,
+                "runall",
+                "- runs all programs in memory.");
+            this.commandList[this.commandList.length] = sc;
+
+            // clearmem
+            sc = new ShellCommand(this.shellClearMem,
+                "clearmem",
+                "- Clears all memory segments");
+            this.commandList[this.commandList.length] = sc;
+
+            // quantum
+            sc = new ShellCommand(this.shellQuantum,
+                "quantum",
+                "<int> - Changes the quantum.");
+            this.commandList[this.commandList.length] = sc;
+
+            // kill
+            sc = new ShellCommand(this.shellKill,
+                "kill",
+                "<pid> - kills a program in memory.");
+            this.commandList[this.commandList.length] = sc;
+
+
+            // killall
+            sc = new ShellCommand(this.shellKillAll,
+                "killall",
+                "- kills all programs in resident list.");
+            this.commandList[this.commandList.length] = sc;
+
+            // ps
+            sc = new ShellCommand(this.shellPs,
+                "ps",
+                "- display the PID and state of all processes.");
+            this.commandList[this.commandList.length] = sc;
+
 
             // Display the initial prompt.
             this.putPrompt();
@@ -402,28 +437,30 @@ module TSOS {
                 }
 
             }
+            Utils.pauseProgram();
 
-            // Since this is not dynamic yet, wipe memory.
-            _MemoryManager.resetMemory(); // we need to reset 
 
-            // Insert our program into memory!
-            _Kernel.insertStringProgram(program);
+            // Find a free memory segment to insert our program into.
+            let memorySegment = _MemoryManager.determineNextSegment();
 
+            if (memorySegment == -1) {
+                _StdOut.putText("Memory is full! Try clearing memory before inserting more programs.");
+                return;
+            }
 
             // Assign a PID (this will be dynamic in future versions).
-            var assignedPid: number = 0;
-            var pcb;
+            var assignedPid: number = _PIDCounter;
+            _PIDCounter++;
 
-            // // Write over existing PCB.
-            // // If assigned PCB is not empty, create blank pcb.
-            // if (!_PCBLIST[assignedPid].isEmpty()) {
-            //     pcb = new PCB(assignedPid);
+            // Insert our program into memory!
+            _Kernel.insertStringProgram(memorySegment, program);
 
-            // }
+            // Create pcb for our process and put it in our list.
+            let pcb = new PCB(assignedPid, memorySegment);
+            _ResidentList[assignedPid] = pcb; // PCB's index will always be it's assigned PID.
 
-            // Creates a PCB based on CPU's current state.
-            pcb = _CPU.saveCurrentState(assignedPid);
-            _PCBLIST[assignedPid] = pcb;// PCB's index will always be it's assigned PID.
+            // Put process id in the ready queue for round robin scheduling!
+            _ReadyQueue.enqueue(assignedPid);
 
             _StdOut.putText("Assigned program to PID #" + assignedPid);
             TSOS.Control.refreshPcbLog();
@@ -433,31 +470,171 @@ module TSOS {
             if (args.length > 0) {
 
                 // if cpu is already executing, save state first.
-                if (_CPU.isExecuting) {
-                    _CPU.saveCurrentState(); // how should we retrieve our last PID? Global variable? CPU variable? shell variable?
+                Utils.saveState();
 
-                    // Creates a PCB based on CPU's current state.
-                    _PCBLIST[0] = _CPU.saveCurrentState(0);;// PCB's index will always be it's assigned PID.
+                // Given a PID, run a process already in memory.
 
-                    TSOS.Control.refreshPcbLog();
+                const pid = Number(args[0]);
+
+                if (_ResidentList[pid].state == "TERMINATED") {
+                    _StdOut.putText("You cannot run a terminated process. ");
+                    return;
                 }
 
+                let process = _ResidentList[pid];
+                // Load the CPU with our process state.
+                _CPU.loadFromPcb(process);
 
-                const pid = args[0];
-                // given a PID, run a program already in memory.
+                // Request Memory Manager update our accessor's base and limits.
+                _MemoryManager.setBaseAndLimit(process.memorySegment); // TODO (Project 4): This will return -1 if a pid does not have an allocated memorySegment anymore.
 
-                //Normally we'd do this, however with only 1 pcb we will only load the wrong state, given a new program.
-                //_CPU.loadFromPcb(_PCBLIST[pid]); 
-
-                const pcb = new PCB(+pid); // saw that we can cast a string to number with + in front... pretty cool.
-                _CPU.loadFromPcb(pcb);
-
+                // Tell our CPU it may start execution now!
                 _CPU.isExecuting = true;
+
             } else {
                 _StdOut.putText("Usage: prompt <string>  Please supply a string.");
                 return;
             }
         } // ends run
+
+        // Enables round robin to run all ready processes in memory.
+        public shellRunAll(args: string[]) {
+
+            cpuScheduler.initializeRoundRobin();
+
+            // Start execution on our CPU!
+            _CPU.isExecuting = true;
+
+            _StdOut.putText("Round Robin enabled with quantum " + _quantum);
+        }
+
+        // Wipes our memory (to store new programs).
+        public shellClearMem(args: string[]) {
+            if (_CPU.isExecuting) {
+                _CPU.isExecuting = false;
+                _StdOut.putText("You cannot clear memory while CPU is executing. Pausing execution of CPU.")
+                return;
+            }
+            // TODO: Tell Memory Manager to clear *taken* segments. Return which segments cleared and print return val here.
+            _MemoryManager.clearSegmemt(0);
+            _MemoryManager.clearSegmemt(1);
+            _MemoryManager.clearSegmemt(2);
+
+            // Since we're clearing memory, the cpu should not have any processes loaded.
+            _CPU.loadFromPcb(new PCB());
+
+            // This will prevent running processes out of memory.
+            for (var i = 0; i < _ResidentList.length; i++) {
+                _ResidentList[i].memorySegment = -1;
+
+                cpuScheduler.removeProcessFromReadyQueue(i); // tells our cpu scheduler this process is off limits.
+                TSOS.Control.refreshPcbLog();
+            }
+
+            _StdOut.putText("Cleared memory segments 0, 1, and 2");
+        }
+
+        // Changes our quantum for round robin.
+        public shellQuantum(args: string[]) {
+            if (args.length > 0) {
+
+                const newQuantum = Number(args[0]);
+
+                if (newQuantum <= 0) {
+                    _Kernel.krnTrapError("TYOS: Wow. You think you're cool or whatever don't ya.");
+                    return;
+                }
+
+                _quantum = newQuantum;
+                Control.quantumLog();
+
+                _StdOut.putText("Changed quantum to " + _quantum);
+            } else {
+                _StdOut.putText("Usage: prompt <int>  Please supply an integer greater than 0.");
+            }
+
+        }
+
+        // Given a pid, kills process associated with it.
+        public shellKill(args: string[]) {
+            if (args.length > 0) {
+
+                // Ensure we don't mess up a currently running program.
+                if (_CPU.isExecuting) {
+                    Utils.saveState();
+                }
+
+                _CPU.isExecuting = false;
+
+                const pid = Number(args[0]);
+
+                _ResidentList[pid].state = "TERMINATED";
+
+                // If our current pid is in the cpu, remove it.
+                if (_CPU.currentPid = pid) {
+                    _CPU.loadFromPcb(new PCB());
+                }
+
+                // Make sure remove the process from the ready queue.
+                cpuScheduler.removeProcessFromReadyQueue(pid);
+
+                _StdOut.putText("Terminated process " + pid);
+
+                TSOS.Control.refreshPcbLog();
+
+            } else {
+                _StdOut.putText("Usage: prompt <pid>  Please supply a process ID.");
+            }
+        }
+
+        // Kills all processes in resident list (_ResidentList) and cpu.
+        public shellKillAll(args: string[]) {
+
+            // This is just used to tell user which processes have been killed by this command.
+            var killedProcesses = "";
+
+            // Turn off CPU execution then save our current CPU state.
+            _CPU.isExecuting = false;
+            Utils.saveState();
+
+            // Now.... we kill it!
+            killedProcesses += _CPU.currentPid + ", ";
+            _ResidentList[_CPU.currentPid].state = "TERMINATED";
+            _CPU.loadFromPcb(new PCB());
+            TSOS.Control.refreshPcbLog();
+
+            // Next, remove all processes from the ready queue and set them to terminated.
+            var pid = _ReadyQueue.dequeue();
+
+            while (pid != null) {
+                _ResidentList[pid].state = "TERMINATED";
+                killedProcesses += pid + ", ";
+                pid = _ReadyQueue.dequeue();
+                TSOS.Control.refreshPcbLog();
+            }
+            killedProcesses += "]";
+
+            // Lastly, display text and refresh PCB.
+            _StdOut.putText("Killed processes : [ " + killedProcesses);
+
+        }
+
+        // Displays the PID and state of all processes.
+        public shellPs(args: string[]) {
+
+            var str = ""; // will hold string to be printed out.
+            // Loop through resident list (PCBLIST) and print out pid : state
+
+            for (var i = 0; i < _ResidentList.length; i++) {
+                str += ("process " + i + " : " + _ResidentList[i].state + "\n");
+            }
+
+            _StdOut.putText(str);
+
+        }
+
+
+
 
     }// ends shell
 } // ends module

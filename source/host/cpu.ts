@@ -24,8 +24,9 @@ module TSOS {
             public zFlag: number = 0,
             public isExecuting: boolean = false,
             private step = 1, // fetch is first step (1).
-            private instruction = 0, // counts the number of instructions.
-            public instructionRegister = 0x00) {
+            private instruction = 0, // counts the number of instructions completed.
+            public instructionRegister = 0x01,
+            public currentPid = 0) {
 
         }
 
@@ -268,7 +269,9 @@ module TSOS {
 
                 // Break.
                 case 0x00: {
-                    this.isExecuting = false;
+                    // saves and updates the current program's state to 'TERMINATED'.
+                    Utils.onProgramFinish();
+                    this.step = 7;
                     break;
                 }
 
@@ -328,6 +331,20 @@ module TSOS {
                     break;
                 }
 
+                case undefined: {
+                    this.instructionRegister = 0x00;
+                    break;
+                }
+
+                // Invalid OP code detected.
+                case this.instructionRegister: {
+                    console.log("Invalid OP code detected. Shutting down program.");
+                    _ResidentList[this.currentPid].state = "TERMINATED";
+                    this.isExecuting = false;
+                    this.step = 7;
+                    TSOS.Control.refreshPcbLog();
+                    break;
+                }
 
             }
         }
@@ -349,12 +366,6 @@ module TSOS {
         }
 
         determineNextStep(currentInstruction: number) {
-            // console.log(currentInstruction);
-            // if currentInstruction is undefined, toggle cpu is executing.
-            if (!currentInstruction) {
-                _CPU.isExecuting = false;
-                return 7;
-            }
             // Instructions that require decoding to retrieve operands.
             let decodeRequired = [0xA9, 0xAD, 0x8D, 0x6D, 0xA2, 0xAE, 0xA0, 0xAC, 0xEC, 0xD0, 0xEE];
             if (decodeRequired.includes(currentInstruction)) {
@@ -366,8 +377,8 @@ module TSOS {
         }
 
         // Saves current state of registers to PCB.
-        public saveCurrentState(pid: number = 0): PCB {
-            return new PCB(pid, "Ready", false, this.programCounter, this.instructionRegister,
+        public saveCurrentState(pid: number = 0, memorySegment: number, state: string): PCB {
+            return new PCB(pid, memorySegment, state, false, this.programCounter, this.instructionRegister,
                 this.Accumulator, this.xRegister, this.yRegister, this.zFlag);
         }
 
@@ -379,6 +390,7 @@ module TSOS {
             this.xRegister = pcb.x;
             this.yRegister = pcb.y;
             this.zFlag = pcb.z;
+            this.currentPid = pcb.pid;
         }
 
         public printStringAt(memoryAddress: number) {
