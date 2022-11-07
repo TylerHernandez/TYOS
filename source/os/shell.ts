@@ -146,8 +146,12 @@ module TSOS {
                 "- kills all programs in resident list.");
             this.commandList[this.commandList.length] = sc;
 
-            // ps  - list the running processes and their IDs
-            // kill <id> - kills the specified process id.
+            // ps
+            sc = new ShellCommand(this.shellPs,
+                "ps",
+                "- display the PID and state of all processes.");
+            this.commandList[this.commandList.length] = sc;
+
 
             // Display the initial prompt.
             this.putPrompt();
@@ -493,6 +497,7 @@ module TSOS {
             }
         } // ends run
 
+        // Enables round robin to run all ready processes in memory.
         public shellRunAll(args: string[]) {
 
             cpuScheduler.initializeRoundRobin();
@@ -503,17 +508,33 @@ module TSOS {
             _StdOut.putText("Round Robin enabled with quantum " + _quantum);
         }
 
+        // Wipes our memory (to store new programs).
         public shellClearMem(args: string[]) {
             if (_CPU.isExecuting) {
-                _StdOut.putText("You cannot clear memory while CPU is executing.")
+                _CPU.isExecuting = false;
+                _StdOut.putText("You cannot clear memory while CPU is executing. Pausing execution of CPU.")
+                return;
             }
             // TODO: Tell Memory Manager to clear *taken* segments. Return which segments cleared and print return val here.
             _MemoryManager.clearSegmemt(0);
             _MemoryManager.clearSegmemt(1);
             _MemoryManager.clearSegmemt(2);
+
+            // Since we're clearing memory, the cpu should not have any processes loaded.
+            _CPU.loadFromPcb(new PCB());
+
+            // This will prevent running processes out of memory.
+            for (var i = 0; i < _PCBLIST.length; i++) {
+                _PCBLIST[i].memorySegment = -1;
+
+                cpuScheduler.removeProcessFromReadyQueue(i); // tells our cpu scheduler this process is off limits.
+                TSOS.Control.refreshPcbLog();
+            }
+
             _StdOut.putText("Cleared memory segments 0, 1, and 2");
         }
 
+        // Changes our quantum for round robin.
         public shellQuantum(args: string[]) {
             if (args.length > 0) {
 
@@ -534,6 +555,7 @@ module TSOS {
 
         }
 
+        // Given a pid, kills process associated with it.
         public shellKill(args: string[]) {
             if (args.length > 0) {
 
@@ -565,8 +587,10 @@ module TSOS {
             }
         }
 
+        // Kills all processes in resident list (_PCBLIST) and cpu.
         public shellKillAll(args: string[]) {
 
+            // This is just used to tell user which processes have been killed by this command.
             var killedProcesses = "";
 
             // Turn off CPU execution then save our current CPU state.
@@ -592,6 +616,20 @@ module TSOS {
 
             // Lastly, display text and refresh PCB.
             _StdOut.putText("Killed processes : [ " + killedProcesses);
+
+        }
+
+        // Displays the PID and state of all processes.
+        public shellPs(args: string[]) {
+
+            var str = ""; // will hold string to be printed out.
+            // Loop through resident list (PCBLIST) and print out pid : state
+
+            for (var i = 0; i < _PCBLIST.length; i++) {
+                str += ("process " + i + " : " + _PCBLIST[i].state + "\n");
+            }
+
+            _StdOut.putText(str);
 
         }
 

@@ -11,8 +11,12 @@ var TSOS;
         // Sets up CPU and Memory Manager for a context switch if needed.
         static roundRobinSetup() {
             // put current process back in ready queue if it is not terminated.
-            let oldPid = _CPU.currentPid;
-            if (_PCBLIST[oldPid].state == "READY") {
+            const oldPid = _CPU.currentPid;
+            if (_ReadyQueue.isEmpty() && _PCBLIST[_CPU.currentPid].state == "TERMINATED") {
+                _CPU.isExecuting = false;
+                return;
+            }
+            if (_PCBLIST[oldPid].state == "READY" && _PCBLIST[oldPid].memorySegment != -1) {
                 _ReadyQueue.enqueue(oldPid);
             }
             // get new process id from ready queue.

@@ -10,10 +10,15 @@ module TSOS {
         public static roundRobinSetup(): void {
 
             // put current process back in ready queue if it is not terminated.
-            let oldPid = _CPU.currentPid;
+            const oldPid = _CPU.currentPid;
+
+            if (_ReadyQueue.isEmpty() && _PCBLIST[_CPU.currentPid].state == "TERMINATED") {
+                _CPU.isExecuting = false;
+                return;
+            }
 
 
-            if (_PCBLIST[oldPid].state == "READY") {
+            if (_PCBLIST[oldPid].state == "READY" && _PCBLIST[oldPid].memorySegment != -1) {
                 _ReadyQueue.enqueue(oldPid);
             }
 
