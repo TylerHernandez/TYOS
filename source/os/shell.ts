@@ -139,6 +139,13 @@ module TSOS {
                 "<pid> - kills a program in memory.");
             this.commandList[this.commandList.length] = sc;
 
+
+            // killall
+            sc = new ShellCommand(this.shellKillAll,
+                "killall",
+                "- kills all programs in resident list.");
+            this.commandList[this.commandList.length] = sc;
+
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
 
@@ -527,7 +534,7 @@ module TSOS {
 
         }
 
-        public shellKill(args) {
+        public shellKill(args: string[]) {
             if (args.length > 0) {
 
                 // Ensure we don't mess up a currently running program.
@@ -537,7 +544,7 @@ module TSOS {
 
                 _CPU.isExecuting = false;
 
-                const pid = args[0];
+                const pid = Number(args[0]);
 
                 _PCBLIST[pid].state = "TERMINATED";
 
@@ -549,11 +556,43 @@ module TSOS {
                 // Make sure remove the process from the ready queue.
                 cpuScheduler.removeProcessFromReadyQueue(pid);
 
+                _StdOut.putText("Terminated process " + pid);
+
                 TSOS.Control.refreshPcbLog();
 
             } else {
                 _StdOut.putText("Usage: prompt <pid>  Please supply a process ID.");
             }
+        }
+
+        public shellKillAll(args: string[]) {
+
+            var killedProcesses = "";
+
+            // Turn off CPU execution then save our current CPU state.
+            _CPU.isExecuting = false;
+            Utils.saveState();
+
+            // Now.... we kill it!
+            killedProcesses += _CPU.currentPid + ", ";
+            _PCBLIST[_CPU.currentPid].state = "TERMINATED";
+            _CPU.loadFromPcb(new PCB());
+            TSOS.Control.refreshPcbLog();
+
+            // Next, remove all processes from the ready queue and set them to terminated.
+            var pid = _ReadyQueue.dequeue();
+
+            while (pid != null) {
+                _PCBLIST[pid].state = "TERMINATED";
+                killedProcesses += pid + ", ";
+                pid = _ReadyQueue.dequeue();
+                TSOS.Control.refreshPcbLog();
+            }
+            killedProcesses += "]";
+
+            // Lastly, display text and refresh PCB.
+            _StdOut.putText("Killed processes : [ " + killedProcesses);
+
         }
 
 
