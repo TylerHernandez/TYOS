@@ -238,8 +238,12 @@ var TSOS;
                 // Compare byte in memory to x register if zflag is set.
                 case 0xEC: {
                     this.MemoryAccessor.putBytesInMar();
-                    if (this.xRegister == this.MemoryAccessor.fetchMemoryContent()) {
+                    const memoryContent = this.MemoryAccessor.fetchMemoryContent();
+                    if (this.xRegister == memoryContent) {
                         this.zFlag = 1;
+                    }
+                    else { // Here we're allowed to reset the z flag.
+                        this.zFlag = 0;
                     }
                     this.step = 7;
                     break;
@@ -247,7 +251,12 @@ var TSOS;
                 // Branch n bytes if zflag == 0.
                 case 0xD0: {
                     if (this.zFlag == 0) {
-                        this.programCounter -= ((0xFF - this.MemoryAccessor.fetchMemoryContent()) + 1);
+                        let memoryContent = this.MemoryAccessor.fetchMemoryContent();
+                        this.programCounter += ((memoryContent));
+                        // to branch backwards, we must wrap around allocated memory segment.
+                        if (this.programCounter + _MemoryAccessor.base >= _MemoryAccessor.limit) {
+                            this.programCounter -= _MemoryAccessor.limit + 1;
+                        }
                     }
                     this.step = 7;
                     break;
