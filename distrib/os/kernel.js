@@ -197,6 +197,58 @@ var TSOS;
             }
             _MemoryAccessor.memoryLog(0x0000, _MemoryAccessor.highestNumber);
         }
+        /*
+        // Tracks= 0-99 index.
+        // Sectors = 0-99 index.
+        // Blocks = 0-255 bytes.
+        // Creates a disk with above specified guidelines.
+        */
+        createDisk() {
+            if (typeof (Storage) !== "undefined") { // We may use session storage.
+                sessionStorage.clear();
+                for (let track = 0; track <= 3; track++) {
+                    for (let sector = 0; sector <= 7; sector++) {
+                        for (let block = 0; block <= 7; block++) {
+                            const tsb = String(track) + "," + String(sector) + "," + String(block);
+                            let data = "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+                            sessionStorage.setItem(tsb, data);
+                        }
+                    }
+                }
+            }
+            else {
+                console.log("Browser does not support session storage");
+            }
+        }
+        // Displays all disk content.
+        getAllDiskContent() {
+            let msg = "";
+            for (let track = 0; track <= 3; track++) {
+                for (let sector = 0; sector <= 3; sector++) {
+                    for (let block = 0; block <= 7; block++) {
+                        const tsb = String(track) + "," + String(sector) + "," + String(block);
+                        const byte = sessionStorage.getItem(tsb);
+                        msg += "<tr>";
+                        msg += "<td>";
+                        msg += tsb;
+                        msg += "</td>";
+                        msg += "<td>";
+                        msg += byte;
+                        msg += "</td>";
+                        msg += "</tr>";
+                    }
+                }
+            }
+            TSOS.Control.diskLog(msg);
+        }
+        // Store our program into disk by programId.
+        storeProgramIntoDisk(programId) {
+            return;
+        }
+        // Get our program from the disk by programId.
+        retrieveProgramFromDisk(programId) {
+            return;
+        }
     }
     TSOS.Kernel = Kernel;
 })(TSOS || (TSOS = {}));

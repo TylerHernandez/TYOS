@@ -84,6 +84,9 @@ var TSOS;
             // ps
             sc = new TSOS.ShellCommand(this.shellPs, "ps", "- display the PID and state of all processes.");
             this.commandList[this.commandList.length] = sc;
+            // Format
+            sc = new TSOS.ShellCommand(this.shellFormat, "format", "- Formats our disk.");
+            this.commandList[this.commandList.length] = sc;
             // Display the initial prompt.
             this.putPrompt();
         }
@@ -484,6 +487,11 @@ var TSOS;
                 str += ("process " + i + " : " + _ResidentList[i].state + "\n");
             }
             _StdOut.putText(str);
+        }
+        // Format our disk.
+        shellFormat(args) {
+            _Kernel.createDisk();
+            _Kernel.getAllDiskContent();
         }
     } // ends shell
     TSOS.Shell = Shell;

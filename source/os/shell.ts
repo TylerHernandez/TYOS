@@ -152,6 +152,12 @@ module TSOS {
                 "- display the PID and state of all processes.");
             this.commandList[this.commandList.length] = sc;
 
+            // Format
+            sc = new ShellCommand(this.shellFormat,
+                "format",
+                "- Formats our disk.");
+            this.commandList[this.commandList.length] = sc;
+
 
             // Display the initial prompt.
             this.putPrompt();
@@ -630,6 +636,13 @@ module TSOS {
             }
 
             _StdOut.putText(str);
+
+        }
+
+        // Format our disk.
+        public shellFormat(args: string[]) {
+            _Kernel.createDisk();
+            _Kernel.getAllDiskContent();
 
         }
 

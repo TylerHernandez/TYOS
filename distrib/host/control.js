@@ -57,7 +57,12 @@ var TSOS;
         }
         // Logs the Memory in our HTML text box.
         static memoryLog(msg) {
-            var taLog = document.getElementById("taMemory");
+            let taLog = document.getElementById("taMemory");
+            taLog.innerHTML = msg;
+        }
+        // Logs disk memory into our HTML table.
+        static diskLog(msg) {
+            let taLog = document.getElementById("taDisk");
             taLog.innerHTML = msg;
         }
         // Logs the Quantum in our HTML text area.

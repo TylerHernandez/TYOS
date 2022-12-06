@@ -71,7 +71,13 @@ module TSOS {
 
         // Logs the Memory in our HTML text box.
         public static memoryLog(msg: string) {
-            var taLog = <HTMLAreaElement>document.getElementById("taMemory");
+            let taLog = <HTMLAreaElement>document.getElementById("taMemory");
+            taLog.innerHTML = msg;
+        }
+
+        // Logs disk memory into our HTML table.
+        public static diskLog(msg: string) {
+            let taLog = <HTMLAreaElement>document.getElementById("taDisk");
             taLog.innerHTML = msg;
         }
 
