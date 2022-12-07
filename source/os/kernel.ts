@@ -294,24 +294,57 @@ module TSOS {
             let program: String[] = _MemoryAccessor.fetchProgram(memorySegment);
 
             // TODO: decide where in disk to place program. Hardcoding at 1,0,0 for now.
-            let tsb = "1,0,0"
+            let tsb = "1,0,0";
+
             // Store Program into disk.
             sessionStorage.setItem(tsb, ""); // Empty out tsb for our input.
-            for (let byte in program) {
+            for (let byte of program) {
 
-                const currentString = sessionStorage.getItem(tsb)
+                if (byte == "--") {
+                    byte = "00";
+                }
+                const currentString = sessionStorage.getItem(tsb);
 
-                if (currentString.length > 120) {
-                    // Increment tsb. 
-                    // TODO: make this dynamic.
-                    tsb = "1,0,1";
+                if (currentString.length >= 120) {
+                    // Increment tsb.
+
+                    //If the block has not reached 7, we can always just add 1 to it.
+                    if (Number(tsb[4]) != 7) {
+                        let num = Number(tsb[4]) + 1;
+                        tsb = tsb.substring(0, 4);
+                        tsb += num.toString();
+
+                    } else if (Number(tsb[2]) != 3) { // If sector has not reached 3, we can add 1.
+                        // Try incrementing sector. Reset block to 0.
+                        let num = Number(tsb[2]) + 1;
+                        tsb = tsb.substring(0, 2);
+                        tsb += num.toString() + ",0";
+
+                    } else if (Number(tsb[0]) != 3) { // If track has not reached 3, we can add 1.
+                        // Try incrementing track. Reset sector and block to 0.
+                        let num = Number(tsb[0]) + 1;
+                        tsb = tsb.substring(0, 1);
+                        tsb += num.toString() + ",0,0";
+                    } else {
+                        console.log("There is no more space left! Tsb: " + tsb);
+                        return;
+                    }
 
                     // Clear out next tsb for the rest of our input.
-                    sessionStorage.setItem(tsb, "");
+                    sessionStorage.setItem(tsb, byte.toString());
+                } else {
+                    sessionStorage.setItem(tsb, currentString + byte);
                 }
 
-                sessionStorage.setItem(tsb, currentString + byte);
+
             }
+
+            // Make sure we show the rest of this line is free storage to be used.
+            let lineOfBytes = sessionStorage.getItem(tsb);
+            while (lineOfBytes.length < 120) {
+                lineOfBytes += "00";
+            }
+            sessionStorage.setItem(tsb, lineOfBytes);
 
             // Refresh disk log.
             this.getAllDiskContent();
