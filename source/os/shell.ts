@@ -158,6 +158,12 @@ module TSOS {
                 "- Formats our disk.");
             this.commandList[this.commandList.length] = sc;
 
+            // store
+            sc = new ShellCommand(this.shellStore,
+                "store",
+                "<pid>- Stored a program in memory onto disk. ");
+            this.commandList[this.commandList.length] = sc;
+
 
             // Display the initial prompt.
             this.putPrompt();
@@ -522,9 +528,9 @@ module TSOS {
                 return;
             }
             // TODO: Tell Memory Manager to clear *taken* segments. Return which segments cleared and print return val here.
-            _MemoryManager.clearSegmemt(0);
-            _MemoryManager.clearSegmemt(1);
-            _MemoryManager.clearSegmemt(2);
+            _MemoryManager.clearSegment(0);
+            _MemoryManager.clearSegment(1);
+            _MemoryManager.clearSegment(2);
 
             // Since we're clearing memory, the cpu should not have any processes loaded.
             _CPU.loadFromPcb(new PCB());
@@ -644,6 +650,12 @@ module TSOS {
             _Kernel.createDisk();
             _Kernel.getAllDiskContent();
 
+        }
+
+        // Format our disk.
+        public shellStore(args: string[]) {
+            _Kernel.storeProgramIntoDisk(args[0]);
+            _Kernel.getAllDiskContent();
         }
 
 

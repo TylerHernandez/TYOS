@@ -22,7 +22,7 @@ module TSOS {
         }
 
         // Clears a given memory segment. Accepts 0, 1, or 2.
-        public clearSegmemt(memorySegment: number): void {
+        public clearSegment(memorySegment: number): void {
             if (memorySegment < 0 || memorySegment > 2) {
                 return;
             }

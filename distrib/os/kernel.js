@@ -241,12 +241,40 @@ var TSOS;
             }
             TSOS.Control.diskLog(msg);
         }
-        // Store our program into disk by programId.
+        // Request to store our program into disk by programId.
         storeProgramIntoDisk(programId) {
+            const pcb = _ResidentList[programId];
+            const memorySegment = pcb.memorySegment;
+            // Retrieve program from memory accessor.
+            let program = _MemoryAccessor.fetchProgram(memorySegment);
+            // TODO: decide where in disk to place program. Hardcoding at 1,0,0 for now.
+            let tsb = "1,0,0";
+            // Store Program into disk.
+            sessionStorage.setItem(tsb, ""); // Empty out tsb for our input.
+            for (let byte in program) {
+                const currentString = sessionStorage.getItem(tsb);
+                if (currentString.length > 120) {
+                    // Increment tsb. 
+                    // TODO: make this dynamic.
+                    tsb = "1,0,1";
+                    // Clear out next tsb for the rest of our input.
+                    sessionStorage.setItem(tsb, "");
+                }
+                sessionStorage.setItem(tsb, currentString + byte);
+            }
+            // Refresh disk log.
+            this.getAllDiskContent();
+            // Update pcb in _ResidentList to show program is in disk now.
+            // Wipe program from memory. Memory Manager will record space has been freed.
+            _MemoryManager.clearSegment(memorySegment);
+            _MemoryAccessor.memoryLog(0x0000, _MemoryAccessor.highestNumber);
+            // Copy program into
             return;
         }
         // Get our program from the disk by programId.
         retrieveProgramFromDisk(programId) {
+            // find which program will be swapped out of memory. or pass this in through function?
+            // hard coding this at 0 for now.
             return;
         }
     }

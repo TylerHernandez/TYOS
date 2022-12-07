@@ -18,7 +18,7 @@ var TSOS;
             this.memorySegments.set(2, "AVAILABLE");
         }
         // Clears a given memory segment. Accepts 0, 1, or 2.
-        clearSegmemt(memorySegment) {
+        clearSegment(memorySegment) {
             if (memorySegment < 0 || memorySegment > 2) {
                 return;
             }

@@ -181,6 +181,34 @@ module TSOS {
             this.memoryLog(0x00, this.highestNumber);
         }
 
+        public fetchProgram(memorySegment): String[] {
+            let program: String[] = [];
+
+            if (memorySegment == 0) {
+                for (let x = 0x0000; x <= 0x00FF; x++) {
+                    program.push(Utils.hexLog(this.memory.getMemoryAt(x), 2));
+                }
+
+            }
+            else if (memorySegment == 1) {
+                for (let x = 0x0100; x <= 0x01FF; x++) {
+                    program.push(Utils.hexLog(this.memory.getMemoryAt(x), 2));
+                }
+
+            }
+            else if (memorySegment == 2) {
+                for (let x = 0x0200; x <= 0x02FF; x++) {
+                    program.push(Utils.hexLog(this.memory.getMemoryAt(x), 2));
+                }
+
+            }
+            else {
+                console.log("Err: Program is not in memory. MemorySegment = " + memorySegment);
+            }
+
+            return program;
+        }
+
         private hexLog(num, desired_length): String {
             if (num === undefined) {
                 return "ERR [hexValue conversion]: number undefined";
