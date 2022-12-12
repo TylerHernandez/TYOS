@@ -493,13 +493,15 @@ var TSOS;
         }
         // Format our disk.
         shellFormat(args) {
-            _Kernel.createDisk();
-            _Kernel.getAllDiskContent();
+            // Create and formats disk.
+            _DiskSystemDeviceDriver.createDisk();
+            // Now display our changes for the user.
+            _DiskSystemDeviceDriver.getAllDiskContent();
         }
-        // Format our disk.
+        // Store a program into the given pid. Remove this before final submission.
         shellStore(args) {
-            _Kernel.storeProgramIntoDisk(args[0]);
-            _Kernel.getAllDiskContent();
+            _DiskSystemDeviceDriver.storeProgramIntoDisk(args[0]);
+            _DiskSystemDeviceDriver.getAllDiskContent();
         }
     } // ends shell
     TSOS.Shell = Shell;

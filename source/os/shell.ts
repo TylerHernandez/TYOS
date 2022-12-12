@@ -647,15 +647,19 @@ module TSOS {
 
         // Format our disk.
         public shellFormat(args: string[]) {
-            _Kernel.createDisk();
-            _Kernel.getAllDiskContent();
+
+            // Create and formats disk.
+            _DiskSystemDeviceDriver.createDisk();
+
+            // Now display our changes for the user.
+            _DiskSystemDeviceDriver.getAllDiskContent();
 
         }
 
-        // Format our disk.
+        // Store a program into the given pid. Remove this before final submission.
         public shellStore(args: string[]) {
-            _Kernel.storeProgramIntoDisk(args[0]);
-            _Kernel.getAllDiskContent();
+            _DiskSystemDeviceDriver.storeProgramIntoDisk(args[0]);
+            _DiskSystemDeviceDriver.getAllDiskContent();
         }
 
 

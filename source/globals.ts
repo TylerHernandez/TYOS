@@ -36,6 +36,7 @@ var _processCycleCounter = 0; // Tracks how many cpu cycles a process has gone t
 var _quantum = 6; // Used for round robin cpu scheduling.
 var _ReadyQueue: TSOS.Queue;
 var _RoundRobinEnabled = false; // Flag to detect if we are using round robin.
+var _DiskSystemDeviceDriver: TSOS.DiskSystemDeviceDriver;
 
 var _OSclock: number = 0;  // Page 23.
 

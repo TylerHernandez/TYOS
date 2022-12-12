@@ -31,6 +31,7 @@ var _processCycleCounter = 0; // Tracks how many cpu cycles a process has gone t
 var _quantum = 6; // Used for round robin cpu scheduling.
 var _ReadyQueue;
 var _RoundRobinEnabled = false; // Flag to detect if we are using round robin.
+var _DiskSystemDeviceDriver;
 var _OSclock = 0; // Page 23.
 var _Mode = 0; // (currently unused)  0 = Kernel Mode, 1 = User Mode.  See page 21.
 var _Canvas; // Initialized in Control.hostInit().
