@@ -88,7 +88,10 @@ var TSOS;
             sc = new TSOS.ShellCommand(this.shellFormat, "format", "- Formats our disk.");
             this.commandList[this.commandList.length] = sc;
             // store
-            sc = new TSOS.ShellCommand(this.shellStore, "store", "<pid>- Stored a program in memory onto disk. ");
+            sc = new TSOS.ShellCommand(this.shellStore, "store", "<pid>- Stores a program in memory onto disk. ");
+            this.commandList[this.commandList.length] = sc;
+            // store
+            sc = new TSOS.ShellCommand(this.shellRetrieve, "retrieve", "<pid>- Retrieve a program from disk. ");
             this.commandList[this.commandList.length] = sc;
             // Display the initial prompt.
             this.putPrompt();
@@ -501,6 +504,10 @@ var TSOS;
         // Store a program into the given pid. Remove this before final submission.
         shellStore(args) {
             _DiskSystemDeviceDriver.storeProgramIntoDisk(args[0]);
+            _DiskSystemDeviceDriver.getAllDiskContent();
+        }
+        shellRetrieve(args) {
+            _DiskSystemDeviceDriver.retrieveProgramFromDisk(args[0]);
             _DiskSystemDeviceDriver.getAllDiskContent();
         }
     } // ends shell

@@ -5,10 +5,13 @@
      to moving and retrieving.
 
      ------------ */
+const DEFAULTVAL = "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
 var TSOS;
 (function (TSOS) {
     class DiskSystemDeviceDriver {
+        programToDiskTsb;
         constructor() {
+            this.programToDiskTsb = new Map([]);
         }
         /*
         // Tracks= 0-99 index.
@@ -23,7 +26,7 @@ var TSOS;
                     for (let sector = 0; sector <= 7; sector++) {
                         for (let block = 0; block <= 7; block++) {
                             const tsb = String(track) + "," + String(sector) + "," + String(block);
-                            let data = "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+                            let data = DEFAULTVAL;
                             sessionStorage.setItem(tsb, data);
                         }
                     }
@@ -62,6 +65,8 @@ var TSOS;
             let program = _MemoryAccessor.fetchProgram(memorySegment);
             // TODO: decide where in disk to place program. Hardcoding at 1,0,0 for now.
             let tsb = "1,0,0";
+            this.programToDiskTsb.set(programId, tsb);
+            // TODO: get rid of excess 0's.
             // Store Program into disk.
             sessionStorage.setItem(tsb, ""); // Empty out tsb for our input.
             for (let byte of program) {
@@ -71,6 +76,7 @@ var TSOS;
                 const currentString = sessionStorage.getItem(tsb);
                 if (currentString.length >= 120) {
                     // Increment tsb.
+                    let oldTsb = tsb;
                     //If the block has not reached 7, we can always just add 1 to it.
                     if (Number(tsb[4]) != 7) {
                         let num = Number(tsb[4]) + 1;
@@ -93,6 +99,8 @@ var TSOS;
                         console.log("There is no more space left! Tsb: " + tsb);
                         return;
                     }
+                    // Point the oldTsb.next to the new tsb.
+                    sessionStorage.setItem(oldTsb + ".next", tsb);
                     // Clear out next tsb for the rest of our input.
                     sessionStorage.setItem(tsb, byte.toString());
                 }
@@ -100,7 +108,7 @@ var TSOS;
                     sessionStorage.setItem(tsb, currentString + byte);
                 }
             }
-            // Make sure we show the rest of this line is free storage to be used.
+            // Show the rest of this line is storage *being wasted*
             let lineOfBytes = sessionStorage.getItem(tsb);
             while (lineOfBytes.length < 120) {
                 lineOfBytes += "00";
@@ -121,8 +129,25 @@ var TSOS;
         // Get our program from the disk by programId. Make sure check if program.memorySegment == -1 before calling.
         retrieveProgramFromDisk(programId) {
             // find which program will be swapped out of memory. or pass this in through function?
-            // hard coding this at 0 for now.
-            return;
+            let tsb = this.findProgramInMemory(programId);
+            let programStr = "";
+            let next = sessionStorage.getItem(tsb + ".next");
+            while (next) {
+                // Get the next line.
+                programStr += sessionStorage.getItem(tsb);
+                // Now remove it from our disk.
+                sessionStorage.setItem(tsb, DEFAULTVAL);
+                next = sessionStorage.getItem(tsb + ".next");
+                // And remove the "next" value.
+                sessionStorage.removeItem(tsb + ".next");
+                if (next) {
+                    tsb = next;
+                }
+            }
+            return programStr;
+        }
+        findProgramInMemory(programId) {
+            return this.programToDiskTsb.get(programId);
         }
     }
     TSOS.DiskSystemDeviceDriver = DiskSystemDeviceDriver;

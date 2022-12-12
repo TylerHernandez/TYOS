@@ -6,12 +6,18 @@
 
      ------------ */
 
+
+const DEFAULTVAL = "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+
 module TSOS {
 
     export class DiskSystemDeviceDriver {
 
 
+        public programToDiskTsb: Map<number, string>;
+
         constructor() {
+            this.programToDiskTsb = new Map<number, string>([]);
         }
 
         /*
@@ -28,7 +34,7 @@ module TSOS {
                     for (let sector = 0; sector <= 7; sector++) {
                         for (let block = 0; block <= 7; block++) {
                             const tsb = String(track) + "," + String(sector) + "," + String(block);
-                            let data = "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+                            let data = DEFAULTVAL;
                             sessionStorage.setItem(tsb, data);
                         }
                     }
@@ -79,6 +85,10 @@ module TSOS {
             // TODO: decide where in disk to place program. Hardcoding at 1,0,0 for now.
             let tsb = "1,0,0";
 
+            this.programToDiskTsb.set(programId, tsb);
+
+            // TODO: get rid of excess 0's.
+
             // Store Program into disk.
             sessionStorage.setItem(tsb, ""); // Empty out tsb for our input.
             for (let byte of program) {
@@ -90,6 +100,7 @@ module TSOS {
 
                 if (currentString.length >= 120) {
                     // Increment tsb.
+                    let oldTsb = tsb;
 
                     //If the block has not reached 7, we can always just add 1 to it.
                     if (Number(tsb[4]) != 7) {
@@ -113,6 +124,9 @@ module TSOS {
                         return;
                     }
 
+                    // Point the oldTsb.next to the new tsb.
+                    sessionStorage.setItem(oldTsb + ".next", tsb)
+
                     // Clear out next tsb for the rest of our input.
                     sessionStorage.setItem(tsb, byte.toString());
                 } else {
@@ -122,7 +136,7 @@ module TSOS {
 
             }
 
-            // Make sure we show the rest of this line is free storage to be used.
+            // Show the rest of this line is storage *being wasted*
             let lineOfBytes = sessionStorage.getItem(tsb);
             while (lineOfBytes.length < 120) {
                 lineOfBytes += "00";
@@ -153,11 +167,34 @@ module TSOS {
         public retrieveProgramFromDisk(programId) {
 
             // find which program will be swapped out of memory. or pass this in through function?
-            // hard coding this at 0 for now.
+
+            let tsb = this.findProgramInMemory(programId);
+
+            let programStr = "";
+
+            let next = sessionStorage.getItem(tsb + ".next");
+
+            while (next) {
+                // Get the next line.
+                programStr += sessionStorage.getItem(tsb);
+                // Now remove it from our disk.
+                sessionStorage.setItem(tsb, DEFAULTVAL);
+
+                next = sessionStorage.getItem(tsb + ".next");
+
+                // And remove the "next" value.
+                sessionStorage.removeItem(tsb + ".next");
+                if (next) {
+                    tsb = next;
+                }
+            }
 
 
+            return programStr;
+        }
 
-            return;
+        public findProgramInMemory(programId) {
+            return this.programToDiskTsb.get(programId);
         }
 
 

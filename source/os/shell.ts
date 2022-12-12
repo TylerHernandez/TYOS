@@ -161,7 +161,13 @@ module TSOS {
             // store
             sc = new ShellCommand(this.shellStore,
                 "store",
-                "<pid>- Stored a program in memory onto disk. ");
+                "<pid>- Stores a program in memory onto disk. ");
+            this.commandList[this.commandList.length] = sc;
+
+            // store
+            sc = new ShellCommand(this.shellRetrieve,
+                "retrieve",
+                "<pid>- Retrieve a program from disk. ");
             this.commandList[this.commandList.length] = sc;
 
 
@@ -659,6 +665,12 @@ module TSOS {
         // Store a program into the given pid. Remove this before final submission.
         public shellStore(args: string[]) {
             _DiskSystemDeviceDriver.storeProgramIntoDisk(args[0]);
+            _DiskSystemDeviceDriver.getAllDiskContent();
+        }
+
+        
+        public shellRetrieve(args: string[]) {
+            _DiskSystemDeviceDriver.retrieveProgramFromDisk(args[0]);
             _DiskSystemDeviceDriver.getAllDiskContent();
         }
 
