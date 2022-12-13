@@ -13,11 +13,13 @@ module TSOS {
 
     export class DiskSystemDeviceDriver {
 
-
+        // Programs will be mapped to their starting TSB. 
         public programToDiskTsb: Map<number, string>;
+        private nextAvailableTsb = "";
 
         constructor() {
             this.programToDiskTsb = new Map<number, string>([]);
+            this.nextAvailableTsb = "0,0,0";
         }
 
         /*
@@ -75,19 +77,26 @@ module TSOS {
 
 
         // Request to store our program into disk by programId.
-        public storeProgramIntoDisk(programId) {
+        public storeProgramIntoDisk(programId, program?: String[]) {
+
+
             const pcb: PCB = _ResidentList[programId];
             const memorySegment = pcb.memorySegment;
 
-            // Retrieve program from memory accessor.
-            let program: String[] = _MemoryAccessor.fetchProgram(memorySegment);
+            let insertingFromMemory = true;
 
-            // TODO: decide where in disk to place program. Hardcoding at 1,0,0 for now.
-            let tsb = "1,0,0";
+            if (program) {
+                // Retrieve program from memory accessor.
+                let program: String[] = _MemoryAccessor.fetchProgram(memorySegment);
+                insertingFromMemory = false;
+            }
+
+            let tsb = this.nextAvailableTsb;
 
             this.programToDiskTsb.set(programId, tsb);
 
             // TODO: get rid of excess 0's.
+
 
             // Store Program into disk.
             sessionStorage.setItem(tsb, ""); // Empty out tsb for our input.
@@ -98,31 +107,11 @@ module TSOS {
                 }
                 const currentString = sessionStorage.getItem(tsb);
 
-                if (currentString.length >= 120) {
+                if (currentString.length >= DEFAULTVAL.length) {
                     // Increment tsb.
                     let oldTsb = tsb;
 
-                    //If the block has not reached 7, we can always just add 1 to it.
-                    if (Number(tsb[4]) != 7) {
-                        let num = Number(tsb[4]) + 1;
-                        tsb = tsb.substring(0, 4);
-                        tsb += num.toString();
-
-                    } else if (Number(tsb[2]) != 3) { // If sector has not reached 3, we can add 1.
-                        // Try incrementing sector. Reset block to 0.
-                        let num = Number(tsb[2]) + 1;
-                        tsb = tsb.substring(0, 2);
-                        tsb += num.toString() + ",0";
-
-                    } else if (Number(tsb[0]) != 3) { // If track has not reached 3, we can add 1.
-                        // Try incrementing track. Reset sector and block to 0.
-                        let num = Number(tsb[0]) + 1;
-                        tsb = tsb.substring(0, 1);
-                        tsb += num.toString() + ",0,0";
-                    } else {
-                        console.log("There is no more space left! Tsb: " + tsb);
-                        return;
-                    }
+                    tsb = this.findNextTsb(tsb);
 
                     // Point the oldTsb.next to the new tsb.
                     sessionStorage.setItem(oldTsb + ".next", tsb)
@@ -136,30 +125,28 @@ module TSOS {
 
             }
 
+            // Take our last used tsb to deduce our next available one.
+            this.nextAvailableTsb = this.findNextTsb(tsb);
+
             // Show the rest of this line is storage *being wasted*
             let lineOfBytes = sessionStorage.getItem(tsb);
-            while (lineOfBytes.length < 120) {
+            while (lineOfBytes.length < DEFAULTVAL.length) {
                 lineOfBytes += "00";
             }
             sessionStorage.setItem(tsb, lineOfBytes);
 
-            // Refresh disk log.
-            this.getAllDiskContent();
 
             // Update pcb in _ResidentList to show program is in disk now.
             _ResidentList[programId].memorySegment = -1;
-            console.log(_ResidentList[programId].memorySegment);
-
-            TSOS.Control.refreshPcbLog();
-
 
             // Wipe program from memory. Memory Manager will record space has been freed.
             _MemoryManager.clearSegment(memorySegment);
 
+            // Show user our changes.
+            this.getAllDiskContent();
+            TSOS.Control.refreshPcbLog();
             _MemoryAccessor.memoryLog(0x0000, _MemoryAccessor.highestNumber);
 
-
-            // Copy program into
             return;
         }
 
@@ -191,6 +178,33 @@ module TSOS {
 
 
             return programStr;
+        }
+
+
+        // Helper functions: 
+        public findNextTsb(tsb) {
+            //If the block has not reached 7, we can always just add 1 to it.
+            if (Number(tsb[4]) != 7) {
+                let num = Number(tsb[4]) + 1;
+                tsb = tsb.substring(0, 4);
+                tsb += num.toString();
+
+            } else if (Number(tsb[2]) != 3) { // If sector has not reached 3, we can add 1.
+                // Try incrementing sector. Reset block to 0.
+                let num = Number(tsb[2]) + 1;
+                tsb = tsb.substring(0, 2);
+                tsb += num.toString() + ",0";
+
+            } else if (Number(tsb[0]) != 3) { // If track has not reached 3, we can add 1.
+                // Try incrementing track. Reset sector and block to 0.
+                let num = Number(tsb[0]) + 1;
+                tsb = tsb.substring(0, 1);
+                tsb += num.toString() + ",0,0";
+            } else {
+                console.log("There is no more space left! Tsb: " + tsb);
+                return;
+            }
+            return tsb;
         }
 
         public findProgramInMemory(programId) {

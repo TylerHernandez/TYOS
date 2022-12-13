@@ -354,18 +354,21 @@ var TSOS;
             TSOS.Utils.pauseProgram();
             // Find a free memory segment to insert our program into.
             let memorySegment = _MemoryManager.determineNextSegment();
-            if (memorySegment == -1) {
-                _StdOut.putText("Memory is full! Try clearing memory before inserting more programs.");
-                return;
-            }
             // Assign a PID (this will be dynamic in future versions).
             var assignedPid = _PIDCounter;
             _PIDCounter++;
-            // Insert our program into memory!
-            _Kernel.insertStringProgram(memorySegment, program);
             // Create pcb for our process and put it in our list.
             let pcb = new TSOS.PCB(assignedPid, memorySegment);
             _ResidentList[assignedPid] = pcb; // PCB's index will always be it's assigned PID.
+            if (memorySegment == -1) {
+                _StdOut.putText("Memory is full! Storing on disk. ");
+                _DiskSystemDeviceDriver.storeProgramIntoDisk(assignedPid, program);
+                _DiskSystemDeviceDriver.getAllDiskContent();
+            }
+            else {
+                // Insert our program into memory!
+                _Kernel.insertStringProgram(memorySegment, program);
+            }
             // Put process id in the ready queue for round robin scheduling!
             _ReadyQueue.enqueue(assignedPid);
             _StdOut.putText("Assigned program to PID #" + assignedPid);
