@@ -40,7 +40,7 @@ var TSOS;
             }
         }
         // Displays all disk content.
-        getAllDiskContent() {
+        refreshDiskDisplay() {
             let msg = "";
             for (let track = 0; track <= 3; track++) {
                 for (let sector = 0; sector <= 3; sector++) {
@@ -62,17 +62,9 @@ var TSOS;
         }
         // Request to store our program into disk by programId.
         storeProgramIntoDisk(programId, program) {
-            const pcb = _ResidentList[programId];
-            const memorySegment = pcb.memorySegment;
-            let insertingFromMemory = true;
-            if (program) {
-                // Retrieve program from memory accessor.
-                let program = _MemoryAccessor.fetchProgram(memorySegment);
-                insertingFromMemory = false;
-            }
+            program = this.removeInsignificantBytes(program);
             let tsb = this.nextAvailableTsb;
             this.programToDiskTsb.set(programId, tsb);
-            // TODO: get rid of excess 0's.
             // Store Program into disk.
             sessionStorage.setItem(tsb, ""); // Empty out tsb for our input.
             for (let byte of program) {
@@ -103,24 +95,52 @@ var TSOS;
             sessionStorage.setItem(tsb, lineOfBytes);
             // Update pcb in _ResidentList to show program is in disk now.
             _ResidentList[programId].memorySegment = -1;
-            // Wipe program from memory. Memory Manager will record space has been freed.
-            _MemoryManager.clearSegment(memorySegment);
             // Show user our changes.
-            this.getAllDiskContent();
+            this.refreshDiskDisplay();
             TSOS.Control.refreshPcbLog();
             _MemoryAccessor.memoryLog(0x0000, _MemoryAccessor.highestNumber);
             return;
         }
+        // swaps a program *in* memory, with a program on disk.
+        swapPrograms(programInMemoryId, programOnDiskId) {
+            if (_ResidentList[programInMemoryId].memorySegment == -1) {
+                console.log("Program not in memory programId: " + programInMemoryId);
+                return;
+            }
+            // retrieve our program from our disk. Also clears program from disk for us.
+            let programFromDisk = this.retrieveProgramFromDisk(programOnDiskId);
+            // retrieve our program from our memory.
+            let programFromMemory = this.retrieveProgramFromMemory(programInMemoryId);
+            // clear memorySegment so we can insert our program.
+            _MemoryManager.clearSegment(_ResidentList[programInMemoryId].memorySegment);
+            // put our program memory onto disk.
+            this.storeProgramIntoDisk(programInMemoryId, programFromMemory);
+            // put our program from disk onto memory.
+            this.storeProgramIntoMemory(programOnDiskId, programFromDisk);
+        }
+        storeProgramIntoMemory(programId, program) {
+            let newMemorySegment = _MemoryManager.determineNextSegment();
+            _Kernel.insertStringProgram(newMemorySegment, program);
+            _ResidentList[programId].memorySegment = newMemorySegment;
+            _MemoryAccessor.memoryLog(0x0000, _MemoryAccessor.highestNumber);
+            TSOS.Control.refreshPcbLog();
+        }
+        retrieveProgramFromMemory(programId) {
+            const memorySegment = _ResidentList[programId].memorySegment;
+            const program = _MemoryAccessor.fetchProgram(memorySegment);
+            _MemoryManager.clearSegment(memorySegment);
+            return program;
+        }
         // Get our program from the disk by programId. Make sure check if program.memorySegment == -1 before calling.
         retrieveProgramFromDisk(programId) {
-            // find which program will be swapped out of memory. or pass this in through function?
-            let tsb = this.findProgramInMemory(programId);
+            let tsb = this.findProgramOnDisk(programId);
             let programStr = "";
             let next = sessionStorage.getItem(tsb + ".next");
-            while (next) {
+            do {
                 // Get the next line.
                 programStr += sessionStorage.getItem(tsb);
                 // Now remove it from our disk.
+                sessionStorage.removeItem(tsb);
                 sessionStorage.setItem(tsb, DEFAULTVAL);
                 next = sessionStorage.getItem(tsb + ".next");
                 // And remove the "next" value.
@@ -128,10 +148,15 @@ var TSOS;
                 if (next) {
                     tsb = next;
                 }
-            }
-            return programStr;
+            } while (next);
+            this.refreshDiskDisplay();
+            return this.stringProgramToArray(programStr);
         }
-        // Helper functions: 
+        /*
+        //
+        //   Helper Functions:
+        //
+        */
         findNextTsb(tsb) {
             //If the block has not reached 7, we can always just add 1 to it.
             if (Number(tsb[4]) != 7) {
@@ -157,8 +182,33 @@ var TSOS;
             }
             return tsb;
         }
-        findProgramInMemory(programId) {
+        findProgramOnDisk(programId) {
             return this.programToDiskTsb.get(programId);
+        }
+        stringProgramToArray(givenProgram) {
+            let program = [];
+            for (var i = 0; i < givenProgram.length; i++) {
+                // Split program numbers into pairs and put them inside program[].
+                if (i % 2 == 0) { // even number.
+                    /* E.g. We want to put the 0th and 1st element of givenProgram
+                     * into program's 0th index. And so on.
+                     *
+                     * 0 1     2 3     4 5       6 7
+                     *  0       1       2         3
+                     */
+                    program[i / 2] = givenProgram[i];
+                }
+                else { // odd number.
+                    // See 2 comments above for explanation.
+                    program[(i - 1) / 2] += givenProgram[i];
+                }
+            }
+            return program;
+        }
+        // TODO: remove a given program's trailing 0's.
+        removeInsignificantBytes(program) {
+            // loop backwards in program, first index that's not 00 or -- we can say is end.
+            return program;
         }
     }
     TSOS.DiskSystemDeviceDriver = DiskSystemDeviceDriver;

@@ -158,16 +158,10 @@ module TSOS {
                 "- Formats our disk.");
             this.commandList[this.commandList.length] = sc;
 
-            // store
-            sc = new ShellCommand(this.shellStore,
-                "store",
-                "<pid>- Stores a program in memory onto disk. ");
-            this.commandList[this.commandList.length] = sc;
-
-            // store
-            sc = new ShellCommand(this.shellRetrieve,
-                "retrieve",
-                "<pid>- Retrieve a program from disk. ");
+            // swap
+            sc = new ShellCommand(this.shellSwap,
+                "swap",
+                "<memory pid> <disk pid>- Swaps a program in memory with a program on disk. ");
             this.commandList[this.commandList.length] = sc;
 
 
@@ -418,6 +412,7 @@ module TSOS {
         }
 
         public shellLoad(args: string[]) {
+            console.log(_MemoryManager.memorySegments);
             var givenProgram: string[] = (<HTMLInputElement>document.getElementById('taProgramInput')
             ).value.replaceAll(' ', '') // Removes all white spaces.
                 .replaceAll(',', '') // Removes all commas.
@@ -472,7 +467,7 @@ module TSOS {
             if (memorySegment == -1) {
                 _StdOut.putText("Memory is full! Storing on disk. ");
                 _DiskSystemDeviceDriver.storeProgramIntoDisk(assignedPid, program);
-                _DiskSystemDeviceDriver.getAllDiskContent();
+                _DiskSystemDeviceDriver.refreshDiskDisplay();
             } else {
                 // Insert our program into memory!
                 _Kernel.insertStringProgram(memorySegment, program);
@@ -660,20 +655,16 @@ module TSOS {
             _DiskSystemDeviceDriver.createDisk();
 
             // Now display our changes for the user.
-            _DiskSystemDeviceDriver.getAllDiskContent();
+            _DiskSystemDeviceDriver.refreshDiskDisplay();
 
         }
 
-        // Store a program into the given pid. Remove this before final submission.
-        public shellStore(args: string[]) {
-            _DiskSystemDeviceDriver.storeProgramIntoDisk(args[0]);
-            _DiskSystemDeviceDriver.getAllDiskContent();
-        }
-
-
-        public shellRetrieve(args: string[]) {
-            _DiskSystemDeviceDriver.retrieveProgramFromDisk(args[0]);
-            _DiskSystemDeviceDriver.getAllDiskContent();
+        public shellSwap(args: string[]) {
+            if (args.length >= 2) {
+                _DiskSystemDeviceDriver.swapPrograms(args[0], args[1]);
+            } else {
+                _StdOut.putText("Missing <memorypid> <diskpid> parameters for swap.");
+            }
         }
 
 
