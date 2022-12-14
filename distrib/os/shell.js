@@ -504,7 +504,9 @@ var TSOS;
         }
         shellSwap(args) {
             if (args.length >= 2) {
-                _DiskSystemDeviceDriver.swapPrograms(args[0], args[1]);
+                let memorypid = Number(args[0]);
+                let diskpid = Number(args[1]);
+                _DiskSystemDeviceDriver.swapPrograms(memorypid, diskpid);
             }
             else {
                 _StdOut.putText("Missing <memorypid> <diskpid> parameters for swap.");

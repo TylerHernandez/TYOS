@@ -62,7 +62,6 @@ var TSOS;
         }
         // Request to store our program into disk by programId.
         storeProgramIntoDisk(programId, program) {
-            program = this.removeInsignificantBytes(program);
             let tsb = this.nextAvailableTsb;
             this.programToDiskTsb.set(programId, tsb);
             // Store Program into disk.
@@ -107,8 +106,12 @@ var TSOS;
                 console.log("Program not in memory programId: " + programInMemoryId);
                 return;
             }
+            console.log(programOnDiskId);
             // retrieve our program from our disk. Also clears program from disk for us.
             let programFromDisk = this.retrieveProgramFromDisk(programOnDiskId);
+            console.log(programFromDisk);
+            programFromDisk = this.removeInsignificantBytes(programFromDisk);
+            console.log(programFromDisk);
             // retrieve our program from our memory.
             let programFromMemory = this.retrieveProgramFromMemory(programInMemoryId);
             // clear memorySegment so we can insert our program.
@@ -183,6 +186,9 @@ var TSOS;
             return tsb;
         }
         findProgramOnDisk(programId) {
+            console.log(programId);
+            console.log(this.programToDiskTsb.get(programId));
+            console.log(this.programToDiskTsb);
             return this.programToDiskTsb.get(programId);
         }
         stringProgramToArray(givenProgram) {
@@ -205,9 +211,13 @@ var TSOS;
             }
             return program;
         }
-        // TODO: remove a given program's trailing 0's.
         removeInsignificantBytes(program) {
             // loop backwards in program, first index that's not 00 or -- we can say is end.
+            while ((program[program.length - 1] == "00") || (program[program.length - 1] == "--")) {
+                program.pop();
+            }
+            // Add our last 00 back.
+            program.push("00");
             return program;
         }
     }
