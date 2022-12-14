@@ -22,6 +22,9 @@ var TSOS;
             }
             // get new process id from ready queue.
             const currentPid = _ReadyQueue.dequeue();
+            if (_ResidentList[currentPid].memorySegment == -1) {
+                _DiskSystemDeviceDriver.swapPrograms(oldPid, currentPid);
+            }
             // Set up CPU for this new process's context.
             if (_CPU.currentPid != currentPid) {
                 console.log("Context switching from process " + oldPid + " to " + currentPid);

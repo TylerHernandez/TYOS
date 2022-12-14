@@ -2,7 +2,6 @@ var TSOS;
 (function (TSOS) {
     // Client memory accessor. 
     class MemoryManager {
-        // TODO: keep track of memory segments taken.
         memorySegments; // map of memory segment to availability
         constructor() {
             this.memorySegments = new Map([
@@ -19,6 +18,7 @@ var TSOS;
         }
         // Clears a given memory segment. Accepts 0, 1, or 2.
         clearSegment(memorySegment) {
+            console.log(memorySegment + " given to clearSegment()");
             if (memorySegment < 0 || memorySegment > 2) {
                 return;
             }

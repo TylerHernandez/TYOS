@@ -106,25 +106,22 @@ var TSOS;
                 console.log("Program not in memory programId: " + programInMemoryId);
                 return;
             }
-            console.log(programOnDiskId);
             // retrieve our program from our disk. Also clears program from disk for us.
             let programFromDisk = this.retrieveProgramFromDisk(programOnDiskId);
-            console.log(programFromDisk);
             programFromDisk = this.removeInsignificantBytes(programFromDisk);
-            console.log(programFromDisk);
             // retrieve our program from our memory.
             let programFromMemory = this.retrieveProgramFromMemory(programInMemoryId);
-            // clear memorySegment so we can insert our program.
-            _MemoryManager.clearSegment(_ResidentList[programInMemoryId].memorySegment);
             // put our program memory onto disk.
             this.storeProgramIntoDisk(programInMemoryId, programFromMemory);
             // put our program from disk onto memory.
             this.storeProgramIntoMemory(programOnDiskId, programFromDisk);
         }
         storeProgramIntoMemory(programId, program) {
-            let newMemorySegment = _MemoryManager.determineNextSegment();
-            _Kernel.insertStringProgram(newMemorySegment, program);
-            _ResidentList[programId].memorySegment = newMemorySegment;
+            const memorySegment = _MemoryManager.determineNextSegment();
+            _Kernel.insertStringProgram(memorySegment, program);
+            _ResidentList[programId].memorySegment = memorySegment;
+            // Request Memory Manager update our accessor's base and limits.
+            _MemoryManager.setBaseAndLimit(memorySegment);
             _MemoryAccessor.memoryLog(0x0000, _MemoryAccessor.highestNumber);
             TSOS.Control.refreshPcbLog();
         }
@@ -132,6 +129,7 @@ var TSOS;
             const memorySegment = _ResidentList[programId].memorySegment;
             const program = _MemoryAccessor.fetchProgram(memorySegment);
             _MemoryManager.clearSegment(memorySegment);
+            _ResidentList[programId].memorySegment = -1;
             return program;
         }
         // Get our program from the disk by programId. Make sure check if program.memorySegment == -1 before calling.
@@ -161,6 +159,7 @@ var TSOS;
         //
         */
         findNextTsb(tsb) {
+            // 1,0,1
             //If the block has not reached 7, we can always just add 1 to it.
             if (Number(tsb[4]) != 7) {
                 let num = Number(tsb[4]) + 1;
@@ -176,8 +175,7 @@ var TSOS;
             else if (Number(tsb[0]) != 3) { // If track has not reached 3, we can add 1.
                 // Try incrementing track. Reset sector and block to 0.
                 let num = Number(tsb[0]) + 1;
-                tsb = tsb.substring(0, 1);
-                tsb += num.toString() + ",0,0";
+                tsb = num.toString() + ",0,0";
             }
             else {
                 console.log("There is no more space left! Tsb: " + tsb);
@@ -186,10 +184,9 @@ var TSOS;
             return tsb;
         }
         findProgramOnDisk(programId) {
-            console.log(programId);
-            console.log(this.programToDiskTsb.get(programId));
-            console.log(this.programToDiskTsb);
-            return this.programToDiskTsb.get(programId);
+            const programLocation = this.programToDiskTsb.get(programId);
+            this.programToDiskTsb.delete(programId);
+            return programLocation;
         }
         stringProgramToArray(givenProgram) {
             let program = [];

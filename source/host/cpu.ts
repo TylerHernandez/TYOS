@@ -48,6 +48,8 @@ module TSOS {
 
 
             this.logPipeline();
+            console.log("Program: " + this.currentPid + " with memory base " + this.MemoryAccessor.base);
+            console.log(_MemoryManager);
 
             var finishedCycle = false;
 
@@ -300,7 +302,7 @@ module TSOS {
                             this.programCounter -= _MemoryAccessor.limit + 1;
                         }
 
-                    } 
+                    }
                     this.step = 7;
                     break;
                 }

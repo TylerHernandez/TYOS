@@ -2,7 +2,6 @@ module TSOS {
 
     // Client memory accessor. 
     export class MemoryManager {
-        // TODO: keep track of memory segments taken.
 
         public memorySegments: Map<number, string>; // map of memory segment to availability
 
@@ -23,6 +22,8 @@ module TSOS {
 
         // Clears a given memory segment. Accepts 0, 1, or 2.
         public clearSegment(memorySegment: number): void {
+            console.log(memorySegment + " given to clearSegment()");
+
             if (memorySegment < 0 || memorySegment > 2) {
                 return;
             }
@@ -53,6 +54,7 @@ module TSOS {
                 _MemoryAccessor.base = 0x0200;
                 _MemoryAccessor.limit = 0x02FF;
             }
+
             // Let's reserve this memorySegment for the incoming process.
             this.memorySegments.set(memorySegment, "TAKEN");
         }

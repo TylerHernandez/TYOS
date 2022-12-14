@@ -52,6 +52,8 @@ var TSOS;
             //     return; 
             // } 
             this.logPipeline();
+            console.log("Program: " + this.currentPid + " with memory base " + this.MemoryAccessor.base);
+            console.log(_MemoryManager);
             var finishedCycle = false;
             // Since this all needs to be executed in one cycle, will run until interrupt check hits.
             while (!finishedCycle) {
