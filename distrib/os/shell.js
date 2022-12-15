@@ -87,8 +87,17 @@ var TSOS;
             // Format
             sc = new TSOS.ShellCommand(this.shellFormat, "format", "- Formats our disk.");
             this.commandList[this.commandList.length] = sc;
-            // swap
-            sc = new TSOS.ShellCommand(this.shellSwap, "swap", "<memory pid> <disk pid>- Swaps a program in memory with a program on disk. ");
+            // Create File
+            sc = new TSOS.ShellCommand(this.shellCreateFile, "create", "<filename> - Creates a file on our disk.");
+            this.commandList[this.commandList.length] = sc;
+            // Write File
+            sc = new TSOS.ShellCommand(this.shellWriteFile, "write", "<filename>, <text> - Writes to a file on our disk.");
+            this.commandList[this.commandList.length] = sc;
+            // Read File
+            sc = new TSOS.ShellCommand(this.shellReadFile, "read", "<filename> - Reads a file on our disk.");
+            this.commandList[this.commandList.length] = sc;
+            // List Files
+            sc = new TSOS.ShellCommand(this.shellLs, "ls", "Lists all files in our disk.");
             this.commandList[this.commandList.length] = sc;
             // Display the initial prompt.
             this.putPrompt();
@@ -507,15 +516,32 @@ var TSOS;
             // Now display our changes for the user.
             _DiskSystemDeviceDriver.refreshDiskDisplay();
         }
-        shellSwap(args) {
-            if (args.length >= 2) {
-                let memorypid = Number(args[0]);
-                let diskpid = Number(args[1]);
-                _DiskSystemDeviceDriver.swapPrograms(memorypid, diskpid);
+        shellCreateFile(args) {
+            if (args.length < 1) {
+                _StdOut.putText("... what do u want?? an unnamed file??");
             }
             else {
-                _StdOut.putText("Missing <memorypid> <diskpid> parameters for swap.");
+                _DiskSystemDeviceDriver.createFile(args[0]);
             }
+        }
+        shellWriteFile(args) {
+            if (args.length < 2) {
+                _StdOut.putText("... not enough parameters.");
+            }
+            else {
+                _DiskSystemDeviceDriver.writeFile(args);
+            }
+        }
+        shellReadFile(args) {
+            if (args.length < 1) {
+                _StdOut.putText("... what do u want?? to READ an unnamed file??");
+            }
+            else {
+                _DiskSystemDeviceDriver.readFile(args[0]);
+            }
+        }
+        shellLs(args) {
+            _DiskSystemDeviceDriver.listFiles();
         }
     } // ends shell
     TSOS.Shell = Shell;

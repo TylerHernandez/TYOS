@@ -158,10 +158,28 @@ module TSOS {
                 "- Formats our disk.");
             this.commandList[this.commandList.length] = sc;
 
-            // swap
-            sc = new ShellCommand(this.shellSwap,
-                "swap",
-                "<memory pid> <disk pid>- Swaps a program in memory with a program on disk. ");
+            // Create File
+            sc = new ShellCommand(this.shellCreateFile,
+                "create",
+                "<filename> - Creates a file on our disk.");
+            this.commandList[this.commandList.length] = sc;
+
+            // Write File
+            sc = new ShellCommand(this.shellWriteFile,
+                "write",
+                "<filename>, <text> - Writes to a file on our disk.");
+            this.commandList[this.commandList.length] = sc;
+
+            // Read File
+            sc = new ShellCommand(this.shellReadFile,
+                "read",
+                "<filename> - Reads a file on our disk.");
+            this.commandList[this.commandList.length] = sc;
+
+            // List Files
+            sc = new ShellCommand(this.shellLs,
+                "ls",
+                "Lists all files in our disk.");
             this.commandList[this.commandList.length] = sc;
 
 
@@ -668,14 +686,38 @@ module TSOS {
 
         }
 
-        public shellSwap(args: string[]) {
-            if (args.length >= 2) {
-                let memorypid = Number(args[0]);
-                let diskpid = Number(args[1]);
-                _DiskSystemDeviceDriver.swapPrograms(memorypid, diskpid);
+        public shellCreateFile(args: string[]) {
+
+            if (args.length < 1) {
+                _StdOut.putText("... what do u want?? an unnamed file??");
             } else {
-                _StdOut.putText("Missing <memorypid> <diskpid> parameters for swap.");
+                _DiskSystemDeviceDriver.createFile(args[0]);
             }
+
+
+        }
+
+        public shellWriteFile(args: string[]) {
+
+            if (args.length < 2) {
+                _StdOut.putText("... not enough parameters.");
+            } else {
+                _DiskSystemDeviceDriver.writeFile(args);
+            }
+
+
+        }
+
+        public shellReadFile(args: string[]) {
+            if (args.length < 1) {
+                _StdOut.putText("... what do u want?? to READ an unnamed file??");
+            } else {
+                _DiskSystemDeviceDriver.readFile(args[0]);
+            }
+        }
+
+        public shellLs(args: string[]) {
+            _DiskSystemDeviceDriver.listFiles();
         }
 
 
