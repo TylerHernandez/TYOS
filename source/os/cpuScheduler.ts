@@ -8,6 +8,7 @@ module TSOS {
 
         // Sets up CPU and Memory Manager for a context switch if needed.
         public static roundRobinSetup(): void {
+            _CPU.isExecuting = false;
 
             // put current process back in ready queue if it is not terminated.
             const oldPid = _CPU.currentPid;
@@ -19,24 +20,33 @@ module TSOS {
             }
 
 
-            if (_ResidentList[oldPid].state == "READY" && _ResidentList[oldPid].memorySegment != -1) {
+            if (_ResidentList[oldPid].state == "READY") {
                 _ReadyQueue.enqueue(oldPid);
             }
 
             // get new process id from ready queue.
             const currentPid = _ReadyQueue.dequeue();
 
-
+            // Swap old program with current one and load from our PCB!
+            if (_ResidentList[currentPid].memorySegment == -1) {
+                _DiskSystemDeviceDriver.swapPrograms(oldPid, currentPid);
+                _CPU.loadFromPcb(_ResidentList[currentPid]);
+            }
             // Set up CPU for this new process's context.
-            if (_CPU.currentPid != currentPid) {
+            else if (_CPU.currentPid != currentPid) {
                 console.log("Context switching from process " + oldPid + " to " + currentPid);
+                // if ()
+
                 _CPU.loadFromPcb(_ResidentList[currentPid]);
                 _MemoryManager.setBaseAndLimit(_ResidentList[currentPid].memorySegment);
+            } else {
+                console.log("Not context switching?");
             }
 
             // reset _processCycleCounter.
             _processCycleCounter = 0;
 
+            _CPU.isExecuting = true;
         }
 
         // Turns on round robin flag and sets up for initial execution.

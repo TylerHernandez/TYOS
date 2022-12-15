@@ -2,7 +2,6 @@ var TSOS;
 (function (TSOS) {
     // Client memory accessor. 
     class MemoryManager {
-        // TODO: keep track of memory segments taken.
         memorySegments; // map of memory segment to availability
         constructor() {
             this.memorySegments = new Map([
@@ -18,8 +17,9 @@ var TSOS;
             this.memorySegments.set(2, "AVAILABLE");
         }
         // Clears a given memory segment. Accepts 0, 1, or 2.
-        clearSegmemt(memorySegment) {
+        clearSegment(memorySegment) {
             if (memorySegment < 0 || memorySegment > 2) {
+                console.log("There was an issue clearing memory segment " + memorySegment);
                 return;
             }
             else if (memorySegment == 0) {
@@ -35,6 +35,10 @@ var TSOS;
         }
         // Sets base and limit for memoryAccessor according to given memory segment.
         setBaseAndLimit(memorySegment) {
+            if (memorySegment < 0 || memorySegment > 2) {
+                console.log("There was an issue setting base and limit for memory segment " + memorySegment);
+                return;
+            }
             if (memorySegment == 0) {
                 _MemoryAccessor.base = 0x0000;
                 _MemoryAccessor.limit = 0x00FF;

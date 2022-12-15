@@ -138,6 +138,28 @@ var TSOS;
             }
             this.memoryLog(0x00, this.highestNumber);
         }
+        fetchProgram(memorySegment) {
+            let program = [];
+            if (memorySegment == 0) {
+                for (let x = 0x0000; x <= 0x00FF; x++) {
+                    program.push(TSOS.Utils.hexLog(this.memory.getMemoryAt(x), 2));
+                }
+            }
+            else if (memorySegment == 1) {
+                for (let x = 0x0100; x <= 0x01FF; x++) {
+                    program.push(TSOS.Utils.hexLog(this.memory.getMemoryAt(x), 2));
+                }
+            }
+            else if (memorySegment == 2) {
+                for (let x = 0x0200; x <= 0x02FF; x++) {
+                    program.push(TSOS.Utils.hexLog(this.memory.getMemoryAt(x), 2));
+                }
+            }
+            else {
+                console.log("Err: Program is not in memory. MemorySegment = " + memorySegment);
+            }
+            return program;
+        }
         hexLog(num, desired_length) {
             if (num === undefined) {
                 return "ERR [hexValue conversion]: number undefined";

@@ -12,7 +12,7 @@
 // Global CONSTANTS (TypeScript 1.5 introduced const. Very cool.)
 //
 const APP_NAME: string = "TYOS"; // Had to do it.
-const APP_VERSION: string = "2.0.4"; // Will I change this after every closed enhancement? Who knows...
+const APP_VERSION: string = "4.0.3"; // Will I change this after every closed enhancement? Who knows...
 
 const CPU_CLOCK_INTERVAL: number = 100;   // This is in ms (milliseconds) so 1000 = 1 second.
 
@@ -36,6 +36,7 @@ var _processCycleCounter = 0; // Tracks how many cpu cycles a process has gone t
 var _quantum = 6; // Used for round robin cpu scheduling.
 var _ReadyQueue: TSOS.Queue;
 var _RoundRobinEnabled = false; // Flag to detect if we are using round robin.
+var _DiskSystemDeviceDriver: TSOS.DiskSystemDeviceDriver;
 
 var _OSclock: number = 0;  // Page 23.
 

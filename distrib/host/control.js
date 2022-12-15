@@ -57,7 +57,12 @@ var TSOS;
         }
         // Logs the Memory in our HTML text box.
         static memoryLog(msg) {
-            var taLog = document.getElementById("taMemory");
+            let taLog = document.getElementById("taMemory");
+            taLog.innerHTML = msg;
+        }
+        // Logs disk memory into our HTML table.
+        static diskLog(msg) {
+            let taLog = document.getElementById("taDisk");
             taLog.innerHTML = msg;
         }
         // Logs the Quantum in our HTML text area.
@@ -102,17 +107,18 @@ var TSOS;
             // Initializes MemoryAccessor.
             _MemoryAccessor = new TSOS.MemoryAccessor(_Memory, _CPU);
             // Initializes MemoryAccessor inside CPU to allow for proper function.
-            _CPU.setMemoryAccessor(_MemoryAccessor);
+            //_CPU.setMemoryAccessor(_MemoryAccessor);
             var MemoryManager = null;
             // Initializes PCB list.
             _ResidentList = [];
             document.getElementById('taProgramInput').innerText =
+                //"A9 00 A9 01 A9 02 A9 03";
                 //"A9008D7B00A9008D7B00A9008D7C00A9008D7C00A9018D7A00A200EC7A00D039A07DA202FFAC7B00A201FFAD7B008D7A00A9016D7A008D7B00A903AE7B008D7A00A900EC7A00D002A9018D7A00A201EC7A00D005A9018D7C00A900AE7C008D7A00A900EC7A00D002A9018D7A00A200EC7A00D0ACA07FA202FF00000000610061646F6E6500";
                 // Loads program input with "12DONE" program as default value.
-                //"A9038D4100A9018D4000AC4000A201FFEE4000AE4000EC4100D0EFA9448D4200A94F8D4300A94E8D4400A9458D4500A9008D4600A202A042FF00";
-                // Loads program input with default value (Fibonacci of 1-5).
-                //"A9058D6000A9008D61008D6400A9018D6200AD61006D62008D6300AD62008D6100AD63008D6200A201AC6300FFA9FF8D6500AD60006D65008D6000AE6000EC6400A200D0CD00";
-                "A9 00 8D 7B 00 A9 00 8D 7B 00 A9 00 8D 7C 00 A9 00 8D 7C 00 A9 01 8D 7A 00 A2 00 EC 7A 00 D0 39 A0 7D A2 02 FF AC 7B 00 A2 01 FF AD 7B 00 8D 7A 00 A9 01 6D 7A 00 8D 7B 00 A9 03 AE 7B 00 8D 7A 00 A9 00 EC 7A 00 D0 02 A9 01 8D 7A 00 A2 01 EC 7A 00 D0 05 A9 01 8D 7C 00 A9 00 AE 7C 00 8D 7A 00 A9 00 EC 7A 00 D0 02 A9 01 8D 7A 00 A2 00 EC 7A 00 D0 AC A0 7F A2 02 FF 00 00 00 00 61 00 61 64 6F 6E 65 00";
+                "A9038D4100A9018D4000AC4000A201FFEE4000AE4000EC4100D0EFA9448D4200A94F8D4300A94E8D4400A9458D4500A9008D4600A202A042FF00";
+            // Loads program input with default value (Fibonacci of 1-5).
+            //"A9058D6000A9008D61008D6400A9018D6200AD61006D62008D6300AD62008D6100AD63008D6200A201AC6300FFA9FF8D6500AD60006D65008D6000AE6000EC6400A200D0CD00";
+            //"A9 00 8D 7B 00 A9 00 8D 7B 00 A9 00 8D 7C 00 A9 00 8D 7C 00 A9 01 8D 7A 00 A2 00 EC 7A 00 D0 39 A0 7D A2 02 FF AC 7B 00 A2 01 FF AD 7B 00 8D 7A 00 A9 01 6D 7A 00 8D 7B 00 A9 03 AE 7B 00 8D 7A 00 A9 00 EC 7A 00 D0 02 A9 01 8D 7A 00 A2 01 EC 7A 00 D0 05 A9 01 8D 7C 00 A9 00 AE 7C 00 8D 7A 00 A9 00 EC 7A 00 D0 02 A9 01 8D 7A 00 A2 00 EC 7A 00 D0 AC A0 7F A2 02 FF 00 00 00 00 61 00 61 64 6F 6E 65 00"
             // ... then set the host clock pulse ...
             _hardwareClockID = setInterval(TSOS.Devices.hostClockPulse, CPU_CLOCK_INTERVAL);
             // .. and call the OS Kernel Bootstrap routine.

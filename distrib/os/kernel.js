@@ -25,6 +25,8 @@ var TSOS;
             _MemoryManager = new TSOS.MemoryManager();
             // Initialize Ready Queue.
             _ReadyQueue = new TSOS.Queue();
+            // Initialize DiskSystemDeviceDriver.
+            _DiskSystemDeviceDriver = new TSOS.DiskSystemDeviceDriver();
             // Display Initial Quantum.
             TSOS.Control.quantumLog();
             // Initialize standard input and output to the _Console.
@@ -190,12 +192,19 @@ var TSOS;
         }
         // Inserts given string program into memory.
         insertStringProgram(memorySegment, program) {
+            const wasExecuting = _CPU.isExecuting;
+            if (wasExecuting) {
+                _CPU.isExecuting = false;
+            }
             _MemoryManager.setBaseAndLimit(memorySegment);
             //loops through program and copies data to MAR and MDR
             for (var index = 0x00; index < program.length; index++) {
                 _MemoryAccessor.writeImmediate(index, parseInt("0x" + program[index]));
             }
             _MemoryAccessor.memoryLog(0x0000, _MemoryAccessor.highestNumber);
+            if (wasExecuting) {
+                _CPU.isExecuting = true;
+            }
         }
     }
     TSOS.Kernel = Kernel;

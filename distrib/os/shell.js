@@ -84,6 +84,12 @@ var TSOS;
             // ps
             sc = new TSOS.ShellCommand(this.shellPs, "ps", "- display the PID and state of all processes.");
             this.commandList[this.commandList.length] = sc;
+            // Format
+            sc = new TSOS.ShellCommand(this.shellFormat, "format", "- Formats our disk.");
+            this.commandList[this.commandList.length] = sc;
+            // swap
+            sc = new TSOS.ShellCommand(this.shellSwap, "swap", "<memory pid> <disk pid>- Swaps a program in memory with a program on disk. ");
+            this.commandList[this.commandList.length] = sc;
             // Display the initial prompt.
             this.putPrompt();
         }
@@ -314,6 +320,7 @@ var TSOS;
             _Kernel.krnTrapError("SPOOKY BLU SCREEN! Try downloading more ram!");
         }
         shellLoad(args) {
+            console.log(_MemoryManager.memorySegments);
             var givenProgram = document.getElementById('taProgramInput').value.replaceAll(' ', '') // Removes all white spaces.
                 .replaceAll(',', '') // Removes all commas.
                 .split(""); // Splits program into each hex digit.
@@ -345,18 +352,21 @@ var TSOS;
             TSOS.Utils.pauseProgram();
             // Find a free memory segment to insert our program into.
             let memorySegment = _MemoryManager.determineNextSegment();
-            if (memorySegment == -1) {
-                _StdOut.putText("Memory is full! Try clearing memory before inserting more programs.");
-                return;
-            }
             // Assign a PID (this will be dynamic in future versions).
             var assignedPid = _PIDCounter;
             _PIDCounter++;
-            // Insert our program into memory!
-            _Kernel.insertStringProgram(memorySegment, program);
             // Create pcb for our process and put it in our list.
             let pcb = new TSOS.PCB(assignedPid, memorySegment);
             _ResidentList[assignedPid] = pcb; // PCB's index will always be it's assigned PID.
+            if (memorySegment == -1) {
+                _StdOut.putText("Memory is full! Storing on disk. ");
+                _DiskSystemDeviceDriver.storeProgramIntoDisk(assignedPid, program);
+                _DiskSystemDeviceDriver.refreshDiskDisplay();
+            }
+            else {
+                // Insert our program into memory!
+                _Kernel.insertStringProgram(memorySegment, program);
+            }
             // Put process id in the ready queue for round robin scheduling!
             _ReadyQueue.enqueue(assignedPid);
             _StdOut.putText("Assigned program to PID #" + assignedPid);
@@ -400,9 +410,9 @@ var TSOS;
                 return;
             }
             // TODO: Tell Memory Manager to clear *taken* segments. Return which segments cleared and print return val here.
-            _MemoryManager.clearSegmemt(0);
-            _MemoryManager.clearSegmemt(1);
-            _MemoryManager.clearSegmemt(2);
+            _MemoryManager.clearSegment(0);
+            _MemoryManager.clearSegment(1);
+            _MemoryManager.clearSegment(2);
             // Since we're clearing memory, the cpu should not have any processes loaded.
             _CPU.loadFromPcb(new TSOS.PCB());
             // This will prevent running processes out of memory.
@@ -484,6 +494,23 @@ var TSOS;
                 str += ("process " + i + " : " + _ResidentList[i].state + "\n");
             }
             _StdOut.putText(str);
+        }
+        // Format our disk.
+        shellFormat(args) {
+            // Create and formats disk.
+            _DiskSystemDeviceDriver.createDisk();
+            // Now display our changes for the user.
+            _DiskSystemDeviceDriver.refreshDiskDisplay();
+        }
+        shellSwap(args) {
+            if (args.length >= 2) {
+                let memorypid = Number(args[0]);
+                let diskpid = Number(args[1]);
+                _DiskSystemDeviceDriver.swapPrograms(memorypid, diskpid);
+            }
+            else {
+                _StdOut.putText("Missing <memorypid> <diskpid> parameters for swap.");
+            }
         }
     } // ends shell
     TSOS.Shell = Shell;
