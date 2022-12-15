@@ -157,27 +157,30 @@ var TSOS;
         //
         */
         findNextTsb(tsb) {
-            // 1,0,1
-            //If the block has not reached 7, we can always just add 1 to it.
-            if (Number(tsb[4]) != 7) {
-                let num = Number(tsb[4]) + 1;
-                tsb = tsb.substring(0, 4);
-                tsb += num.toString();
-            }
-            else if (Number(tsb[2]) != 3) { // If sector has not reached 3, we can add 1.
-                // Try incrementing sector. Reset block to 0.
-                let num = Number(tsb[2]) + 1;
-                tsb = tsb.substring(0, 2);
-                tsb += num.toString() + ",0";
-            }
-            else if (Number(tsb[0]) != 3) { // If track has not reached 3, we can add 1.
-                // Try incrementing track. Reset sector and block to 0.
-                let num = Number(tsb[0]) + 1;
-                tsb = num.toString() + ",0,0";
-            }
-            else {
-                console.log("There is no more space left! Tsb: " + tsb);
-                return;
+            while (true) {
+                // If the block has not reached 7, we can always just add 1 to it.
+                if (Number(tsb[4]) != 7) {
+                    let num = Number(tsb[4]) + 1;
+                    tsb = tsb.substring(0, 4);
+                    tsb += num.toString();
+                }
+                else if (Number(tsb[2]) != 3) { // If sector has not reached 3, we can add 1.
+                    // Try incrementing sector. Reset block to 0.
+                    let num = Number(tsb[2]) + 1;
+                    tsb = tsb.substring(0, 2);
+                    tsb += num.toString() + ",0";
+                }
+                else if (Number(tsb[0]) != 3) { // If track has not reached 3, we can add 1.
+                    // Try incrementing track. Reset sector and block to 0.
+                    let num = Number(tsb[0]) + 1;
+                    tsb = num.toString() + ",0,0";
+                }
+                else {
+                    tsb = "0,0,0";
+                }
+                if (sessionStorage.getItem(tsb) == DEFAULTVAL) {
+                    break;
+                }
             }
             return tsb;
         }
