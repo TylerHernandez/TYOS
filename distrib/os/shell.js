@@ -359,7 +359,12 @@ var TSOS;
             let pcb = new TSOS.PCB(assignedPid, memorySegment);
             _ResidentList[assignedPid] = pcb; // PCB's index will always be it's assigned PID.
             if (memorySegment == -1) {
-                _StdOut.putText("Memory is full! Storing on disk. ");
+                _StdOut.putText("Memory is full... ");
+                if (!_DiskSystemDeviceDriver.isFormatted) {
+                    _StdOut.putText("Formatting the disk... ");
+                    _DiskSystemDeviceDriver.createDisk();
+                }
+                _StdOut.putText("Storing on disk... ");
                 _DiskSystemDeviceDriver.storeProgramIntoDisk(assignedPid, program);
                 _DiskSystemDeviceDriver.refreshDiskDisplay();
             }
@@ -369,7 +374,7 @@ var TSOS;
             }
             // Put process id in the ready queue for round robin scheduling!
             _ReadyQueue.enqueue(assignedPid);
-            _StdOut.putText("Assigned program to PID #" + assignedPid);
+            _StdOut.putText(" -- Assigning program to PID #" + assignedPid);
             TSOS.Control.refreshPcbLog();
         } // ends load
         shellRun(args) {
@@ -386,7 +391,7 @@ var TSOS;
                 // Load the CPU with our process state.
                 _CPU.loadFromPcb(process);
                 // Request Memory Manager update our accessor's base and limits.
-                _MemoryManager.setBaseAndLimit(process.memorySegment); // TODO (Project 4): This will return -1 if a pid does not have an allocated memorySegment anymore.
+                _MemoryManager.setBaseAndLimit(process.memorySegment);
                 // Tell our CPU it may start execution now!
                 _CPU.isExecuting = true;
             }

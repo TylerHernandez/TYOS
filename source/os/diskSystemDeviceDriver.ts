@@ -15,11 +15,13 @@ module TSOS {
 
         // Programs will be mapped to their starting TSB. 
         public programToDiskTsb: Map<number, string>;
+        public isFormatted;
         private nextAvailableTsb = "";
 
         constructor() {
             this.programToDiskTsb = new Map<number, string>([]);
             this.nextAvailableTsb = "0,0,0";
+            this.isFormatted = false;
         }
 
         /*
@@ -41,6 +43,7 @@ module TSOS {
                         }
                     }
                 }
+                this.isFormatted = true;
 
             } else {
                 console.log("Browser does not support session storage");
@@ -160,6 +163,7 @@ module TSOS {
             const memorySegment = _MemoryManager.determineNextSegment()
             _Kernel.insertStringProgram(memorySegment, program);
             _ResidentList[programId].memorySegment = memorySegment;
+            _ResidentList[programId].swapped = true;
 
             _MemoryAccessor.memoryLog(0x0000, _MemoryAccessor.highestNumber);
             TSOS.Control.refreshPcbLog();
@@ -170,6 +174,7 @@ module TSOS {
             const program = _MemoryAccessor.fetchProgram(memorySegment);
             _MemoryManager.clearSegment(memorySegment);
             _ResidentList[programId].memorySegment = -1;
+            _ResidentList[programId].swapped = true;
             return program;
         }
 
