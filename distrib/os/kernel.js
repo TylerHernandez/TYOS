@@ -192,12 +192,19 @@ var TSOS;
         }
         // Inserts given string program into memory.
         insertStringProgram(memorySegment, program) {
+            const wasExecuting = _CPU.isExecuting;
+            if (wasExecuting) {
+                _CPU.isExecuting = false;
+            }
             _MemoryManager.setBaseAndLimit(memorySegment);
             //loops through program and copies data to MAR and MDR
             for (var index = 0x00; index < program.length; index++) {
                 _MemoryAccessor.writeImmediate(index, parseInt("0x" + program[index]));
             }
             _MemoryAccessor.memoryLog(0x0000, _MemoryAccessor.highestNumber);
+            if (wasExecuting) {
+                _CPU.isExecuting = true;
+            }
         }
     }
     TSOS.Kernel = Kernel;

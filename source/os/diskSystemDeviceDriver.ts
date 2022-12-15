@@ -163,9 +163,6 @@ module TSOS {
             _Kernel.insertStringProgram(memorySegment, program);
             _ResidentList[programId].memorySegment = memorySegment;
 
-            // Request Memory Manager update our accessor's base and limits.
-            _MemoryManager.setBaseAndLimit(memorySegment);
-
             _MemoryAccessor.memoryLog(0x0000, _MemoryAccessor.highestNumber);
             TSOS.Control.refreshPcbLog();
         }

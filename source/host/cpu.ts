@@ -14,7 +14,7 @@ module TSOS {
 
     export class CPU {
 
-        private MemoryAccessor: MemoryAccessor;
+        // private MemoryAccessor: MemoryAccessor;
 
 
         constructor(public programCounter: number = 0,
@@ -34,10 +34,10 @@ module TSOS {
             this.isExecuting = false;
         }
 
-        // MemoryAccessor is made from CPU, then System calls this function to initialize MemoryAccessor in CPU.
-        setMemoryAccessor(MemoryAccessor: MemoryAccessor) {
-            this.MemoryAccessor = MemoryAccessor;
-        }
+        // // MemoryAccessor is made from CPU, then System calls this function to initialize MemoryAccessor in CPU.
+        // setMemoryAccessor(MemoryAccessor: MemoryAccessor) {
+        //     _MemoryAccessor = MemoryAccessor;
+        // }
 
         // Change this to be all of these steps execute in one cycle.
         cycle(): void {
@@ -48,8 +48,7 @@ module TSOS {
 
 
             this.logPipeline();
-            console.log("Program: " + this.currentPid + " with memory base " + this.MemoryAccessor.base);
-            console.log(_MemoryManager);
+            _MemoryManager.setBaseAndLimit(_ResidentList[this.currentPid].memorySegment);
 
             var finishedCycle = false;
 
@@ -107,20 +106,20 @@ module TSOS {
                 } // ends Switch statement.
 
             } // ends while.
-
+            Utils.saveState();
         } // ends Pulse.
 
         // Fetches instruction.
         fetch(): void {
 
             // Set MAR to programCounter.
-            this.MemoryAccessor.setMAR(this.programCounter);
+            _MemoryAccessor.setMAR(this.programCounter);
 
             // Increment program counter every time we read a byte.
             this.programCounter++;
 
             // Grab instruction from MemoryAccessor.
-            this.instructionRegister = this.MemoryAccessor.fetchMemoryContent();
+            this.instructionRegister = _MemoryAccessor.fetchMemoryContent();
 
             // Set next step to either decode or execute.
             this.step = this.determineNextStep(this.instructionRegister);
@@ -132,7 +131,7 @@ module TSOS {
             if (this.instructionRegister == 0xA9 || this.instructionRegister == 0xA2 ||
                 this.instructionRegister == 0xA0 || this.instructionRegister == 0xD0) {
                 // Read operand at program counter index.
-                this.MemoryAccessor.setMAR(this.programCounter);
+                _MemoryAccessor.setMAR(this.programCounter);
 
                 // Increment program counter after reading.
                 this.programCounter++;
@@ -142,16 +141,16 @@ module TSOS {
 
             } else { // Instruction has two operands.
                 // Read at program counter index.
-                this.MemoryAccessor.setMAR(this.programCounter);
+                _MemoryAccessor.setMAR(this.programCounter);
 
                 // Increment program counter after reading.
                 this.programCounter++;
 
                 // First of two decodes will set low order byte.
                 if (this.step == 2) {
-                    this.MemoryAccessor.setLowOrderByte(this.MemoryAccessor.fetchMemoryContent());
+                    _MemoryAccessor.setLowOrderByte(_MemoryAccessor.fetchMemoryContent());
                 } else { // Second of two decodes will set high order byte.
-                    this.MemoryAccessor.setHighOrderByte(this.MemoryAccessor.fetchMemoryContent());
+                    _MemoryAccessor.setHighOrderByte(_MemoryAccessor.fetchMemoryContent());
                 }
                 // Step to either decode 2 or execute.
                 this.step++;
@@ -165,7 +164,7 @@ module TSOS {
 
                 // Load accumulator with constant.
                 case 0xA9: {
-                    this.Accumulator = this.MemoryAccessor.fetchMemoryContent();
+                    this.Accumulator = _MemoryAccessor.fetchMemoryContent();
                     this.step = 7;
                     break;
                 }
@@ -173,8 +172,8 @@ module TSOS {
                 // Load accumulator with memory address.
                 case 0xAD: {
                     // Put the low order byte + high order byte in MAR.
-                    this.MemoryAccessor.putBytesInMar();
-                    this.Accumulator = this.MemoryAccessor.fetchMemoryContent();
+                    _MemoryAccessor.putBytesInMar();
+                    this.Accumulator = _MemoryAccessor.fetchMemoryContent();
                     this.step = 7;
                     break;
                 }
@@ -182,9 +181,9 @@ module TSOS {
                 // Store accumulator in memory.
                 case 0x8D: {
                     // Set MAR with the operand bytes (low + high).
-                    this.MemoryAccessor.putBytesInMar();
-                    this.MemoryAccessor.setMDR(this.Accumulator);
-                    this.MemoryAccessor.write();
+                    _MemoryAccessor.putBytesInMar();
+                    _MemoryAccessor.setMDR(this.Accumulator);
+                    _MemoryAccessor.write();
                     this.step = 7;
                     break;
                 }
@@ -206,8 +205,8 @@ module TSOS {
                 // Add contents from memory address onto accumulator.
                 case 0x6D: {
 
-                    this.MemoryAccessor.putBytesInMar();
-                    this.Accumulator += this.MemoryAccessor.fetchMemoryContent();
+                    _MemoryAccessor.putBytesInMar();
+                    this.Accumulator += _MemoryAccessor.fetchMemoryContent();
 
                     if (this.Accumulator >= 0x100) {
                         this.Accumulator -= 0x100
@@ -219,7 +218,7 @@ module TSOS {
 
                 // Load x register with a constant.
                 case 0xA2: {
-                    this.xRegister = this.MemoryAccessor.fetchMemoryContent();
+                    this.xRegister = _MemoryAccessor.fetchMemoryContent();
                     this.step = 7;
                     break;
                 }
@@ -227,8 +226,8 @@ module TSOS {
                 // Load x register from memory. 
                 case 0xAE: {
 
-                    this.MemoryAccessor.putBytesInMar();
-                    this.xRegister = this.MemoryAccessor.fetchMemoryContent();
+                    _MemoryAccessor.putBytesInMar();
+                    this.xRegister = _MemoryAccessor.fetchMemoryContent();
                     this.step = 7;
                     break;
                 }
@@ -242,7 +241,7 @@ module TSOS {
 
                 // Load y register with a constant.
                 case 0xA0: {
-                    this.yRegister = this.MemoryAccessor.fetchMemoryContent();
+                    this.yRegister = _MemoryAccessor.fetchMemoryContent();
                     this.step = 7;
                     break;
                 }
@@ -250,8 +249,8 @@ module TSOS {
                 // Load y register from memory. 
                 case 0xAC: {
 
-                    this.MemoryAccessor.putBytesInMar();
-                    this.yRegister = this.MemoryAccessor.fetchMemoryContent();
+                    _MemoryAccessor.putBytesInMar();
+                    this.yRegister = _MemoryAccessor.fetchMemoryContent();
                     this.step = 7;
                     break;
                 }
@@ -279,8 +278,8 @@ module TSOS {
 
                 // Compare byte in memory to x register if zflag is set.
                 case 0xEC: {
-                    this.MemoryAccessor.putBytesInMar();
-                    const memoryContent = this.MemoryAccessor.fetchMemoryContent();
+                    _MemoryAccessor.putBytesInMar();
+                    const memoryContent = _MemoryAccessor.fetchMemoryContent();
                     if (this.xRegister == memoryContent) {
                         this.zFlag = 1;
                     } else { // Here we're allowed to reset the z flag.
@@ -294,12 +293,12 @@ module TSOS {
                 case 0xD0: {
 
                     if (this.zFlag == 0) {
-                        let memoryContent = this.MemoryAccessor.fetchMemoryContent();
+                        let memoryContent = _MemoryAccessor.fetchMemoryContent();
                         this.programCounter += ((memoryContent));
 
                         // to branch backwards, we must wrap around allocated memory segment.
                         if (this.programCounter + _MemoryAccessor.base >= _MemoryAccessor.limit) {
-                            this.programCounter -= _MemoryAccessor.limit + 1;
+                            this.programCounter -= 256; // this took me 7 hours to debug. cool.
                         }
 
                     }
@@ -311,8 +310,8 @@ module TSOS {
                 case 0xEE: {
 
                     if (this.step == 4) {
-                        this.MemoryAccessor.putBytesInMar();
-                        this.Accumulator = this.MemoryAccessor.fetchMemoryContent();
+                        _MemoryAccessor.putBytesInMar();
+                        this.Accumulator = _MemoryAccessor.fetchMemoryContent();
                     } else {
                         this.Accumulator++;
                     }
@@ -345,6 +344,7 @@ module TSOS {
                 }
 
                 case undefined: {
+                    console.log("Error: instruction is undefined " + this.instructionRegister);
                     this.instructionRegister = 0x00;
                     break;
                 }
@@ -363,9 +363,9 @@ module TSOS {
         }
 
         writeback(): void {
-            this.MemoryAccessor.putBytesInMar();
-            this.MemoryAccessor.setMDR(this.Accumulator);
-            this.MemoryAccessor.write();
+            _MemoryAccessor.putBytesInMar();
+            _MemoryAccessor.setMDR(this.Accumulator);
+            _MemoryAccessor.write();
             this.step++;
         }
 

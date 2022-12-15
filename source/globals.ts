@@ -14,7 +14,7 @@
 const APP_NAME: string = "TYOS"; // Had to do it.
 const APP_VERSION: string = "4.0.3"; // Will I change this after every closed enhancement? Who knows...
 
-const CPU_CLOCK_INTERVAL: number = 200;   // This is in ms (milliseconds) so 1000 = 1 second.
+const CPU_CLOCK_INTERVAL: number = 100;   // This is in ms (milliseconds) so 1000 = 1 second.
 
 const TIMER_IRQ: number = 0;  // Pages 23 (timer), 9 (interrupts), and 561 (interrupt priority).
 // NOTE: The timer is different from hardware/host clock pulses. Don't confuse these.

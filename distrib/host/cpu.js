@@ -23,7 +23,7 @@ var TSOS;
         instruction;
         instructionRegister;
         currentPid;
-        MemoryAccessor;
+        // private MemoryAccessor: MemoryAccessor;
         constructor(programCounter = 0, Accumulator = 0, xRegister = 0, yRegister = 0, zFlag = 0, isExecuting = false, step = 1, // fetch is first step (1).
         instruction = 0, // counts the number of instructions completed.
         instructionRegister = 0x01, currentPid = 0) {
@@ -41,10 +41,10 @@ var TSOS;
         init() {
             this.isExecuting = false;
         }
-        // MemoryAccessor is made from CPU, then System calls this function to initialize MemoryAccessor in CPU.
-        setMemoryAccessor(MemoryAccessor) {
-            this.MemoryAccessor = MemoryAccessor;
-        }
+        // // MemoryAccessor is made from CPU, then System calls this function to initialize MemoryAccessor in CPU.
+        // setMemoryAccessor(MemoryAccessor: MemoryAccessor) {
+        //     _MemoryAccessor = MemoryAccessor;
+        // }
         // Change this to be all of these steps execute in one cycle.
         cycle() {
             // Prevents execution.
@@ -52,8 +52,7 @@ var TSOS;
             //     return; 
             // } 
             this.logPipeline();
-            console.log("Program: " + this.currentPid + " with memory base " + this.MemoryAccessor.base);
-            console.log(_MemoryManager);
+            _MemoryManager.setBaseAndLimit(_ResidentList[this.currentPid].memorySegment);
             var finishedCycle = false;
             // Since this all needs to be executed in one cycle, will run until interrupt check hits.
             while (!finishedCycle) {
@@ -99,15 +98,16 @@ var TSOS;
                     }
                 } // ends Switch statement.
             } // ends while.
+            TSOS.Utils.saveState();
         } // ends Pulse.
         // Fetches instruction.
         fetch() {
             // Set MAR to programCounter.
-            this.MemoryAccessor.setMAR(this.programCounter);
+            _MemoryAccessor.setMAR(this.programCounter);
             // Increment program counter every time we read a byte.
             this.programCounter++;
             // Grab instruction from MemoryAccessor.
-            this.instructionRegister = this.MemoryAccessor.fetchMemoryContent();
+            this.instructionRegister = _MemoryAccessor.fetchMemoryContent();
             // Set next step to either decode or execute.
             this.step = this.determineNextStep(this.instructionRegister);
         }
@@ -117,7 +117,7 @@ var TSOS;
             if (this.instructionRegister == 0xA9 || this.instructionRegister == 0xA2 ||
                 this.instructionRegister == 0xA0 || this.instructionRegister == 0xD0) {
                 // Read operand at program counter index.
-                this.MemoryAccessor.setMAR(this.programCounter);
+                _MemoryAccessor.setMAR(this.programCounter);
                 // Increment program counter after reading.
                 this.programCounter++;
                 // Step to execute.
@@ -125,15 +125,15 @@ var TSOS;
             }
             else { // Instruction has two operands.
                 // Read at program counter index.
-                this.MemoryAccessor.setMAR(this.programCounter);
+                _MemoryAccessor.setMAR(this.programCounter);
                 // Increment program counter after reading.
                 this.programCounter++;
                 // First of two decodes will set low order byte.
                 if (this.step == 2) {
-                    this.MemoryAccessor.setLowOrderByte(this.MemoryAccessor.fetchMemoryContent());
+                    _MemoryAccessor.setLowOrderByte(_MemoryAccessor.fetchMemoryContent());
                 }
                 else { // Second of two decodes will set high order byte.
-                    this.MemoryAccessor.setHighOrderByte(this.MemoryAccessor.fetchMemoryContent());
+                    _MemoryAccessor.setHighOrderByte(_MemoryAccessor.fetchMemoryContent());
                 }
                 // Step to either decode 2 or execute.
                 this.step++;
@@ -144,24 +144,24 @@ var TSOS;
             switch (this.instructionRegister) {
                 // Load accumulator with constant.
                 case 0xA9: {
-                    this.Accumulator = this.MemoryAccessor.fetchMemoryContent();
+                    this.Accumulator = _MemoryAccessor.fetchMemoryContent();
                     this.step = 7;
                     break;
                 }
                 // Load accumulator with memory address.
                 case 0xAD: {
                     // Put the low order byte + high order byte in MAR.
-                    this.MemoryAccessor.putBytesInMar();
-                    this.Accumulator = this.MemoryAccessor.fetchMemoryContent();
+                    _MemoryAccessor.putBytesInMar();
+                    this.Accumulator = _MemoryAccessor.fetchMemoryContent();
                     this.step = 7;
                     break;
                 }
                 // Store accumulator in memory.
                 case 0x8D: {
                     // Set MAR with the operand bytes (low + high).
-                    this.MemoryAccessor.putBytesInMar();
-                    this.MemoryAccessor.setMDR(this.Accumulator);
-                    this.MemoryAccessor.write();
+                    _MemoryAccessor.putBytesInMar();
+                    _MemoryAccessor.setMDR(this.Accumulator);
+                    _MemoryAccessor.write();
                     this.step = 7;
                     break;
                 }
@@ -179,8 +179,8 @@ var TSOS;
                 // }
                 // Add contents from memory address onto accumulator.
                 case 0x6D: {
-                    this.MemoryAccessor.putBytesInMar();
-                    this.Accumulator += this.MemoryAccessor.fetchMemoryContent();
+                    _MemoryAccessor.putBytesInMar();
+                    this.Accumulator += _MemoryAccessor.fetchMemoryContent();
                     if (this.Accumulator >= 0x100) {
                         this.Accumulator -= 0x100;
                     }
@@ -189,14 +189,14 @@ var TSOS;
                 }
                 // Load x register with a constant.
                 case 0xA2: {
-                    this.xRegister = this.MemoryAccessor.fetchMemoryContent();
+                    this.xRegister = _MemoryAccessor.fetchMemoryContent();
                     this.step = 7;
                     break;
                 }
                 // Load x register from memory. 
                 case 0xAE: {
-                    this.MemoryAccessor.putBytesInMar();
-                    this.xRegister = this.MemoryAccessor.fetchMemoryContent();
+                    _MemoryAccessor.putBytesInMar();
+                    this.xRegister = _MemoryAccessor.fetchMemoryContent();
                     this.step = 7;
                     break;
                 }
@@ -208,14 +208,14 @@ var TSOS;
                 // }
                 // Load y register with a constant.
                 case 0xA0: {
-                    this.yRegister = this.MemoryAccessor.fetchMemoryContent();
+                    this.yRegister = _MemoryAccessor.fetchMemoryContent();
                     this.step = 7;
                     break;
                 }
                 // Load y register from memory. 
                 case 0xAC: {
-                    this.MemoryAccessor.putBytesInMar();
-                    this.yRegister = this.MemoryAccessor.fetchMemoryContent();
+                    _MemoryAccessor.putBytesInMar();
+                    this.yRegister = _MemoryAccessor.fetchMemoryContent();
                     this.step = 7;
                     break;
                 }
@@ -239,8 +239,8 @@ var TSOS;
                 }
                 // Compare byte in memory to x register if zflag is set.
                 case 0xEC: {
-                    this.MemoryAccessor.putBytesInMar();
-                    const memoryContent = this.MemoryAccessor.fetchMemoryContent();
+                    _MemoryAccessor.putBytesInMar();
+                    const memoryContent = _MemoryAccessor.fetchMemoryContent();
                     if (this.xRegister == memoryContent) {
                         this.zFlag = 1;
                     }
@@ -253,11 +253,11 @@ var TSOS;
                 // Branch n bytes if zflag == 0.
                 case 0xD0: {
                     if (this.zFlag == 0) {
-                        let memoryContent = this.MemoryAccessor.fetchMemoryContent();
+                        let memoryContent = _MemoryAccessor.fetchMemoryContent();
                         this.programCounter += ((memoryContent));
                         // to branch backwards, we must wrap around allocated memory segment.
                         if (this.programCounter + _MemoryAccessor.base >= _MemoryAccessor.limit) {
-                            this.programCounter -= _MemoryAccessor.limit + 1;
+                            this.programCounter -= 256; // this took me 7 hours to debug. cool.
                         }
                     }
                     this.step = 7;
@@ -266,8 +266,8 @@ var TSOS;
                 // Increment value of byte.
                 case 0xEE: {
                     if (this.step == 4) {
-                        this.MemoryAccessor.putBytesInMar();
-                        this.Accumulator = this.MemoryAccessor.fetchMemoryContent();
+                        _MemoryAccessor.putBytesInMar();
+                        this.Accumulator = _MemoryAccessor.fetchMemoryContent();
                     }
                     else {
                         this.Accumulator++;
@@ -293,6 +293,7 @@ var TSOS;
                     break;
                 }
                 case undefined: {
+                    console.log("Error: instruction is undefined " + this.instructionRegister);
                     this.instructionRegister = 0x00;
                     break;
                 }
@@ -308,9 +309,9 @@ var TSOS;
             }
         }
         writeback() {
-            this.MemoryAccessor.putBytesInMar();
-            this.MemoryAccessor.setMDR(this.Accumulator);
-            this.MemoryAccessor.write();
+            _MemoryAccessor.putBytesInMar();
+            _MemoryAccessor.setMDR(this.Accumulator);
+            _MemoryAccessor.write();
             this.step++;
         }
         logPipeline() {

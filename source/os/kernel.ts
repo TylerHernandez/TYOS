@@ -223,6 +223,10 @@ module TSOS {
 
         // Inserts given string program into memory.
         public insertStringProgram(memorySegment, program: string[]) {
+            const wasExecuting = _CPU.isExecuting;
+            if (wasExecuting) {
+                _CPU.isExecuting = false;
+            }
 
             _MemoryManager.setBaseAndLimit(memorySegment);
 
@@ -232,6 +236,9 @@ module TSOS {
             }
 
             _MemoryAccessor.memoryLog(0x0000, _MemoryAccessor.highestNumber);
+            if (wasExecuting) {
+                _CPU.isExecuting = true;
+            }
         }
 
 
