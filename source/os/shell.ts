@@ -176,6 +176,12 @@ module TSOS {
                 "<filename> - Reads a file on our disk.");
             this.commandList[this.commandList.length] = sc;
 
+            // Delete File
+            sc = new ShellCommand(this.shellDeleteFile,
+                "delete",
+                "<filename> - Deletes a file on our disk.");
+            this.commandList[this.commandList.length] = sc;
+
             // List Files
             sc = new ShellCommand(this.shellLs,
                 "ls",
@@ -704,8 +710,6 @@ module TSOS {
             } else {
                 _DiskSystemDeviceDriver.writeFile(args);
             }
-
-
         }
 
         public shellReadFile(args: string[]) {
@@ -713,6 +717,14 @@ module TSOS {
                 _StdOut.putText("... what do u want?? to READ an unnamed file??");
             } else {
                 _DiskSystemDeviceDriver.readFile(args[0]);
+            }
+        }
+
+        public shellDeleteFile(args: string[]) {
+            if (args.length < 1) {
+                _StdOut.putText("... what do u want?? to DELETE nothing??");
+            } else {
+                _DiskSystemDeviceDriver.deleteFile(args[0]);
             }
         }
 

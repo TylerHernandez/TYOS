@@ -96,6 +96,9 @@ var TSOS;
             // Read File
             sc = new TSOS.ShellCommand(this.shellReadFile, "read", "<filename> - Reads a file on our disk.");
             this.commandList[this.commandList.length] = sc;
+            // Delete File
+            sc = new TSOS.ShellCommand(this.shellDeleteFile, "delete", "<filename> - Deletes a file on our disk.");
+            this.commandList[this.commandList.length] = sc;
             // List Files
             sc = new TSOS.ShellCommand(this.shellLs, "ls", "Lists all files in our disk.");
             this.commandList[this.commandList.length] = sc;
@@ -538,6 +541,14 @@ var TSOS;
             }
             else {
                 _DiskSystemDeviceDriver.readFile(args[0]);
+            }
+        }
+        shellDeleteFile(args) {
+            if (args.length < 1) {
+                _StdOut.putText("... what do u want?? to DELETE nothing??");
+            }
+            else {
+                _DiskSystemDeviceDriver.deleteFile(args[0]);
             }
         }
         shellLs(args) {

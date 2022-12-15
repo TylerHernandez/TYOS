@@ -240,6 +240,8 @@ module TSOS {
                     text += args[i] + " ";
                 }
 
+                text = text.replace(/['"]+/g, '');
+
                 sessionStorage.setItem(tsb, text);
 
                 _StdOut.putText("Saved file. ");
@@ -264,6 +266,18 @@ module TSOS {
             }
             output += "]";
             _StdOut.putText(output);
+        }
+
+        public deleteFile(filename: string) {
+            if (!this.filenameToDiskTsb.has(filename)) {
+                _StdOut.putText("File not found.")
+            } else {
+                const tsb = this.filenameToDiskTsb.get(filename);
+                this.filenameToDiskTsb.delete(filename);
+                sessionStorage.removeItem(tsb);
+                sessionStorage.setItem(tsb, DEFAULTVAL);
+                this.refreshDiskDisplay();
+            }
         }
 
 

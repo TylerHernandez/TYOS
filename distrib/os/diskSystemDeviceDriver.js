@@ -185,6 +185,7 @@ var TSOS;
                 for (let i = 1; i < args.length; i++) {
                     text += args[i] + " ";
                 }
+                text = text.replace(/['"]+/g, '');
                 sessionStorage.setItem(tsb, text);
                 _StdOut.putText("Saved file. ");
                 this.refreshDiskDisplay();
@@ -206,6 +207,18 @@ var TSOS;
             }
             output += "]";
             _StdOut.putText(output);
+        }
+        deleteFile(filename) {
+            if (!this.filenameToDiskTsb.has(filename)) {
+                _StdOut.putText("File not found.");
+            }
+            else {
+                const tsb = this.filenameToDiskTsb.get(filename);
+                this.filenameToDiskTsb.delete(filename);
+                sessionStorage.removeItem(tsb);
+                sessionStorage.setItem(tsb, DEFAULTVAL);
+                this.refreshDiskDisplay();
+            }
         }
         /*
         //
