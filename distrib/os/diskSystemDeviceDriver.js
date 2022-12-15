@@ -6,15 +6,18 @@
 
      ------------ */
 const DEFAULTVAL = "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+const FILEDEFAULTVAL = "111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111";
 var TSOS;
 (function (TSOS) {
     class DiskSystemDeviceDriver {
         // Programs will be mapped to their starting TSB. 
         programToDiskTsb;
+        filenameToDiskTsb;
         isFormatted;
         nextAvailableTsb = "";
         constructor() {
             this.programToDiskTsb = new Map([]);
+            this.filenameToDiskTsb = new Map([]);
             this.nextAvailableTsb = "0,0,0";
             this.isFormatted = false;
         }
@@ -155,6 +158,54 @@ var TSOS;
             } while (next);
             this.refreshDiskDisplay();
             return this.stringProgramToArray(programStr);
+        }
+        createFile(filename) {
+            if (this.filenameToDiskTsb.has(filename)) {
+                _StdOut.putText("This file name already exists. ");
+                return;
+            }
+            else {
+                let tsb = this.nextAvailableTsb;
+                this.filenameToDiskTsb.set(filename, tsb);
+                sessionStorage.setItem(tsb, FILEDEFAULTVAL);
+                // Make sure our variable is set up for success :)
+                // ... so the next time we use it it will be accurate.
+                this.nextAvailableTsb = this.findNextTsb(this.nextAvailableTsb);
+                this.refreshDiskDisplay();
+            }
+        }
+        writeFile(args) {
+            const filename = args[0];
+            if (!this.filenameToDiskTsb.has(filename)) {
+                _StdOut.putText("File not found, try creating one.");
+            }
+            else {
+                const tsb = this.filenameToDiskTsb.get(filename);
+                let text = "";
+                for (let i = 1; i < args.length; i++) {
+                    text += args[i] + " ";
+                }
+                sessionStorage.setItem(tsb, text);
+                _StdOut.putText("Saved file. ");
+                this.refreshDiskDisplay();
+            }
+        }
+        readFile(filename) {
+            if (!this.filenameToDiskTsb.has(filename)) {
+                _StdOut.putText("File not found, try creating one.");
+            }
+            else {
+                const tsb = this.filenameToDiskTsb.get(filename);
+                _StdOut.putText(sessionStorage.getItem(tsb));
+            }
+        }
+        listFiles() {
+            let output = "[";
+            for (let filename of this.filenameToDiskTsb.keys()) {
+                output += filename + ",";
+            }
+            output += "]";
+            _StdOut.putText(output);
         }
         /*
         //
