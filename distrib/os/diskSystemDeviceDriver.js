@@ -11,10 +11,12 @@ var TSOS;
     class DiskSystemDeviceDriver {
         // Programs will be mapped to their starting TSB. 
         programToDiskTsb;
+        isFormatted;
         nextAvailableTsb = "";
         constructor() {
             this.programToDiskTsb = new Map([]);
             this.nextAvailableTsb = "0,0,0";
+            this.isFormatted = false;
         }
         /*
         // Tracks= 0-99 index.
@@ -34,6 +36,7 @@ var TSOS;
                         }
                     }
                 }
+                this.isFormatted = true;
             }
             else {
                 console.log("Browser does not support session storage");
@@ -120,6 +123,7 @@ var TSOS;
             const memorySegment = _MemoryManager.determineNextSegment();
             _Kernel.insertStringProgram(memorySegment, program);
             _ResidentList[programId].memorySegment = memorySegment;
+            _ResidentList[programId].swapped = true;
             _MemoryAccessor.memoryLog(0x0000, _MemoryAccessor.highestNumber);
             TSOS.Control.refreshPcbLog();
         }
@@ -128,6 +132,7 @@ var TSOS;
             const program = _MemoryAccessor.fetchProgram(memorySegment);
             _MemoryManager.clearSegment(memorySegment);
             _ResidentList[programId].memorySegment = -1;
+            _ResidentList[programId].swapped = true;
             return program;
         }
         // Get our program from the disk by programId. Make sure check if program.memorySegment == -1 before calling.
